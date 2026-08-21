@@ -1,0 +1,82 @@
+<%- include('../partials/admin-head') %>
+
+<div class="admin-head">
+  <div>
+    <h1>Dashboard</h1>
+    <p class="muted" style="margin:0">Today is <%= schedule.formatDate(today) %> in <%= site.timezone %>.</p>
+  </div>
+  <a class="btn btn-ink btn-sm" href="/?preview=1">Preview the site</a>
+</div>
+
+<div class="panel" style="border-left:4px solid <%= enrollment.state === 'open' ? 'var(--open)' : 'var(--gold-bright)' %>">
+  <h2 style="margin-bottom:.3em">
+    Enrollment is <%= enrollment.state === 'open' ? 'open' : 'closed' %>
+  </h2>
+  <p style="margin-bottom:.6em">
+    <%= enrollmentLabel %>.
+    <% if (enrollment.state === 'open' && enrollment.daysUntilClose !== null) { %>
+      <strong><%= enrollment.daysUntilClose %> days remain</strong> in this cycle.
+    <% } else if (enrollment.daysUntilOpen !== null) { %>
+      The next cycle opens in <strong><%= enrollment.daysUntilOpen %> days</strong>
+      and runs to <%= schedule.formatDate(enrollment.closesOn) %>.
+    <% } %>
+  </p>
+  <p class="small muted" style="margin:0">
+    This rolls over on its own each year — nothing to update in November.
+    Change the season in <a href="/admin/settings">settings</a>.
+  </p>
+</div>
+
+<div class="tiles">
+  <div class="tile accent">
+    <div class="n"><%= openCount %></div>
+    <div class="l">scholarships accepting applications today</div>
+  </div>
+  <div class="tile">
+    <div class="n"><%= scholarships.length %></div>
+    <div class="l">scholarships in total</div>
+  </div>
+  <div class="tile">
+    <div class="n"><%= publishedRecipients.length %></div>
+    <div class="l">recipients published<% if (recipients.length !== publishedRecipients.length) { %> of <%= recipients.length %><% } %></div>
+  </div>
+  <div class="tile">
+    <div class="n"><%= formatMoney(stats.totalAwarded) || '—' %></div>
+    <div class="l">published award total</div>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Scholarships and their windows</h2>
+  <table class="rows">
+    <tr><th>Scholarship</th><th>Status</th><th>Window</th><th></th></tr>
+    <% scholarships.forEach(function (item) { %>
+      <tr>
+        <td class="rowtitle"><a href="/admin/scholarships/<%= item.id %>"><%= item.name %></a></td>
+        <td><span class="tag <%= item.isOpen ? 'tag-open' : 'tag-shut' %>"><%= item.isOpen ? 'Open' : 'Closed' %></span></td>
+        <td class="rowsub">
+          <%= item.statusLabel %><% if (item.inheritsWindow) { %> <span class="muted">(site period)</span><% } %>
+        </td>
+        <td class="actions"><a class="btn btn-sm btn-outline" href="/admin/scholarships/<%= item.id %>">Edit</a></td>
+      </tr>
+    <% }) %>
+  </table>
+</div>
+
+<div class="panel">
+  <h2>Everything else</h2>
+  <p class="muted small">
+    <a href="/admin/recipients"><%= recipients.length %> recipients</a> ·
+    <a href="/admin/pages"><%= pageCount %> pages</a> ·
+    <a href="/admin/announcements"><%= announcementCount %> announcements</a>
+  </p>
+  <% if (recipients.length !== publishedRecipients.length) { %>
+    <div class="warn" style="margin-bottom:0">
+      <strong><%= recipients.length - publishedRecipients.length %> recipient records are drafts</strong>
+      and are not visible to the public. The seeded placeholders are drafts on purpose —
+      replace them with real students, then untick Draft.
+    </div>
+  <% } %>
+</div>
+
+<%- include('../partials/admin-foot') %>

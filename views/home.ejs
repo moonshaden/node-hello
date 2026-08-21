@@ -1,0 +1,129 @@
+<%- include('partials/head') %>
+
+<section class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <p class="eyebrow"><%= site.location %> · 501(c)(3) nonprofit</p>
+      <h1>Every scholarship is a door someone walks through.</h1>
+      <p><%= site.mission %></p>
+      <div class="actions">
+        <a class="btn btn-gold" href="/scholarships">
+          <%= enrollment.state === 'open' ? 'Apply for a scholarship' : 'See available scholarships' %>
+        </a>
+        <a class="btn btn-outline" style="color:#fff" href="/recipients">Meet our recipients</a>
+      </div>
+    </div>
+
+    <!-- The deadline is the thing applicants come here for, so it is never
+         more than one glance away, in or out of season. -->
+    <aside class="deadline">
+      <div class="count">
+        <% if (enrollment.state === 'open' && enrollment.daysUntilClose !== null) { %>
+          <%= enrollment.daysUntilClose %><small>days left to apply</small>
+        <% } else if (enrollment.daysUntilOpen !== null) { %>
+          <%= enrollment.daysUntilOpen %><small>days until applications open</small>
+        <% } else { %>
+          Open<small>applications accepted year-round</small>
+        <% } %>
+      </div>
+      <dl>
+        <% if (enrollment.opensOn) { %>
+          <dt>Applications open</dt>
+          <dd><%= schedule.formatDate(enrollment.opensOn) %></dd>
+        <% } %>
+        <% if (enrollment.closesOn) { %>
+          <dt>Applications close</dt>
+          <dd><%= schedule.formatDate(enrollment.closesOn) %></dd>
+        <% } %>
+        <% if (enrollmentSettings.awardedNote) { %>
+          <dt>Awards</dt>
+          <dd style="font-weight:400;color:#c6d5e2;font-size:.92rem"><%= enrollmentSettings.awardedNote %></dd>
+        <% } %>
+      </dl>
+    </aside>
+  </div>
+</section>
+
+<% if (site.impact && site.impact.length) { %>
+<div class="stats">
+  <% site.impact.forEach(function (item) { %>
+    <div>
+      <div class="value"><%= item.value %></div>
+      <div class="label"><%= item.label %></div>
+    </div>
+  <% }) %>
+</div>
+<% } %>
+
+<% if (announcements.length) { %>
+<section class="band" style="padding-bottom:0">
+  <div class="wrap stack">
+    <% announcements.forEach(function (note) { %>
+      <div class="notice">
+        <div>
+          <h3><%= note.title %></h3>
+          <p><%= note.body %></p>
+        </div>
+        <% if (note.ctaUrl && note.ctaLabel) { %>
+          <a class="btn btn-sm btn-ink" href="<%= note.ctaUrl %>"><%= note.ctaLabel %></a>
+        <% } %>
+      </div>
+    <% }) %>
+  </div>
+</section>
+<% } %>
+
+<!-- Recipients lead the page, ahead of the application funnel: the awards
+     already made are the strongest case for both students and donors. -->
+<section class="band">
+  <div class="wrap">
+    <div class="band-head">
+      <div>
+        <p class="eyebrow">Scholarships awarded</p>
+        <h2>The students behind the numbers</h2>
+        <p>Every award on this page went to a student in Arizona who applied, qualified, and got to keep going.</p>
+      </div>
+      <a class="btn btn-sm btn-outline" href="/recipients">All recipients</a>
+    </div>
+
+    <% if (featuredRecipients.length) { %>
+      <div class="grid grid-3">
+        <% featuredRecipients.forEach(function (recipient) { %>
+          <%- include('partials/recipient-card', { recipient }) %>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="empty">
+        <p><strong>No recipients published yet.</strong></p>
+        <p class="small">Add this year's awarded students in the admin area and they will appear here first.</p>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<section class="band tint">
+  <div class="wrap">
+    <div class="band-head">
+      <div>
+        <p class="eyebrow"><%= enrollment.state === 'open' ? 'Now accepting applications' : 'Plan ahead' %></p>
+        <h2><%= openScholarships.length ? 'Scholarships open right now' : 'Scholarships offered each year' %></h2>
+        <p>
+          <% if (enrollment.state === 'open') { %>
+            The enrollment period closes <%= schedule.formatDate(enrollment.closesOn) %>. Apply for every award you qualify for.
+          <% } else { %>
+            Applications reopen <%= schedule.formatDate(enrollment.opensOn) %>. Review the criteria now so you are ready.
+          <% } %>
+        </p>
+      </div>
+      <a class="btn btn-sm btn-outline" href="/scholarships">All scholarships</a>
+    </div>
+
+    <div class="grid grid-3">
+      <% (openScholarships.length ? openScholarships : scholarships).slice(0, 3).forEach(function (scholarship) { %>
+        <%- include('partials/scholarship-card', { scholarship }) %>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/foot') %>

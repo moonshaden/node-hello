@@ -48,6 +48,7 @@ function createApp({ store = new Store() } = {}) {
       content.publicPages(store, req.today, { includeHidden: req.preview })
     );
     res.locals.announcements = content.activeAnnouncements(store, req.today, enrollment.state);
+    res.locals.scholarshipNames = store.list('scholarships').map((item) => item.name);
     res.locals.currentPath = req.path;
     next();
   });

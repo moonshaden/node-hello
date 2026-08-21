@@ -1,16 +1,19 @@
 {
-  "name": "node-hello",
+  "name": "leo-foundation-site",
   "version": "1.0.0",
-  "description": "",
+  "description": "The LEO Foundation website — scholarships, application periods, and awarded recipients.",
   "main": "server.js",
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "ejs": "^3.1.10",
     "express": "^4.22.2",
     "marked": "^12.0.2"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "node --test"
   },
   "author": "",
   "license": "ISC"

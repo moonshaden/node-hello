@@ -1,0 +1,12 @@
+<article class="card">
+  <span class="pill pill-<%= scholarship.window.state %>"><%= scholarship.isOpen ? 'Open' : (scholarship.window.state === 'upcoming' ? 'Opens later' : 'Closed') %></span>
+  <h3 style="margin-top:14px"><a href="/scholarships/<%= scholarship.slug %>"><%= scholarship.name %></a></h3>
+  <% if (scholarship.amount) { %><div class="amount"><%= scholarship.amount %></div><% } %>
+  <p style="margin-top:12px"><%= scholarship.summary %></p>
+  <div class="card-foot">
+    <a class="btn btn-sm <%= scholarship.isOpen ? 'btn-ink' : 'btn-outline' %>" href="/scholarships/<%= scholarship.slug %>">
+      <%= scholarship.isOpen ? 'View and apply' : 'View details' %>
+    </a>
+    <span class="small muted"><%= scholarship.statusLabel %></span>
+  </div>
+</article>

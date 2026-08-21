@@ -1,11 +1,10 @@
 {
-  "_note": "Seed content assembled from public sources (leofoundationusa.org search results, GuideStar EIN 20-4879525). Everything here is editable at /admin. Records marked \"draft\": true are placeholders that never render publicly -- replace them with real data before launch.",
   "site": {
     "name": "LEO Foundation",
-    "legalName": "LEO Foundation USA",
     "tagline": "Leadership. Education. Opportunity.",
-    "mission": "LEO Foundation is an independent nonprofit 501(c)(3) organization whose mission is to provide educational opportunities and scholarships to students attending university with a traditional full-time status.",
     "timezone": "America/Phoenix",
+    "legalName": "LEO Foundation USA",
+    "mission": "LEO Foundation is an independent nonprofit 501(c)(3) organization whose mission is to provide educational opportunities and scholarships to students attending university with a traditional full-time status.",
     "email": "mwinney@leofoundationusa.org",
     "phone": "602.206.4465",
     "location": "Phoenix, Arizona",
@@ -13,9 +12,18 @@
     "donateUrl": "https://www.mightycause.com/organization/LEOFoundation",
     "facebookUrl": "https://www.facebook.com/LEOFoundationUSA/",
     "impact": [
-      { "value": "$5M+", "label": "in scholarships connected to students" },
-      { "value": "3,000+", "label": "youth supported in nearly 20 years" },
-      { "value": "$225,000+", "label": "awarded for the 2024/2025 school year" }
+      {
+        "value": "$5M+",
+        "label": "in scholarships connected to students"
+      },
+      {
+        "value": "3,000+",
+        "label": "youth supported in nearly 20 years"
+      },
+      {
+        "value": "$225,000+",
+        "label": "awarded for the 2024/2025 school year"
+      }
     ]
   },
   "enrollment": {
@@ -52,7 +60,9 @@
       "summary": "The foundation's general scholarship for traditional full-time undergraduates enrolled at an Arizona college or university.",
       "criteria": "- Traditional, full-time undergraduate status\n- Enrolled at, or admitted to, a college or university in Arizona\n- Demonstrated financial need\n- Evidence of leadership and service",
       "applyUrl": "",
-      "window": { "type": "inherit" },
+      "window": {
+        "type": "inherit"
+      },
       "featured": true,
       "hideWhenClosed": false
     },
@@ -68,7 +78,9 @@
         "Describe how your values shape the way you intend to lead (300 words)."
       ],
       "applyUrl": "",
-      "window": { "type": "inherit" },
+      "window": {
+        "type": "inherit"
+      },
       "featured": true,
       "hideWhenClosed": false
     },
@@ -80,7 +92,9 @@
       "summary": "A memorial award for students pursuing an academic degree in nursing.",
       "criteria": "- Pursuing an academic degree in nursing\n- Traditional, full-time undergraduate status",
       "applyUrl": "",
-      "window": { "type": "inherit" },
+      "window": {
+        "type": "inherit"
+      },
       "hideWhenClosed": false
     },
     {
@@ -91,7 +105,9 @@
       "summary": "For women pursuing chemistry or biochemistry who lead with excellence and character.",
       "criteria": "- Women applicants\n- Declared major in Chemistry or Biochemistry\n- Traditional, full-time undergraduate status",
       "applyUrl": "",
-      "window": { "type": "inherit" },
+      "window": {
+        "type": "inherit"
+      },
       "hideWhenClosed": false
     },
     {
@@ -102,7 +118,9 @@
       "summary": "A memorial award for homeschooled students entering engineering, science, or pre-med study at Grand Canyon University.",
       "criteria": "- Homeschooled for a minimum of the high school years\n- Engineering, Science, or Pre-Med major\n- Attending Grand Canyon University",
       "applyUrl": "",
-      "window": { "type": "inherit" },
+      "window": {
+        "type": "inherit"
+      },
       "hideWhenClosed": false
     },
     {
@@ -116,7 +134,9 @@
         "Describe how the loss of a parent impacted your life."
       ],
       "applyUrl": "",
-      "window": { "type": "inherit" },
+      "window": {
+        "type": "inherit"
+      },
       "hideWhenClosed": false
     },
     {
@@ -125,10 +145,19 @@
       "name": "Arvizu Scholarship",
       "amount": "$1,000",
       "summary": "An award supporting an Arizona undergraduate with financial need.",
-      "criteria": "- Traditional, full-time undergraduate status\n- Demonstrated financial need",
+      "criteria": "- Traditional, full-time undergraduate status",
       "applyUrl": "",
-      "window": { "type": "inherit" },
-      "hideWhenClosed": false
+      "window": {
+        "type": "inherit"
+      },
+      "hideWhenClosed": false,
+      "essayPrompts": [],
+      "details": "",
+      "publish": {
+        "showFrom": "",
+        "showUntil": ""
+      },
+      "draft": false
     }
   ],
   "recipients": [
@@ -179,7 +208,8 @@
       "title": "About the foundation",
       "inNav": true,
       "summary": "Who we are and why we invest in students.",
-      "body": "LEO Foundation — Leadership, Education and Opportunity — is an independent nonprofit 501(c)(3) organization. Our mission is to invest in future generations by supporting student leadership and educational opportunities through scholarships, mentoring, and athletic programs.\n\nFor nearly twenty years, the foundation — formerly the GCU Scholarship Foundation — has connected more than 3,000 young people to over $5 million in scholarships and to educational and athletic opportunities that promote higher-learning academic achievement.\n\n## Who we serve\n\nOur primary exempt purpose is to provide scholarships to traditional, full-time undergraduate students enrolled at universities and colleges in Arizona.\n\n## How we are funded\n\nThe foundation is funded by individual donors, families who establish memorial scholarships, and community partners. Gifts are tax deductible to the extent allowed by law."
+      "body": "LEO Foundation \u2014 Leadership, Education and Opportunity \u2014 is an independent nonprofit 501(c)(3) organization. Our mission is to invest in future generations by supporting student leadership and educational opportunities through scholarships, mentoring, and athletic programs.\n\nFor nearly twenty years, the foundation \u2014 formerly the GCU Scholarship Foundation \u2014 has connected more than 3,000 young people to over $5 million in scholarships and to educational and athletic opportunities that promote higher-learning academic achievement.\n\n## Who we serve\n\nOur primary exempt purpose is to provide scholarships to traditional, full-time undergraduate students enrolled at universities and colleges in Arizona.\n\n## How we are funded\n\nThe foundation is funded by individual donors, families who establish memorial scholarships, and community partners. Gifts are tax deductible to the extent allowed by law.",
+      "navLabel": "About"
     },
     {
       "id": "page-faq",
@@ -187,7 +217,8 @@
       "title": "Scholarship FAQs",
       "inNav": true,
       "summary": "How applications, deadlines, and awards work.",
-      "body": "## When can I apply?\n\nThe enrollment period runs from November 1 through March 31 each year. Awards are announced in the spring for the following academic year.\n\n## How many scholarships can I apply for?\n\nRead the instructions and criteria for each scholarship, then apply for every award you qualify for. Only one application per scholarship is accepted.\n\n## Do I need to be admitted to a university first?\n\nYes. In most cases foundation scholarships are open only to students who have already been accepted into a program at that university. You must have completed the university application process and been admitted to qualify for an award.\n\n## Who is eligible?\n\nTraditional, full-time undergraduate students enrolled at universities and colleges in Arizona. Individual scholarships add their own criteria — major, GPA, background — which are listed on each scholarship page.\n\n## When will I hear back?\n\nRecipients are notified in the spring, and awarded students are featured on our recipients page."
+      "body": "## When can I apply?\n\nThe enrollment period runs from November 1 through March 31 each year. Awards are announced in the spring for the following academic year.\n\n## How many scholarships can I apply for?\n\nRead the instructions and criteria for each scholarship, then apply for every award you qualify for. Only one application per scholarship is accepted.\n\n## Do I need to be admitted to a university first?\n\nYes. In most cases foundation scholarships are open only to students who have already been accepted into a program at that university. You must have completed the university application process and been admitted to qualify for an award.\n\n## Who is eligible?\n\nTraditional, full-time undergraduate students enrolled at universities and colleges in Arizona. Individual scholarships add their own criteria \u2014 major, GPA, background \u2014 which are listed on each scholarship page.\n\n## When will I hear back?\n\nRecipients are notified in the spring, and awarded students are featured on our recipients page.",
+      "navLabel": "FAQs"
     },
     {
       "id": "page-donate",
@@ -195,7 +226,8 @@
       "title": "Support a student",
       "inNav": true,
       "summary": "Fund a scholarship, or establish one in a loved one's name.",
-      "body": "Every dollar given to the LEO Foundation goes toward opening a door for a student in Arizona. In the 2024/2025 school year alone, the foundation awarded more than $225,000 in scholarships.\n\n## Ways to give\n\n- **Give once or monthly.** A recurring gift lets us commit to students earlier in the cycle.\n- **Establish a memorial or named scholarship.** Several of our awards were created by families to carry a name forward. We will help you set the criteria and steward the fund.\n- **Employer matching.** Many Arizona employers match charitable gifts — ask your HR team.\n\nThe LEO Foundation is a 501(c)(3) organization, EIN 20-4879525. Contributions are tax deductible to the extent allowed by law."
+      "body": "Every dollar given to the LEO Foundation goes toward opening a door for a student in Arizona. In the 2024/2025 school year alone, the foundation awarded more than $225,000 in scholarships.\n\n## Ways to give\n\n- **Give once or monthly.** A recurring gift lets us commit to students earlier in the cycle.\n- **Establish a memorial or named scholarship.** Several of our awards were created by families to carry a name forward. We will help you set the criteria and steward the fund.\n- **Employer matching.** Many Arizona employers match charitable gifts \u2014 ask your HR team.\n\nThe LEO Foundation is a 501(c)(3) organization, EIN 20-4879525. Contributions are tax deductible to the extent allowed by law.",
+      "navLabel": "Giving"
     },
     {
       "id": "page-contact",
@@ -203,7 +235,9 @@
       "title": "Contact us",
       "inNav": true,
       "summary": "Questions about an application, a gift, or a named scholarship.",
-      "body": "We are glad to help with applications, gifts, and questions about establishing a scholarship.\n\n- **Email:** mwinney@leofoundationusa.org\n- **Phone:** 602.206.4465\n- **Location:** Phoenix, Arizona\n\nDuring the enrollment period we answer application questions as quickly as we can, but please allow a few business days in March as the deadline approaches."
+      "body": "We are glad to help with applications, gifts, and questions about establishing a scholarship.\n\n- **Email:** mwinney@leofoundationusa.org\n- **Phone:** 602.206.4465\n- **Location:** Phoenix, Arizona\n\nDuring the enrollment period we answer application questions as quickly as we can, but please allow a few business days in March as the deadline approaches.",
+      "navLabel": "Contact"
     }
-  ]
+  ],
+  "_note": "Seed content assembled from public sources (leofoundationusa.org search results, GuideStar EIN 20-4879525). Everything here is editable at /admin. Records marked \"draft\": true are placeholders that never render publicly -- replace them with real data before launch."
 }

@@ -1,0 +1,14 @@
+<article class="card recipient">
+  <% if (recipient.photoUrl) { %>
+    <img class="portrait" src="<%= recipient.photoUrl %>" alt="<%= recipient.name %>">
+  <% } else { %>
+    <div class="portrait portrait-fallback"><%= (recipient.name || '?').trim().charAt(0).toUpperCase() %></div>
+  <% } %>
+  <h3 class="name"><%= recipient.name %><% if (preview && recipient.draft) { %> <span class="pill pill-closed">Draft</span><% } %></h3>
+  <div class="award"><%= recipient.scholarship %><% if (recipient.amount) { %> · <%= formatMoney(recipient.amount) %><% } %></div>
+  <div class="meta">
+    <%= [recipient.major, recipient.school].filter(Boolean).join(' · ') %>
+    <% if (recipient.year) { %><br>Class of <%= recipient.year %><% } %>
+  </div>
+  <% if (recipient.quote) { %><blockquote><%= recipient.quote %></blockquote><% } %>
+</article>
