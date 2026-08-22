@@ -21,11 +21,23 @@ final class App
     /** The variables in scope for the view currently rendering. */
     private array $current = [];
 
+    /**
+     * The path the site is mounted at, '' at a domain root.
+     *
+     * cPanel's temporary URL serves the account from /~username/ via
+     * mod_userdir, and a site whose links are all root-absolute breaks
+     * completely there. Deriving the prefix from where index.php actually sits
+     * makes the site work at a domain root and in any subdirectory, with no
+     * configuration.
+     */
+    private string $basePath = '';
+
     public function __construct(
         private string $dataFile,
         private string $viewsDir,
         private array $config,
     ) {
+        $this->basePath = $this->deriveBasePath();
         $this->store = new Store($this->dataFile);
         $this->auth = new Auth(
             (string) ($this->config['admin_password'] ?? ''),
@@ -61,11 +73,47 @@ final class App
         }
     }
 
-    /** The request path, with the trailing slash normalised away. */
+    /**
+     * Where index.php is mounted: '/~leofoundationusa' under mod_userdir, ''
+     * at a domain root. An explicit base_path in config wins, for the rare
+     * host that reports SCRIPT_NAME unhelpfully.
+     */
+    private function deriveBasePath(): string
+    {
+        $configured = $this->config['base_path'] ?? null;
+        if (is_string($configured)) {
+            return rtrim($configured, '/');
+        }
+
+        $script = (string) ($_SERVER['SCRIPT_NAME'] ?? '/index.php');
+        $base = rtrim(str_replace('\\', '/', dirname($script)), '/');
+        return $base === '.' ? '' : $base;
+    }
+
+    public function basePath(): string
+    {
+        return $this->basePath;
+    }
+
+    /** Prefix an app-absolute path with the base path. */
+    public function url(string $path): string
+    {
+        if ($path === '' || $path[0] !== '/') {
+            return $path;
+        }
+        return $this->basePath . $path;
+    }
+
+    /** The request path, relative to the base path, trailing slash removed. */
     private function path(): string
     {
         $path = parse_url((string) ($_SERVER['REQUEST_URI'] ?? '/'), PHP_URL_PATH);
         $path = is_string($path) ? $path : '/';
+
+        if ($this->basePath !== '' && str_starts_with($path, $this->basePath)) {
+            $path = substr($path, strlen($this->basePath));
+        }
+
         $path = rtrim($path, '/');
         return $path === '' ? '/' : $path;
     }
@@ -107,6 +155,7 @@ final class App
                 $this->store->list('scholarships')
             ),
             'currentPath' => $this->path(),
+            'basePath' => $this->basePath,
         ];
     }
 
@@ -455,7 +504,7 @@ final class App
 
     private function redirect(string $to): void
     {
-        header('Location: ' . $to, true, 302);
+        header('Location: ' . $this->url($to), true, 302);
     }
 
     // ----------------------------------------------------------------- views

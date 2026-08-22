@@ -144,7 +144,7 @@
             "slug": "arvizu-scholarship",
             "name": "Arvizu Scholarship",
             "amount": "$1,000",
-            "summary": "An award supporting an Arizona undergraduate with financial need.",
+            "summary": "",
             "criteria": "",
             "applyUrl": "",
             "window": {
@@ -153,7 +153,12 @@
             "hideWhenClosed": false,
             "essayPrompts": [],
             "details": "",
-            "draft": false
+            "draft": false,
+            "featured": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            }
         }
     ],
     "recipients": [

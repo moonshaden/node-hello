@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($title) ?><?= $title === ($site['name'] ?? '') ? '' : ' — ' . e($site['name'] ?? '') ?></title>
 <meta name="description" content="<?= e($description ?? ($site['mission'] ?? $site['tagline'] ?? '')) ?>">
-<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="<?= e($basePath) ?>/css/site.css">
 </head>
 <body>
 
@@ -26,7 +26,7 @@
 
 <header class="masthead">
   <div class="wrap masthead-inner">
-    <a class="wordmark" href="/">
+    <a class="wordmark" href="<?= e($basePath) ?>/">
       <span class="mark">LEO</span>
       <span>
         <span class="name"><?= e($site['name'] ?? '') ?></span><br>
@@ -34,13 +34,13 @@
       </span>
     </a>
     <nav class="nav">
-      <a href="/scholarships" class="<?= str_starts_with($currentPath, '/scholarships') ? 'is-current' : '' ?>">Scholarships</a>
-      <a href="/recipients" class="<?= $currentPath === '/recipients' ? 'is-current' : '' ?>">Recipients</a>
+      <a href="<?= e($basePath) ?>/scholarships" class="<?= str_starts_with($currentPath, '/scholarships') ? 'is-current' : '' ?>">Scholarships</a>
+      <a href="<?= e($basePath) ?>/recipients" class="<?= $currentPath === '/recipients' ? 'is-current' : '' ?>">Recipients</a>
       <?php foreach ($navPages as $navPage): ?>
-        <a href="/<?= e($navPage['slug'] ?? '') ?>" class="<?= $currentPath === '/' . ($navPage['slug'] ?? '') ? 'is-current' : '' ?>"><?= e($navPage['navLabel'] ?? $navPage['title'] ?? '') ?></a>
+        <a href="<?= e($basePath) ?>/<?= e($navPage['slug'] ?? '') ?>" class="<?= $currentPath === '/' . ($navPage['slug'] ?? '') ? 'is-current' : '' ?>"><?= e($navPage['navLabel'] ?? $navPage['title'] ?? '') ?></a>
       <?php endforeach; ?>
       <?php if (!empty($site['donateUrl'])): ?>
-        <a class="btn btn-gold btn-sm" href="<?= e($site['donateUrl']) ?>">Donate</a>
+        <a class="btn btn-gold btn-sm" href="<?= e(link_url($site['donateUrl'], $basePath)) ?>">Donate</a>
       <?php endif; ?>
     </nav>
   </div>
@@ -58,7 +58,7 @@
         <span class="muted">Opens in <?= (int) $enrollment['daysUntilOpen'] ?> days.</span>
       <?php endif; ?>
     </span>
-    <a class="btn btn-ink btn-sm" href="/scholarships">
+    <a class="btn btn-ink btn-sm" href="<?= e($basePath) ?>/scholarships">
       <?= $enrollment['state'] === 'open' ? 'Apply now' : 'Browse scholarships' ?>
     </a>
   </div>

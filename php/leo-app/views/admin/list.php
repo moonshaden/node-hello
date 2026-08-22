@@ -5,7 +5,7 @@
     <h1><?= e($config['plural']) ?></h1>
     <p class="muted" style="margin:0"><?= count($items) ?> <?= count($items) === 1 ? 'record' : 'records' ?>. Order here is the order shown on the site.</p>
   </div>
-  <a class="btn btn-ink btn-sm" href="/admin/<?= e($name) ?>/new">Add <?= e(strtolower($config['label'])) ?></a>
+  <a class="btn btn-ink btn-sm" href="<?= e($basePath) ?>/admin/<?= e($name) ?>/new">Add <?= e(strtolower($config['label'])) ?></a>
 </div>
 
 <div class="panel" style="padding:0;overflow:hidden">
@@ -19,7 +19,7 @@
     <?php foreach ($items as $item): ?>
       <tr>
         <td>
-          <div class="rowtitle"><a href="/admin/<?= e($name) ?>/<?= e($item['id'] ?? '') ?>"><?= e($item[$config['titleKey']] ?? 'Untitled') ?></a></div>
+          <div class="rowtitle"><a href="<?= e($basePath) ?>/admin/<?= e($name) ?>/<?= e($item['id'] ?? '') ?>"><?= e($item[$config['titleKey']] ?? 'Untitled') ?></a></div>
           <div class="rowsub">
             <?php if (!empty($item['slug'])): ?>/<?= e($item['slug']) ?><?php endif; ?>
             <?php if (!empty($item['year'])): ?>Class of <?= e($item['year']) ?><?php endif; ?>
@@ -34,15 +34,15 @@
           <td class="rowsub"><?= e($item['resolved']['statusLabel'] ?? '') ?></td>
         <?php endif; ?>
         <td class="actions">
-          <form method="post" action="/admin/<?= e($name) ?>/<?= e($item['id'] ?? '') ?>/move">
+          <form method="post" action="<?= e($basePath) ?>/admin/<?= e($name) ?>/<?= e($item['id'] ?? '') ?>/move">
             <input type="hidden" name="direction" value="up">
             <button class="btn btn-sm btn-outline" type="submit" title="Move up">↑</button>
           </form>
-          <form method="post" action="/admin/<?= e($name) ?>/<?= e($item['id'] ?? '') ?>/move">
+          <form method="post" action="<?= e($basePath) ?>/admin/<?= e($name) ?>/<?= e($item['id'] ?? '') ?>/move">
             <input type="hidden" name="direction" value="down">
             <button class="btn btn-sm btn-outline" type="submit" title="Move down">↓</button>
           </form>
-          <a class="btn btn-sm btn-ink" href="/admin/<?= e($name) ?>/<?= e($item['id'] ?? '') ?>">Edit</a>
+          <a class="btn btn-sm btn-ink" href="<?= e($basePath) ?>/admin/<?= e($name) ?>/<?= e($item['id'] ?? '') ?>">Edit</a>
         </td>
       </tr>
     <?php endforeach; ?>

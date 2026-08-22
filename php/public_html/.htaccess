@@ -6,9 +6,9 @@ RewriteEngine On
 # RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
 
 # Old WordPress URLs. These ran for years — keep them working.
-RewriteRule ^available-scholarships/?$ /scholarships [R=301,L]
-RewriteRule ^scholarship-recipients/?$ /recipients [R=301,L]
-RewriteRule ^scholarship-faqs/?$ /faq [R=301,L]
+RewriteRule ^available-scholarships/?$ scholarships [R=301,L]
+RewriteRule ^scholarship-recipients/?$ recipients [R=301,L]
+RewriteRule ^scholarship-faqs/?$ faq [R=301,L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d

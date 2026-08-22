@@ -15,6 +15,8 @@ require __DIR__ . '/../leo-app/src/Markdown.php';
 require __DIR__ . '/../leo-app/src/Content.php';
 require __DIR__ . '/../leo-app/src/Auth.php';
 require __DIR__ . '/../leo-app/src/Admin.php';
+require __DIR__ . '/../leo-app/src/App.php';
+require __DIR__ . '/../leo-app/src/helpers.php';
 
 use Leo\Admin;
 use Leo\Content;
@@ -353,6 +355,72 @@ test('field types coerce the way the store expects', function () {
     is_same($record['essayPrompts'], ['First prompt', 'Second prompt']);
     is_same($record['featured'], true);
     is_same($record['name'], 'Ada');
+});
+
+echo "\nMount point\n";
+
+/** Build an App as if index.php were served from $scriptName. */
+function appAt(string $scriptName, array $config = []): Leo\App
+{
+    $_SERVER['SCRIPT_NAME'] = $scriptName;
+    return new Leo\App(
+        __DIR__ . '/../leo-app/data/content.json',
+        __DIR__ . '/../leo-app/views',
+        $config
+    );
+}
+
+/** path() is private; the request path is worth testing directly. */
+function requestPath(Leo\App $app, string $requestUri): string
+{
+    $_SERVER['REQUEST_URI'] = $requestUri;
+    $method = new \ReflectionMethod($app, 'path');
+    return $method->invoke($app);
+}
+
+test('a domain root has no prefix', function () {
+    $app = appAt('/index.php');
+    is_same($app->basePath(), '');
+    is_same($app->url('/scholarships'), '/scholarships');
+    is_same(requestPath($app, '/scholarships'), '/scholarships');
+    is_same(requestPath($app, '/'), '/');
+});
+
+test('a userdir mount prefixes links and strips itself from the request', function () {
+    // cPanel's temporary URL serves the account from /~username/.
+    $app = appAt('/~leofoundationusa/index.php');
+    is_same($app->basePath(), '/~leofoundationusa');
+    is_same($app->url('/scholarships'), '/~leofoundationusa/scholarships');
+    is_same($app->url('/'), '/~leofoundationusa/');
+    is_same(requestPath($app, '/~leofoundationusa/scholarships'), '/scholarships');
+    is_same(requestPath($app, '/~leofoundationusa/'), '/');
+    is_same(requestPath($app, '/~leofoundationusa'), '/');
+});
+
+test('a nested subdirectory works the same way', function () {
+    $app = appAt('/staging/leo/index.php');
+    is_same($app->basePath(), '/staging/leo');
+    is_same(requestPath($app, '/staging/leo/recipients'), '/recipients');
+});
+
+test('config can override the derived mount point', function () {
+    $app = appAt('/~leofoundationusa/index.php', ['base_path' => '/custom/']);
+    is_same($app->basePath(), '/custom');
+    is_same($app->url('/faq'), '/custom/faq');
+});
+
+test('url leaves anything that is not app-absolute alone', function () {
+    $app = appAt('/~leofoundationusa/index.php');
+    is_same($app->url('https://example.org'), 'https://example.org');
+    is_same($app->url(''), '');
+});
+
+test('stored links are prefixed only when internal', function () {
+    is_same(link_url('/recipients', '/~leofoundationusa'), '/~leofoundationusa/recipients');
+    is_same(link_url('https://example.org/give', '/~leofoundationusa'), 'https://example.org/give');
+    is_same(link_url('mailto:a@b.c', '/~leofoundationusa'), 'mailto:a@b.c');
+    is_same(link_url('/recipients', ''), '/recipients');
+    is_same(link_url(null, '/x'), '');
 });
 
 echo "\nMarkdown\n";

@@ -6,14 +6,14 @@
 
 <div class="admin-head">
   <div>
-    <p class="small muted" style="margin:0"><a href="/admin/<?= e($name) ?>">← <?= e($config['plural']) ?></a></p>
+    <p class="small muted" style="margin:0"><a href="<?= e($basePath) ?>/admin/<?= e($name) ?>">← <?= e($config['plural']) ?></a></p>
     <h1><?= $isNew ? 'New ' . e(strtolower($config['label'])) : e($record[$config['titleKey']] ?? $config['label']) ?></h1>
   </div>
 </div>
 
 <?php if ($saved): ?><div class="saved">Saved. The public site is already showing this.</div><?php endif; ?>
 
-<form method="post" action="/admin/<?= e($name) ?>/<?= $isNew ? 'new' : e($record['id']) ?>">
+<form method="post" action="<?= e($basePath) ?>/admin/<?= e($name) ?>/<?= $isNew ? 'new' : e($record['id']) ?>">
 <div class="formgrid">
   <div class="panel">
     <?php foreach ($config['fields'] as $field): ?>
@@ -122,10 +122,10 @@
     <div class="panel">
       <button class="btn btn-ink" type="submit" style="width:100%">Save <?= e(strtolower($config['label'])) ?></button>
       <?php if (!$isNew && $name === 'scholarships' && !empty($record['slug'])): ?>
-        <a class="btn btn-outline btn-sm" style="width:100%;text-align:center;margin-top:10px" href="/scholarships/<?= e($record['slug']) ?>?preview=1">Preview page</a>
+        <a class="btn btn-outline btn-sm" style="width:100%;text-align:center;margin-top:10px" href="<?= e($basePath) ?>/scholarships/<?= e($record['slug']) ?>?preview=1">Preview page</a>
       <?php endif; ?>
       <?php if (!$isNew && $name === 'pages' && !empty($record['slug'])): ?>
-        <a class="btn btn-outline btn-sm" style="width:100%;text-align:center;margin-top:10px" href="/<?= e($record['slug']) ?>?preview=1">Preview page</a>
+        <a class="btn btn-outline btn-sm" style="width:100%;text-align:center;margin-top:10px" href="<?= e($basePath) ?>/<?= e($record['slug']) ?>?preview=1">Preview page</a>
       <?php endif; ?>
     </div>
 
@@ -148,7 +148,7 @@
       <div class="panel">
         <h2>Delete</h2>
         <p class="small muted">This cannot be undone.</p>
-        <form method="post" action="/admin/<?= e($name) ?>/<?= e($record['id']) ?>/delete"
+        <form method="post" action="<?= e($basePath) ?>/admin/<?= e($name) ?>/<?= e($record['id']) ?>/delete"
               onsubmit="return confirm('Delete this <?= e(strtolower($config['label'])) ?>?')">
           <button class="btn btn-sm btn-outline" type="submit" style="width:100%">Delete <?= e(strtolower($config['label'])) ?></button>
         </form>
@@ -158,5 +158,5 @@
 </div>
 </form>
 
-<script src="/js/admin.js"></script>
+<script src="<?= e($basePath) ?>/js/admin.js"></script>
 <?php $app->partial('admin-foot'); ?>

@@ -5,8 +5,8 @@
     <h1>We could not find that page</h1>
     <p class="muted">It may have moved when the site was rebuilt. Try the scholarships list or our recipients.</p>
     <p style="margin-top:28px">
-      <a class="btn btn-ink" href="/scholarships">Available scholarships</a>
-      <a class="btn btn-outline" href="/">Home</a>
+      <a class="btn btn-ink" href="<?= e($basePath) ?>/scholarships">Available scholarships</a>
+      <a class="btn btn-outline" href="<?= e($basePath) ?>/">Home</a>
     </p>
   </div>
 </section>

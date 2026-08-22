@@ -2,7 +2,7 @@
 
 <div class="page-head">
   <div class="wrap">
-    <p class="eyebrow"><a href="/scholarships">Available scholarships</a></p>
+    <p class="eyebrow"><a href="<?= e($basePath) ?>/scholarships">Available scholarships</a></p>
     <h1><?= e($scholarship['name'] ?? '') ?></h1>
     <p class="lede"><?= e($scholarship['summary'] ?? '') ?></p>
   </div>
@@ -49,7 +49,7 @@
 
       <?php if ($scholarship['isOpen']): ?>
         <?php if (!empty($scholarship['applyUrl'])): ?>
-          <a class="btn btn-gold" style="width:100%;text-align:center" href="<?= e($scholarship['applyUrl']) ?>">Start your application</a>
+          <a class="btn btn-gold" style="width:100%;text-align:center" href="<?= e(link_url($scholarship['applyUrl'], $basePath)) ?>">Start your application</a>
         <?php else: ?>
           <p class="small muted">Application link coming soon. Email <a href="mailto:<?= e($site['email'] ?? '') ?>"><?= e($site['email'] ?? '') ?></a> to be notified.</p>
         <?php endif; ?>

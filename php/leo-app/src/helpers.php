@@ -16,6 +16,19 @@ function md(?string $value): string
     return Leo\Markdown::render($value);
 }
 
+/**
+ * Prefix a stored link with the site's mount point, if it is internal.
+ *
+ * Admin-entered URLs like an announcement's button link are root-relative
+ * ('/recipients'), and need the same prefix a template link gets. External
+ * URLs, mailto: and tel: are returned untouched.
+ */
+function link_url(?string $url, string $basePath): string
+{
+    $url = (string) $url;
+    return ($url !== '' && $url[0] === '/') ? $basePath . $url : $url;
+}
+
 /** Format a stored calendar date for display. */
 function fdate(?string $date, bool $short = false): string
 {

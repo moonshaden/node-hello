@@ -9,7 +9,7 @@
 
 <?php if ($saved): ?><div class="saved">Settings saved.</div><?php endif; ?>
 
-<form method="post" action="/admin/settings">
+<form method="post" action="<?= e($basePath) ?>/admin/settings">
 <div class="formgrid">
   <div>
     <div class="panel">

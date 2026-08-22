@@ -7,10 +7,10 @@
       <h1>Every scholarship is a door someone walks through.</h1>
       <p><?= e($site['mission'] ?? '') ?></p>
       <div class="actions">
-        <a class="btn btn-gold" href="/scholarships">
+        <a class="btn btn-gold" href="<?= e($basePath) ?>/scholarships">
           <?= $enrollment['state'] === 'open' ? 'Apply for a scholarship' : 'See available scholarships' ?>
         </a>
-        <a class="btn btn-outline" style="color:#fff" href="/recipients">Meet our recipients</a>
+        <a class="btn btn-outline" style="color:#fff" href="<?= e($basePath) ?>/recipients">Meet our recipients</a>
       </div>
     </div>
 
@@ -65,7 +65,7 @@
           <p><?= e($note['body'] ?? '') ?></p>
         </div>
         <?php if (!empty($note['ctaUrl']) && !empty($note['ctaLabel'])): ?>
-          <a class="btn btn-sm btn-ink" href="<?= e($note['ctaUrl']) ?>"><?= e($note['ctaLabel']) ?></a>
+          <a class="btn btn-sm btn-ink" href="<?= e(link_url($note['ctaUrl'], $basePath)) ?>"><?= e($note['ctaLabel']) ?></a>
         <?php endif; ?>
       </div>
     <?php endforeach; ?>
@@ -83,7 +83,7 @@
         <h2>The students behind the numbers</h2>
         <p>Every award on this page went to a student in Arizona who applied, qualified, and got to keep going.</p>
       </div>
-      <a class="btn btn-sm btn-outline" href="/recipients">All recipients</a>
+      <a class="btn btn-sm btn-outline" href="<?= e($basePath) ?>/recipients">All recipients</a>
     </div>
 
     <?php if ($featuredRecipients !== []): ?>
@@ -115,7 +115,7 @@
           <?php endif; ?>
         </p>
       </div>
-      <a class="btn btn-sm btn-outline" href="/scholarships">All scholarships</a>
+      <a class="btn btn-sm btn-outline" href="<?= e($basePath) ?>/scholarships">All scholarships</a>
     </div>
 
     <div class="grid grid-3">

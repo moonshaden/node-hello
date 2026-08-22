@@ -18,9 +18,9 @@
   <div class="wrap">
     <?php if (count($years) > 1): ?>
       <div class="filters">
-        <a href="/recipients" class="<?= $selectedYear === null ? 'is-current' : '' ?>">All years</a>
+        <a href="<?= e($basePath) ?>/recipients" class="<?= $selectedYear === null ? 'is-current' : '' ?>">All years</a>
         <?php foreach ($years as $year): ?>
-          <a href="/recipients?year=<?= e($year) ?>" class="<?= $selectedYear === $year ? 'is-current' : '' ?>"><?= e($year) ?></a>
+          <a href="<?= e($basePath) ?>/recipients?year=<?= e($year) ?>" class="<?= $selectedYear === $year ? 'is-current' : '' ?>"><?= e($year) ?></a>
         <?php endforeach; ?>
       </div>
     <?php endif; ?>

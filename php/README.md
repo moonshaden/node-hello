@@ -58,9 +58,27 @@ the site ever writes.
 
 ## Before pointing the domain
 
-`leofoundationusa.org` still resolves to the old WordPress host. Test on this
-server first — cPanel's temporary URL, or a `hosts` file entry on your own
-machine — and only move DNS once the pages look right. Redirects for the old
+`leofoundationusa.org` still resolves to the old WordPress host, so test here
+first and only move DNS once the pages look right.
+
+**The `/~username/` temporary URL works.** The site derives its mount point from
+where `index.php` sits, so it runs correctly at
+
+```
+http://160.153.181.93/~leofoundationusa/
+```
+
+with every link, stylesheet and redirect carrying the prefix. Nothing to
+configure — it also means the site can be installed in any subdirectory, and
+`base_path` in `config.php` overrides the derived value if a host reports
+`SCRIPT_NAME` unhelpfully.
+
+The subdomain-style temp URL (`username.server-hostname`) does **not** exist on
+this server — there is no wildcard DNS on the hostname, so it returns NXDOMAIN.
+
+A `hosts` file entry on your own machine pointing `leofoundationusa.org` at the
+server IP is the closest thing to a production test, since it exercises the real
+domain at a root path. Redirects for the old
 WordPress URLs are already in `public_html/.htaccess`:
 
 | Old | New |
