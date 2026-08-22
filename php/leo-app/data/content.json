@@ -1,0 +1,239 @@
+{
+    "site": {
+        "name": "LEO Foundation",
+        "tagline": "Leadership. Education. Opportunity.",
+        "timezone": "America/Phoenix",
+        "legalName": "LEO Foundation USA",
+        "mission": "LEO Foundation is an independent nonprofit 501(c)(3) organization whose mission is to provide educational opportunities and scholarships to students attending university with a traditional full-time status.",
+        "email": "mwinney@leofoundationusa.org",
+        "phone": "602.206.4465",
+        "location": "Phoenix, Arizona",
+        "ein": "20-4879525",
+        "donateUrl": "https://www.mightycause.com/organization/LEOFoundation",
+        "facebookUrl": "https://www.facebook.com/LEOFoundationUSA/",
+        "impact": [
+            {
+                "value": "$5M+",
+                "label": "in scholarships connected to students"
+            },
+            {
+                "value": "3,000+",
+                "label": "youth supported in nearly 20 years"
+            },
+            {
+                "value": "$225,000+",
+                "label": "awarded for the 2024/2025 school year"
+            }
+        ]
+    },
+    "enrollment": {
+        "type": "annual",
+        "opensOn": "11-01",
+        "closesOn": "03-31",
+        "awardedNote": "Awards are announced each spring for the following academic year.",
+        "instructions": "Read the criteria for each scholarship, then apply for every award you qualify for. Applicants must already be admitted to their university before a scholarship can be awarded."
+    },
+    "announcements": [
+        {
+            "id": "ann-open",
+            "title": "Applications are open",
+            "body": "The enrollment period runs November 1 through March 31. Review the available scholarships and apply for every award you qualify for.",
+            "ctaLabel": "See available scholarships",
+            "ctaUrl": "/scholarships",
+            "showWhen": "open"
+        },
+        {
+            "id": "ann-closed",
+            "title": "Applications reopen November 1",
+            "body": "This year's enrollment period has closed. Browse the scholarships now so you are ready when the next cycle opens, and see who was awarded this year.",
+            "ctaLabel": "Meet our recipients",
+            "ctaUrl": "/recipients",
+            "showWhen": "closed"
+        }
+    ],
+    "scholarships": [
+        {
+            "id": "sch-leo",
+            "slug": "leo-foundation-scholarship",
+            "name": "LEO Foundation Scholarship",
+            "amount": "Varies with available funds",
+            "summary": "The foundation's general scholarship for traditional full-time undergraduates enrolled at an Arizona college or university.",
+            "criteria": "- Traditional, full-time undergraduate status\n- Enrolled at, or admitted to, a college or university in Arizona\n- Demonstrated financial need\n- Evidence of leadership and service",
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "featured": true,
+            "hideWhenClosed": false
+        },
+        {
+            "id": "sch-entrepreneurial",
+            "slug": "leo-foundation-entrepreneurial-scholarship",
+            "name": "LEO Foundation Entrepreneurial Scholarship",
+            "amount": "Varies with available funds",
+            "summary": "For full-time students majoring in entrepreneurial business studies who show initiative, need, and character.",
+            "criteria": "- Full-time student majoring in business entrepreneurial studies\n- Minimum 3.0 GPA\n- Demonstrated financial need\n- Demonstrated Christian and conservative values",
+            "essayPrompts": [
+                "Describe a venture or idea you have pursued and what it taught you (300 words).",
+                "Describe how your values shape the way you intend to lead (300 words)."
+            ],
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "featured": true,
+            "hideWhenClosed": false
+        },
+        {
+            "id": "sch-nursing",
+            "slug": "joyce-k-smith-nursing-memorial-scholarship",
+            "name": "Joyce K. Smith Nursing Memorial Scholarship",
+            "amount": "$1,000",
+            "summary": "A memorial award for students pursuing an academic degree in nursing.",
+            "criteria": "- Pursuing an academic degree in nursing\n- Traditional, full-time undergraduate status",
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "hideWhenClosed": false
+        },
+        {
+            "id": "sch-mealman",
+            "slug": "tiffany-d-mealman-scholarship",
+            "name": "Tiffany D. Mealman Women Excellence in Chemistry and Christian Character Scholarship",
+            "amount": "Varies with available funds",
+            "summary": "For women pursuing chemistry or biochemistry who lead with excellence and character.",
+            "criteria": "- Women applicants\n- Declared major in Chemistry or Biochemistry\n- Traditional, full-time undergraduate status",
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "hideWhenClosed": false
+        },
+        {
+            "id": "sch-gary",
+            "slug": "evan-c-gary-memorial-scholarship",
+            "name": "Evan C. Gary Memorial Scholarship",
+            "amount": "$1,000",
+            "summary": "A memorial award for homeschooled students entering engineering, science, or pre-med study at Grand Canyon University.",
+            "criteria": "- Homeschooled for a minimum of the high school years\n- Engineering, Science, or Pre-Med major\n- Attending Grand Canyon University",
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "hideWhenClosed": false
+        },
+        {
+            "id": "sch-browning",
+            "slug": "tim-browning-memorial-scholarship",
+            "name": "Tim Browning Memorial Scholarship",
+            "amount": "$1,000",
+            "summary": "A memorial award for students who have lost a parent and carried that loss forward into their education.",
+            "criteria": "- Traditional, full-time undergraduate status\n- Essay describing how the loss of a parent impacted your life",
+            "essayPrompts": [
+                "Describe how the loss of a parent impacted your life."
+            ],
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "hideWhenClosed": false
+        },
+        {
+            "id": "sch-arvizu",
+            "slug": "arvizu-scholarship",
+            "name": "Arvizu Scholarship",
+            "amount": "$1,000",
+            "summary": "An award supporting an Arizona undergraduate with financial need.",
+            "criteria": "",
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "hideWhenClosed": false,
+            "essayPrompts": [],
+            "details": "",
+            "draft": false
+        }
+    ],
+    "recipients": [
+        {
+            "id": "rec-placeholder-1",
+            "name": "Recipient name",
+            "year": "2025",
+            "scholarship": "LEO Foundation Scholarship",
+            "school": "Grand Canyon University",
+            "major": "Nursing",
+            "amount": 1000,
+            "quote": "Placeholder record. Replace the details with a real recipient, add a photo URL, then untick Draft to publish.",
+            "photoUrl": "",
+            "featured": true,
+            "draft": true
+        },
+        {
+            "id": "rec-placeholder-2",
+            "name": "Recipient name",
+            "year": "2025",
+            "scholarship": "LEO Foundation Entrepreneurial Scholarship",
+            "school": "Arizona State University",
+            "major": "Entrepreneurship",
+            "amount": 1000,
+            "quote": "Placeholder record. Replace the details with a real recipient, add a photo URL, then untick Draft to publish.",
+            "photoUrl": "",
+            "featured": true,
+            "draft": true
+        },
+        {
+            "id": "rec-placeholder-3",
+            "name": "Recipient name",
+            "year": "2024",
+            "scholarship": "Joyce K. Smith Nursing Memorial Scholarship",
+            "school": "Grand Canyon University",
+            "major": "Nursing",
+            "amount": 1000,
+            "quote": "Placeholder record. Replace the details with a real recipient, add a photo URL, then untick Draft to publish.",
+            "photoUrl": "",
+            "featured": false,
+            "draft": true
+        }
+    ],
+    "pages": [
+        {
+            "id": "page-about",
+            "slug": "about",
+            "title": "About the foundation",
+            "inNav": true,
+            "summary": "Who we are and why we invest in students.",
+            "body": "LEO Foundation — Leadership, Education and Opportunity — is an independent nonprofit 501(c)(3) organization. Our mission is to invest in future generations by supporting student leadership and educational opportunities through scholarships, mentoring, and athletic programs.\n\nFor nearly twenty years, the foundation — formerly the GCU Scholarship Foundation — has connected more than 3,000 young people to over $5 million in scholarships and to educational and athletic opportunities that promote higher-learning academic achievement.\n\n## Who we serve\n\nOur primary exempt purpose is to provide scholarships to traditional, full-time undergraduate students enrolled at universities and colleges in Arizona.\n\n## How we are funded\n\nThe foundation is funded by individual donors, families who establish memorial scholarships, and community partners. Gifts are tax deductible to the extent allowed by law.",
+            "navLabel": "About"
+        },
+        {
+            "id": "page-faq",
+            "slug": "faq",
+            "title": "Scholarship FAQs",
+            "inNav": true,
+            "summary": "How applications, deadlines, and awards work.",
+            "body": "## When can I apply?\n\nThe enrollment period runs from November 1 through March 31 each year. Awards are announced in the spring for the following academic year.\n\n## How many scholarships can I apply for?\n\nRead the instructions and criteria for each scholarship, then apply for every award you qualify for. Only one application per scholarship is accepted.\n\n## Do I need to be admitted to a university first?\n\nYes. In most cases foundation scholarships are open only to students who have already been accepted into a program at that university. You must have completed the university application process and been admitted to qualify for an award.\n\n## Who is eligible?\n\nTraditional, full-time undergraduate students enrolled at universities and colleges in Arizona. Individual scholarships add their own criteria — major, GPA, background — which are listed on each scholarship page.\n\n## When will I hear back?\n\nRecipients are notified in the spring, and awarded students are featured on our recipients page.",
+            "navLabel": "FAQs"
+        },
+        {
+            "id": "page-donate",
+            "slug": "donate",
+            "title": "Support a student",
+            "inNav": true,
+            "summary": "Fund a scholarship, or establish one in a loved one's name.",
+            "body": "Every dollar given to the LEO Foundation goes toward opening a door for a student in Arizona. In the 2024/2025 school year alone, the foundation awarded more than $225,000 in scholarships.\n\n## Ways to give\n\n- **Give once or monthly.** A recurring gift lets us commit to students earlier in the cycle.\n- **Establish a memorial or named scholarship.** Several of our awards were created by families to carry a name forward. We will help you set the criteria and steward the fund.\n- **Employer matching.** Many Arizona employers match charitable gifts — ask your HR team.\n\nThe LEO Foundation is a 501(c)(3) organization, EIN 20-4879525. Contributions are tax deductible to the extent allowed by law.",
+            "navLabel": "Giving"
+        },
+        {
+            "id": "page-contact",
+            "slug": "contact",
+            "title": "Contact us",
+            "inNav": true,
+            "summary": "Questions about an application, a gift, or a named scholarship.",
+            "body": "We are glad to help with applications, gifts, and questions about establishing a scholarship.\n\n- **Email:** mwinney@leofoundationusa.org\n- **Phone:** 602.206.4465\n- **Location:** Phoenix, Arizona\n\nDuring the enrollment period we answer application questions as quickly as we can, but please allow a few business days in March as the deadline approaches.",
+            "navLabel": "Contact"
+        }
+    ],
+    "_note": "Seed content assembled from public sources (leofoundationusa.org search results, GuideStar EIN 20-4879525). Everything here is editable at /admin. Records marked \"draft\": true are placeholders that never render publicly -- replace them with real data before launch."
+}

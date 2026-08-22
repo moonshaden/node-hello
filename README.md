@@ -1,7 +1,20 @@
 # LEO Foundation website
 
 The foundation's public site and the small admin area that runs it. No
-WordPress, no database, no build step: Node and three dependencies.
+WordPress, no database, no build step.
+
+**Two builds of the same site**, sharing one content format:
+
+| | Runtime | Use it when |
+| --- | --- | --- |
+| [`php/`](php/) | PHP 8, zero dependencies | **Deploying to the cPanel account.** Nothing to install on the server. |
+| root | Node 20 + three packages | Local development, or a host that runs Node. |
+
+They render identically and read the same `content.json`. The PHP build is the
+one that goes on shared hosting — see [`php/README.md`](php/README.md) for the
+cPanel install.
+
+## The Node build
 
 ```bash
 npm install
