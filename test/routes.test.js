@@ -8,6 +8,7 @@ const path = require('node:path');
 
 const { Store } = require('../src/store');
 const { createApp } = require('../src/app');
+const schedule = require('../src/schedule');
 
 process.env.ADMIN_PASSWORD = 'test-password';
 
@@ -105,7 +106,12 @@ test('editing a scholarship changes the public site immediately', async () => {
 
     // Give one award its own window that is open today, while the site-wide
     // enrollment period stays shut.
-    const today = new Date().toISOString().slice(0, 10);
+    //
+    // "Today" has to be the site's today, not UTC's. Phoenix is UTC-7, so for
+    // seven hours each evening the UTC date is already tomorrow — a window
+    // opening on the UTC date reads as 'upcoming' to the app, and this test
+    // failed only during those hours.
+    const today = schedule.todayIn('America/Phoenix');
     await fetch(`${base}/admin/scholarships/sch-arvizu`, {
       method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded', cookie, origin: base },
