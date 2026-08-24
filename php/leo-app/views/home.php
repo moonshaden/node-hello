@@ -45,14 +45,25 @@
 </section>
 
 <?php if (!empty($site['impact'])): ?>
-<div class="stats">
-  <?php foreach ($site['impact'] as $item): ?>
-    <div>
-      <div class="value"><?= e($item['value'] ?? '') ?></div>
-      <div class="label"><?= e($item['label'] ?? '') ?></div>
+<section class="impact">
+  <div class="wrap">
+    <div class="impact-head">
+      <p class="eyebrow">Our impact</p>
+      <h2><?= e($site['impactTitle'] ?? 'What the scholarships have added up to.') ?></h2>
     </div>
-  <?php endforeach; ?>
-</div>
+    <div class="impact-grid">
+      <?php foreach ($site['impact'] as $item): ?>
+        <div>
+          <div class="value"><?= e($item['value'] ?? '') ?></div>
+          <div class="label"><?= e($item['label'] ?? '') ?></div>
+          <?php if (!empty($item['detail'])): ?>
+            <p class="detail"><?= e($item['detail']) ?></p>
+          <?php endif; ?>
+        </div>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
 <?php endif; ?>
 
 <?php if ($announcements !== []): ?>

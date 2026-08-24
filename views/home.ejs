@@ -45,14 +45,25 @@
 </section>
 
 <% if (site.impact && site.impact.length) { %>
-<div class="stats">
-  <% site.impact.forEach(function (item) { %>
-    <div>
-      <div class="value"><%= item.value %></div>
-      <div class="label"><%= item.label %></div>
+<section class="impact">
+  <div class="wrap">
+    <div class="impact-head">
+      <p class="eyebrow">Our impact</p>
+      <h2><%= site.impactTitle || 'What the scholarships have added up to.' %></h2>
     </div>
-  <% }) %>
-</div>
+    <div class="impact-grid">
+      <% site.impact.forEach(function (item) { %>
+        <div>
+          <div class="value"><%= item.value %></div>
+          <div class="label"><%= item.label %></div>
+          <% if (item.detail) { %>
+            <p class="detail"><%= item.detail %></p>
+          <% } %>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
 <% } %>
 
 <% if (announcements.length) { %>

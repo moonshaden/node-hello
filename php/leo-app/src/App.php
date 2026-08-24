@@ -471,8 +471,9 @@ final class App
         foreach ([0, 1, 2] as $index) {
             $value = trim((string) ($body["impact{$index}value"] ?? ''));
             $label = trim((string) ($body["impact{$index}label"] ?? ''));
+            $detail = trim((string) ($body["impact{$index}detail"] ?? ''));
             if ($value !== '' || $label !== '') {
-                $impact[] = ['value' => $value, 'label' => $label];
+                $impact[] = ['value' => $value, 'label' => $label, 'detail' => $detail];
             }
         }
 
@@ -488,6 +489,7 @@ final class App
             'ein' => $text('ein'),
             'donateUrl' => $text('donateUrl'),
             'facebookUrl' => $text('facebookUrl'),
+            'impactTitle' => $text('impactTitle'),
             'impact' => $impact,
         ]);
 

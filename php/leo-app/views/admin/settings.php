@@ -109,7 +109,14 @@
 
     <div class="panel">
       <h2>Impact numbers</h2>
-      <p class="small muted">The three figures across the homepage.</p>
+      <p class="small muted">The heading and three figures in the navy band on the homepage.</p>
+
+      <div class="field">
+        <label class="title" for="impactTitle">Band heading</label>
+        <input type="text" id="impactTitle" name="impactTitle" value="<?= e($site['impactTitle'] ?? '') ?>">
+        <div class="help">The claim the figures back up. Leave blank to fall back to a default.</div>
+      </div>
+
       <?php foreach ([0, 1, 2] as $index): ?>
         <div class="row2">
           <div class="field">
@@ -120,6 +127,11 @@
             <label class="title" for="impact<?= $index ?>label">Caption <?= $index + 1 ?></label>
             <input type="text" id="impact<?= $index ?>label" name="impact<?= $index ?>label" value="<?= e($site['impact'][$index]['label'] ?? '') ?>">
           </div>
+        </div>
+        <div class="field">
+          <label class="title" for="impact<?= $index ?>detail">Supporting line <?= $index + 1 ?></label>
+          <input type="text" id="impact<?= $index ?>detail" name="impact<?= $index ?>detail" value="<?= e($site['impact'][$index]['detail'] ?? '') ?>">
+          <div class="help">Optional. One sentence of context under the caption.</div>
         </div>
       <?php endforeach; ?>
     </div>

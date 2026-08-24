@@ -443,6 +443,45 @@ test('only safe link schemes are linkified', function () {
     ok(!str_contains(Markdown::render('[x](javascript:alert(1))'), '<a href'), 'javascript: url became a link');
 });
 
+echo "\nSettings\n";
+
+// The impact heading and supporting lines are easy to add to the form and
+// forget in the save handler. That fails silently: the field renders, accepts
+// text, and is dropped on submit. This drives the real handler.
+test('a settings save keeps the impact heading and supporting lines', function () {
+    $dir = sys_get_temp_dir() . '/leo-settings-' . bin2hex(random_bytes(4));
+    mkdir($dir, 0777, true);
+    $file = $dir . '/content.json';
+    file_put_contents($file, json_encode([
+        'site' => ['name' => 'LEO Foundation', 'impact' => []],
+        'enrollment' => ENROLLMENT,
+    ]));
+
+    $app = new \Leo\App($file, __DIR__ . '/../leo-app/views', ['admin_password' => 'x', 'base_path' => '']);
+
+    $_POST = [
+        'name' => 'LEO Foundation',
+        'timezone' => 'America/Phoenix',
+        'impactTitle' => 'A heading that must persist',
+        'impact0value' => '$9M+',
+        'impact0label' => 'in scholarships',
+        'impact0detail' => 'A supporting line that must persist',
+        'enrollmentType' => 'annual',
+        'enrollmentOpensOn' => '11-01',
+        'enrollmentClosesOn' => '03-31',
+    ];
+
+    $method = new \ReflectionMethod($app, 'saveSettings');
+    $method->setAccessible(true);
+    @$method->invoke($app);
+    $_POST = [];
+
+    $site = (new Store($file))->site();
+    is_same($site['impactTitle'] ?? null, 'A heading that must persist', 'heading persisted');
+    is_same($site['impact'][0]['detail'] ?? null, 'A supporting line that must persist', 'detail persisted');
+    is_same($site['impact'][0]['value'] ?? null, '$9M+', 'figure persisted');
+});
+
 echo "\nAuth\n";
 
 test('a signed token verifies and a tampered one does not', function () {

@@ -11,18 +11,22 @@
         "ein": "20-4879525",
         "donateUrl": "https://www.mightycause.com/organization/LEOFoundation",
         "facebookUrl": "https://www.facebook.com/LEOFoundationUSA/",
+        "impactTitle": "Twenty years of scholarships, one student at a time.",
         "impact": [
             {
                 "value": "$5M+",
-                "label": "in scholarships connected to students"
+                "label": "in scholarships connected to students",
+                "detail": "Connected to students across every LEO scholarship program."
             },
             {
                 "value": "3,000+",
-                "label": "youth supported in nearly 20 years"
+                "label": "youth supported in nearly 20 years",
+                "detail": "Supported since the foundation was founded in 2006."
             },
             {
                 "value": "$225,000+",
-                "label": "awarded for the 2024/2025 school year"
+                "label": "awarded for the 2024/2025 school year",
+                "detail": "Awarded to students already admitted to their university."
             }
         ]
     },

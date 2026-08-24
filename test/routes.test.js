@@ -155,3 +155,36 @@ test('date preview is an admin-only capability', async () => {
     assert.match(preview, /Applications open/);
   });
 });
+
+// The impact band's heading and supporting lines are easy to add to the form
+// and forget in the save handler, which fails silently: the field shows up,
+// accepts text, and drops it on submit.
+test('the impact heading and supporting lines survive a settings save', async () => {
+  await withServer(async (base) => {
+    const cookie = await signIn(base);
+    const body = new URLSearchParams({
+      name: 'LEO Foundation',
+      timezone: 'America/Phoenix',
+      impactTitle: 'A heading that must persist',
+      impact0value: '$9M+',
+      impact0label: 'in scholarships',
+      impact0detail: 'A supporting line that must persist',
+      enrollmentType: 'annual',
+      enrollmentOpensOn: '11-01',
+      enrollmentClosesOn: '03-31',
+    });
+
+    const saved = await fetch(`${base}/admin/settings`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded', origin: base, cookie },
+      body,
+      redirect: 'manual',
+    });
+    assert.equal(saved.status, 302);
+
+    const home = await (await fetch(`${base}/`)).text();
+    assert.match(home, /A heading that must persist/);
+    assert.match(home, /A supporting line that must persist/);
+    assert.match(home, /\$9M\+/);
+  });
+});

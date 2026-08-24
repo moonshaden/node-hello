@@ -247,10 +247,12 @@ router.post('/settings', (req, res) => {
     ein: body.ein?.trim() || '',
     donateUrl: body.donateUrl?.trim() || '',
     facebookUrl: body.facebookUrl?.trim() || '',
+    impactTitle: body.impactTitle?.trim() || '',
     impact: [0, 1, 2]
       .map((index) => ({
         value: (body[`impact${index}value`] || '').trim(),
         label: (body[`impact${index}label`] || '').trim(),
+        detail: (body[`impact${index}detail`] || '').trim(),
       }))
       .filter((item) => item.value || item.label),
   });
