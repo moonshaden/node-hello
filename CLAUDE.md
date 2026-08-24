@@ -223,6 +223,11 @@ Nothing on the site loads an image from the WordPress host any more.
 
 ## Deploying
 
+**Deploying works. It has been done, verified against the live account, and can
+be repeated from a session here.** The repo of record is the private
+`moonshaden/leo-foundation-site`; `moonshaden/node-hello` is the old public copy
+and should not be developed against.
+
 `.github/workflows/deploy.yml` uploads the PHP build over FTPS from a GitHub
 runner. It runs there rather than from an agent session because **the sandbox
 reaches port 443 only** — ports 21, 990 and 2083 are all refused from it, so no
@@ -250,6 +255,38 @@ credential makes a direct upload possible. Tested, not assumed.
   neither mirror uses `--delete`.
 - **The seeded `content.json` still has to be uploaded by hand once**, or the
   site goes live with the placeholder drafts.
+
+### Confirmed remote layout (probed, not assumed)
+
+The `leo@leofoundationusa.org` FTP account is **chrooted**: listing `..` returns
+byte-identical output to `.`, so there is no directory above it. It lands on the
+**document root**, which is why:
+
+- `FTP_PUBLIC_DIR` is `.` — public files go straight into the document root.
+- `FTP_APP_DIR` is `./leo-app/` — `leo-app` cannot be placed above the web root
+  on this account, so it sits inside it. That is the fallback
+  `public_html/index.php` explicitly tolerates, and `leo-app/.htaccess`
+  (`Require all denied`) is then the **only** thing keeping `config.php` and the
+  content store from being served over HTTP. If the VPS ever runs
+  `AllowOverride None`, that protection silently stops working — re-check it
+  after any server change.
+
+An earlier manual extraction left junk in the document root that the deploy does
+not remove (there is no `--delete`): a nested `public_html/`, plus `router.php`
+(dev-only), `test/`, `README.md` and `leofoundationphp.zip`. Clear those by hand
+before launch.
+
+### Triggering a deploy
+
+`mcp__github__actions_run_trigger` with `run_workflow` on `deploy.yml` works from
+a session — the workflow can be dispatched even though secrets cannot be written
+from here. Inputs: `dry_run` (defaults **true**; a manual run never writes unless
+this is explicitly false) and `probe_path` (lists one remote path and stops,
+transferring nothing — how the layout above was established).
+
+`DEPLOY_ON_PUSH` is a repository variable, currently unset, so pushes do **not**
+deploy. Leave it that way unless someone asks: a push then writes to a live site
+with no confirmation step.
 
 ## Client context
 
