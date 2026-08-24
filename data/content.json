@@ -155,6 +155,7 @@
         "type": "inherit"
       },
       "hideWhenClosed": false,
+      "featured": false,
       "essayPrompts": [],
       "details": "",
       "publish": {

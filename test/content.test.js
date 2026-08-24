@@ -112,3 +112,11 @@ test('money is formatted, and zero renders as nothing', () => {
   assert.equal(content.formatMoney(0), '');
   assert.equal(content.formatMoney('x'), '');
 });
+
+// The Node and PHP builds each carry their own copy of the seed content, and
+// they have drifted before: a scholarship lost its summary and criteria in one
+// copy only, so the card rendered blank on the deployed site and nowhere else.
+test('both builds ship the same seed content', () => {
+  const read = (file) => JSON.parse(fs.readFileSync(path.join(__dirname, '..', file), 'utf8'));
+  assert.deepEqual(read('data/content.json'), read('php/leo-app/data/content.json'));
+});
