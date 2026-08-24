@@ -30,6 +30,10 @@ on:
         description: 'Optional: list this remote path and stop (diagnostics only, never uploads)'
         type: string
         default: ''
+      seed_content:
+        description: 'Upload ONLY leo-app/data/content.json, overwriting the server copy, then stop'
+        type: boolean
+        default: false
 
 # Never pull_request: on a public repo that would expose secrets to forks.
 
@@ -118,6 +122,7 @@ jobs:
           PUBLIC_DIR: ${{ vars.FTP_PUBLIC_DIR || './' }}
           VERIFY_CERT: ${{ vars.FTP_VERIFY_CERT || 'true' }}
           PROBE_PATH: ${{ inputs.probe_path }}
+          SEED_CONTENT: ${{ github.event_name == 'workflow_dispatch' && inputs.seed_content || 'false' }}
           DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
         run: |
           set -euo pipefail
@@ -136,6 +141,22 @@ jobs:
           if [ -n "${PROBE_PATH:-}" ]; then
             echo "::notice::Probe only - listing '$PROBE_PATH', no transfer."
             lftp -c "$COMMON echo '--- $PROBE_PATH ---'; cls -l '$PROBE_PATH' || true;"
+            exit 0
+          fi
+
+          # Seeding the content store is a deliberate, separate act. The file is
+          # excluded from every ordinary deploy because /admin owns it on the
+          # server; this overwrites that copy, so it is opt-in per run, does
+          # nothing else, and stops.
+          if [ "$SEED_CONTENT" = "true" ]; then
+            echo "::warning::Seeding leo-app/data/content.json - this OVERWRITES the copy on the server."
+            lftp -c "$COMMON
+              cd '$APP_DIR';
+              mkdir -p data;
+              put -O data php/leo-app/data/content.json;
+              cls -l data/content.json;
+            "
+            echo "::notice::content.json seeded. No other file was touched."
             exit 0
           fi
 
