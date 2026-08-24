@@ -152,7 +152,7 @@ jobs:
             echo "::warning::Seeding leo-app/data/content.json - this OVERWRITES the copy on the server."
             lftp -c "$COMMON
               cd '$APP_DIR';
-              mkdir -p data;
+              mkdir -pf data;   # -f: data/ already exists, and fail-exit is on
               put -O data php/leo-app/data/content.json;
               cls -l data/content.json;
             "
