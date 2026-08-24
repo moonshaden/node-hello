@@ -15,7 +15,7 @@ public_html/        the only folder the web serves
   index.php         front controller
   .htaccess         routing, old WordPress redirects, security headers
   css/  js/
-test/run.php        38 tests, run with `php test/run.php`
+test/run.php        45 tests, run with `php test/run.php`
 ```
 
 Nothing in `leo-app/` is reachable over HTTP, because it sits outside
