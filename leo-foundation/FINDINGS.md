@@ -76,27 +76,84 @@ either, so they cannot be linked to a specific award without client input.
 
 ## Content problems found on the live site
 
-1. **Arvizu Scholarship is invisible.** Its block on Available Scholarships is
-   wrapped in an HTML comment, so it never renders — but its application modal is
-   still live on the homepage. Students can apply to a scholarship they cannot
-   read about. ($1,000; requires Latino heritage.)
-2. **Tim Browning Memorial Scholarship** and **Alex Acosta Scholarship** have
-   application modals on the homepage but no detail page and no listing on
-   Available Scholarships. No published amount or criteria for either.
-3. **Duplicate BHHS block.** A second BHHS Legacy entry is also commented out on
-   Available Scholarships. The live one says amount "Various"; the commented one
-   says "Amount varies"; the detail page says "The scholarship amount varies."
-4. **Name mismatch.** Available Scholarships calls it "LEO Foundation Theatre
-   Scholarship"; the page itself is titled "Foundation Theatre Scholarship".
-5. **Typos in published copy.** "pursing" for "pursuing" appears twice on
-   Available Scholarships (SKW Music, Theatre). The LaVern Baker entry runs the
-   name and "Scholarship Amount:" together without a break.
-6. **Stale-dated Sophia Hamre bio.** It mixes first person and third person, and
-   contains a sentence fragment: "allowing her to continue her studies with a
-   sense of relief and determination."
-7. **Photo filenames are meaningless.** Three recipient photos (Matthew, Joshua,
-   Julian) are served as `Copy-of-Murphy-logo*.png`. They are real photos
-   (231–537 KB), just badly named — worth renaming on migration.
+**Correction (client input):** Arvizu, Tim Browning Memorial, and Alex Acosta are
+**deliberately disabled — the foundation is not currently issuing them.** An
+earlier version of this file called that a bug and claimed students could apply
+to scholarships they could not read about. That was wrong, and the risk was
+overstated. Corrected analysis below.
+
+### How the application forms actually work
+
+The homepage carries the modal markup for all 16 application forms. A custom
+script defines a `modalMap` of page-slug -> modal class, and on each scholarship
+detail page it rewires the "APPLY ONLINE" button to open the matching modal.
+
+Matching is `currentUrl.includes(key)` — a naive substring test against the whole
+URL, query string included. Verified: the 13 live scholarships all route to the
+correct modal, no collisions.
+
+The three withdrawn scholarships are correctly disabled at the page level — all
+three detail URLs return **404** and none appear on Available Scholarships.
+
+### 1. Arvizu application form is still reachable (the one real remnant)
+
+`"arvizu-scholarship": "arvizu"` is **still in the `modalMap`**, and the Arvizu
+modal (`.fusion-modal.modal-27.arvizu`) is still in the homepage DOM. Because the
+match is a substring test on the full URL, any URL containing that string still
+opens a working application form — including a query string on the homepage:
+
+    https://leofoundationusa.org/?arvizu-scholarship
+
+The intended route (`/arvizu-scholarship/`) 404s, so this is not linked from
+anywhere and nobody reaches it by normal browsing. But the form still submits.
+
+**Fix:** delete the `"arvizu-scholarship": "arvizu",` line from the homepage's
+custom JS. That alone closes it.
+
+### 2. Dead modal markup for the other two (cleanup only, no exposure)
+
+`.fusion-modal.modal-14.timbrowning` and `.fusion-modal.modal-28.acosta` remain
+in the homepage DOM, but neither has a `modalMap` key and neither has a page, so
+there is no way to open them. Harmless — worth removing to keep the homepage from
+carrying forms for scholarships that no longer exist.
+
+**Fix:** remove those two modal blocks in the homepage layout.
+
+### 3. Duplicate BHHS block
+
+A second BHHS Legacy entry is commented out on Available Scholarships. The live
+one says amount "Various"; the commented one says "Amount varies"; the detail
+page says "The scholarship amount varies." Pick one wording.
+
+### 4. Name mismatch
+
+Available Scholarships calls it "LEO Foundation Theatre Scholarship"; the page
+itself is titled "Foundation Theatre Scholarship".
+
+### 5. Typos in published copy
+
+"pursing" for "pursuing" appears twice on Available Scholarships (SKW Music,
+Theatre). The LaVern Baker entry runs the name and "Scholarship Amount:" together
+without a break.
+
+### 6. Sophia Hamre bio
+
+Mixes first and third person, and contains a sentence fragment: "allowing her to
+continue her studies with a sense of relief and determination."
+
+### 7. Photo filenames are meaningless
+
+Three recipient photos (Matthew, Joshua, Julian) are served as
+`Copy-of-Murphy-logo*.png`. They are real photos (231-537 KB), just badly named —
+worth renaming on migration.
+
+## Applying these fixes
+
+Items 1 and 2 are edits to the **live WordPress homepage** (Avada/Fusion builder
+plus a custom JS block). This session has no WordPress credentials and no repo
+containing the theme, so they could not be applied here — they need someone with
+WP admin access. Items 3-6 are page-content edits in the same place. Item 7 is a
+media-library rename best done during migration.
 
 ## Application window (as published)
 

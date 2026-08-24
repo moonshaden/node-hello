@@ -253,7 +253,8 @@
       "amount": null,
       "criteria": [],
       "link": null,
-      "status": "application_form_only"
+      "status": "not_currently_issuing",
+      "note": "Intentionally disabled by the client - not currently issuing. Detail page returns 404, no listing entry, and no modalMap key. Modal markup (.fusion-modal.modal-14.timbrowning) remains in the homepage DOM but is unreachable - dead markup only."
     },
     {
       "id": "alex-acosta-scholarship",
@@ -263,7 +264,8 @@
       "amount": null,
       "criteria": [],
       "link": null,
-      "status": "application_form_only"
+      "status": "not_currently_issuing",
+      "note": "Intentionally disabled by the client - not currently issuing. Detail page returns 404, no listing entry, and no modalMap key. Modal markup (.fusion-modal.modal-28.acosta) remains in the homepage DOM but is unreachable - dead markup only."
     },
     {
       "id": "arvizu-scholarship",
@@ -275,8 +277,12 @@
         "Students must be of Latino heritage."
       ],
       "link": null,
-      "status": "hidden",
-      "note": "Block is HTML-commented out on the Available Scholarships page, so it does not render. Application modal still exists on the homepage."
+      "status": "not_currently_issuing",
+      "note": "Intentionally disabled by the client - not currently issuing. Detail page returns 404 and the listing block on Available Scholarships is HTML-commented out. NOTE: the key \"arvizu-scholarship\" is still present in the homepage modalMap and the modal markup (.fusion-modal.modal-27.arvizu) is still in the homepage DOM, so any URL containing the substring \"arvizu-scholarship\" - including a query string such as /?arvizu-scholarship - still opens a working application form. This is the one live remnant."
     }
-  ]
+  ],
+  "status_legend": {
+    "published": "Live: detail page, listing entry, and working application modal.",
+    "not_currently_issuing": "Deliberately withdrawn by the client. Detail page 404s and it is absent from the listing."
+  }
 }
