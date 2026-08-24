@@ -10,5 +10,17 @@
     <?= e(implode(' · ', array_filter([$recipient['major'] ?? '', $recipient['school'] ?? '']))) ?>
     <?php if (!empty($recipient['year'])): ?><br>Class of <?= e($recipient['year']) ?><?php endif; ?>
   </div>
-  <?php if (!empty($recipient['quote'])): ?><blockquote><?= e($recipient['quote']) ?></blockquote><?php endif; ?>
+  <?php if (!empty($recipient['quote'])): $story = excerpt($recipient['quote']); ?>
+    <?php if ($story['truncated']): ?>
+      <details class="story">
+        <summary>
+          <blockquote class="story-excerpt"><?= e($story['text']) ?></blockquote>
+          <span class="story-toggle"><span class="when-shut">Read the full story</span><span class="when-open">Show less</span></span>
+        </summary>
+        <blockquote class="story-full"><?= e($story['full']) ?></blockquote>
+      </details>
+    <?php else: ?>
+      <blockquote><?= e($story['text']) ?></blockquote>
+    <?php endif; ?>
+  <?php endif; ?>
 </article>

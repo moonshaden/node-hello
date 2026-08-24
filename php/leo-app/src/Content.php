@@ -198,4 +198,44 @@ final class Content
         }
         return '$' . number_format($number, 0, '.', ',');
     }
+    /**
+     * Trim a recipient story down to a card-sized excerpt.
+     *
+     * The published bios run from 334 to 1,271 characters, which left one card
+     * in a row roughly four times the height of its neighbour. Cutting at a
+     * sentence end keeps the excerpt readable; the full text is still in the
+     * store, and the card offers it behind a disclosure.
+     *
+     * Multibyte throughout: several bios use curly quotes and en dashes.
+     */
+    public const EXCERPT_LIMIT = 520;
+
+    public static function excerpt(mixed $text, int $limit = self::EXCERPT_LIMIT): array
+    {
+        $clean = trim((string) preg_replace('/\s+/u', ' ', (string) $text));
+        if (mb_strlen($clean) <= $limit) {
+            return ['text' => $clean, 'full' => $clean, 'truncated' => false];
+        }
+
+        $head = mb_substr($clean, 0, $limit);
+        $sentence = max(
+            (int) mb_strrpos($head, '. '),
+            (int) mb_strrpos($head, '! '),
+            (int) mb_strrpos($head, '? ')
+        );
+        // Only respect a sentence end past the halfway mark, or a single long
+        // opening sentence would cut the excerpt down to almost nothing.
+        $space = (int) mb_strrpos($head, ' ');
+        $atSentence = $sentence > intdiv($limit, 2);
+        $cut = $atSentence ? $sentence + 1 : $space;
+        $trimmed = preg_replace('/[\s,;:]+$/u', '', mb_substr($clean, 0, $cut > 0 ? $cut : $limit));
+
+        // A sentence end already closes the excerpt; an ellipsis after the full
+        // stop just reads as ".…". Only a mid-sentence cut needs one.
+        return [
+            'text' => $atSentence ? $trimmed : $trimmed . '…',
+            'full' => $clean,
+            'truncated' => true,
+        ];
+    }
 }

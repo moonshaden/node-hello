@@ -103,6 +103,16 @@ round-trip test; extend it when adding fields.
 sans container does not constrain a serif `h2` the way you expect. Put the
 constraint on the element whose font it should measure.
 
+**Recipient stories are excerpted at render time, not in the store.** The
+published bios run 334-1,271 characters, which made one card in a row nearly
+four times the height of its neighbour. `content.excerpt()` /
+`Content::excerpt()` cut at a sentence end past the halfway mark (falling back
+to a word break), at `EXCERPT_LIMIT = 520`. A sentence-end cut keeps its full
+stop and takes no ellipsis; only a mid-sentence cut gets one. The full text
+stays in the store and the card offers it behind a `<details>` — so editing a
+bio in `/admin` re-excerpts by itself, and nothing published is unreachable.
+Both builds must agree on where to cut; a test asserts it.
+
 **An `img` width/height attribute overrides `aspect-ratio`.** The portraits
 carry `width`/`height` so the card reserves space before the photo loads, but
 that is a presentational hint applied as a real `height`, and the rule only set

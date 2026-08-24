@@ -19,6 +19,7 @@ function createApp({ store = new Store() } = {}) {
   app.locals.markdown = markdown;
   app.locals.schedule = schedule;
   app.locals.formatMoney = content.formatMoney;
+  app.locals.excerpt = content.excerpt;
 
   app.use(express.static(path.join(__dirname, '..', 'public'), { maxAge: '1h' }));
   app.use(express.urlencoded({ extended: false, limit: '256kb' }));

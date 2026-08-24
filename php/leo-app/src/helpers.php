@@ -35,6 +35,12 @@ function fdate(?string $date, bool $short = false): string
     return Leo\Schedule::formatDate($date, $short);
 }
 
+/** Card-sized excerpt of a recipient story. Returns text/full/truncated. */
+function excerpt(mixed $text): array
+{
+    return Leo\Content::excerpt($text);
+}
+
 function money(mixed $value): string
 {
     return Leo\Content::formatMoney($value);

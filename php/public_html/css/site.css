@@ -209,6 +209,25 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   font-family: var(--serif); font-style: italic; color: var(--ink-soft);
 }
 
+/* A long bio would otherwise make one card several times the height of its
+   neighbour. The excerpt shows by default and the disclosure swaps in the full
+   text — no script, and nothing published becomes unreachable. */
+.recipient .story { margin-top: 16px; }
+.recipient .story > summary {
+  list-style: none; cursor: pointer; display: block;
+}
+.recipient .story > summary::-webkit-details-marker { display: none; }
+.recipient .story blockquote { margin: 0; }
+.recipient .story-toggle {
+  display: inline-block; margin-top: 10px; padding-left: 16px;
+  color: var(--gold); font-size: .85rem; font-weight: 600;
+}
+.recipient .story > summary:hover .story-toggle { text-decoration: underline; }
+.recipient .story .when-open,
+.recipient .story[open] .when-shut { display: none; }
+.recipient .story[open] .when-open { display: inline; }
+.recipient .story[open] .story-excerpt { display: none; }
+
 .year-head {
   display: flex; align-items: center; gap: 18px; margin: 48px 0 24px;
   font-family: var(--serif); font-size: 1.6rem;

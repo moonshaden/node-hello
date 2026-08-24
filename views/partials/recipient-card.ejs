@@ -10,5 +10,18 @@
     <%= [recipient.major, recipient.school].filter(Boolean).join(' · ') %>
     <% if (recipient.year) { %><br>Class of <%= recipient.year %><% } %>
   </div>
-  <% if (recipient.quote) { %><blockquote><%= recipient.quote %></blockquote><% } %>
+  <% if (recipient.quote) { %>
+    <% const story = excerpt(recipient.quote); %>
+    <% if (story.truncated) { %>
+      <details class="story">
+        <summary>
+          <blockquote class="story-excerpt"><%= story.text %></blockquote>
+          <span class="story-toggle"><span class="when-shut">Read the full story</span><span class="when-open">Show less</span></span>
+        </summary>
+        <blockquote class="story-full"><%= story.full %></blockquote>
+      </details>
+    <% } else { %>
+      <blockquote><%= story.text %></blockquote>
+    <% } %>
+  <% } %>
 </article>

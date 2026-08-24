@@ -284,6 +284,37 @@ test('recipients group newest year first, featured leading each year', function 
 // The live site publishes no award year for anyone, so every recipient can
 // arrive with year empty. That used to bucket them all under a literal "Other"
 // heading and report "across 0 years".
+test('a short story is left alone, a long one is cut at a sentence end', function () {
+    $short = 'I am grateful for the scholarship. It changed things.';
+    is_same(Content::excerpt($short), ['text' => $short, 'full' => $short, 'truncated' => false]);
+
+    $long = str_repeat('This is a sentence that runs on for a while. ', 40);
+    $cut = Content::excerpt($long);
+    is_same($cut['truncated'], true);
+    ok(mb_strlen($cut['text']) <= 521, 'excerpt was ' . mb_strlen($cut['text']));
+    ok(str_ends_with($cut['text'], '.'), 'did not cut at a sentence end');
+    ok(!str_contains($cut['text'], '…'), 'a sentence end should not take an ellipsis');
+});
+
+test('a single long opening sentence still yields a usable excerpt', function () {
+    $cut = Content::excerpt(str_repeat('word ', 200) . '. Then more.');
+    is_same($cut['truncated'], true);
+    ok(mb_strlen($cut['text']) > 400, 'excerpt collapsed to ' . mb_strlen($cut['text']));
+    ok(str_ends_with($cut['text'], '…'), 'a mid-sentence cut needs an ellipsis');
+});
+
+// Both builds render the same cards, so they must agree on where to cut.
+test('every seeded recipient story fits a card once excerpted', function () {
+    $seed = json_decode(file_get_contents(dirname(__DIR__, 2) . '/data/content.json'), true);
+    foreach ($seed['recipients'] as $r) {
+        if (empty($r['quote'])) {
+            continue;
+        }
+        $e = Content::excerpt($r['quote']);
+        ok(mb_strlen($e['text']) <= 521, $r['name'] . ': ' . mb_strlen($e['text']));
+    }
+});
+
 // The recipient photos used to be hot-linked from the WordPress media library,
 // which would have 404'd the moment the new site took over the domain.
 test('every recipient photo is served from this repo and exists', function () {

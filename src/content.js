@@ -121,6 +121,33 @@ function awardStats(recipients) {
   };
 }
 
+/**
+ * Trim a recipient story down to a card-sized excerpt.
+ *
+ * The published bios run from 334 to 1,271 characters, which left one card in a
+ * row roughly four times the height of its neighbour. Cutting at a sentence end
+ * keeps the excerpt readable; the full text is still in the store, and the card
+ * offers it behind a disclosure so nothing published is lost.
+ */
+const EXCERPT_LIMIT = 520;
+
+function excerpt(text, limit = EXCERPT_LIMIT) {
+  const clean = String(text || '').replace(/\s+/g, ' ').trim();
+  if (clean.length <= limit) return { text: clean, full: clean, truncated: false };
+
+  const head = clean.slice(0, limit);
+  const sentence = Math.max(head.lastIndexOf('. '), head.lastIndexOf('! '), head.lastIndexOf('? '));
+  // Only respect a sentence end past the halfway mark, or a single long opening
+  // sentence would cut the excerpt down to almost nothing.
+  const atSentence = sentence > limit / 2;
+  const cut = atSentence ? sentence + 1 : head.lastIndexOf(' ');
+  const trimmed = clean.slice(0, cut > 0 ? cut : limit).replace(/[\s,;:]+$/, '');
+
+  // A sentence end already closes the excerpt; an ellipsis after the full stop
+  // just reads as ".…". Only a mid-sentence cut needs one.
+  return { text: atSentence ? trimmed : `${trimmed}…`, full: clean, truncated: true };
+}
+
 function formatMoney(value) {
   const number = Number(value);
   if (!Number.isFinite(number) || number === 0) return '';
@@ -140,4 +167,5 @@ module.exports = {
   navPages,
   awardStats,
   formatMoney,
+  excerpt,
 };

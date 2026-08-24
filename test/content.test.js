@@ -129,6 +129,39 @@ test('money is formatted, and zero renders as nothing', () => {
   assert.equal(content.formatMoney('x'), '');
 });
 
+test('a short story is left alone, a long one is cut at a sentence end', () => {
+  const short = 'I am grateful for the scholarship. It changed things.';
+  assert.deepEqual(content.excerpt(short), { text: short, full: short, truncated: false });
+
+  const long = ('This is a sentence that runs on for a while. ').repeat(40);
+  const cut = content.excerpt(long);
+  assert.equal(cut.truncated, true);
+  assert.ok(cut.text.length <= 521, `excerpt was ${cut.text.length}`);
+  assert.equal(cut.full, long.replace(/\s+/g, ' ').trim());
+  // cut at a sentence end, so it closes with the full stop and takes no ellipsis
+  assert.match(cut.text, /\.$/);
+  assert.doesNotMatch(cut.text, /…/);
+});
+
+test('a single long opening sentence still yields a usable excerpt', () => {
+  // No sentence end before the halfway mark, so it falls back to a word break
+  // rather than returning almost nothing.
+  const cut = content.excerpt('word '.repeat(200) + '. Then more.');
+  assert.equal(cut.truncated, true);
+  assert.ok(cut.text.length > 400, `excerpt collapsed to ${cut.text.length}`);
+  // mid-sentence, so this one does get an ellipsis, with no space before it
+  assert.match(cut.text, /[^\s]…$/);
+});
+
+test('every seeded recipient story fits a card once excerpted', () => {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  for (const r of seed.recipients.filter((x) => x.quote)) {
+    const e = content.excerpt(r.quote);
+    assert.ok(e.text.length <= 521, `${r.name}: ${e.text.length}`);
+    if (e.truncated) assert.equal(e.full, r.quote.replace(/\s+/g, ' ').trim());
+  }
+});
+
 // The recipient photos used to be hot-linked from the WordPress media library,
 // which would have 404'd the moment the new site took over the domain. Every
 // portrait must resolve inside this repo, in both builds.
