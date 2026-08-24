@@ -4,21 +4,21 @@ Scraped from the live WordPress site at <https://leofoundationusa.org> via its
 open REST API (`/wp-json/wp/v2/`). All content below is verbatim from published
 pages. Captured 2026-08-24.
 
-## Blocker: no LEO Foundation codebase in scope
+## What this file is
 
-The task asked to load recipients into "both content stores", delete "the three
-placeholder drafts", and verify "seeded scholarship copy". **None of those exist
-in any repository available to this session.**
+The audit of the **old WordPress site**, which was the transcription source for
+the replacement site in this repo. `data/` holds the raw scrape.
 
-- This repo (`moonshaden/node-hello`) is a two-file Express "hello world" server.
-  The working branch is identical to `master`.
-- No LEO Foundation repo exists on the account. Available repos: `quixtix`,
-  `node-hello`, `quixchex`, `quixchex-site`, `globalone`, `claude-memory`,
-  `ach-frontend`.
-- There is no `CLAUDE.md` in this repo.
+An earlier version of this section claimed no LEO Foundation codebase existed in
+this session. That was wrong — the site lives on the
+`claude/leo-foundation-site-redesign-knr6vv` branch of this same repo, which had
+simply not been fetched yet.
 
-So the scrape — the input to all of that work — is done and committed here.
-The load/delete/verify steps need the real repo.
+The scholarship and recipient content described below is now loaded into both
+content stores (`data/content.json` and `php/leo-app/data/content.json`). The
+WordPress-side fixes listed further down are **superseded** for anything that
+ships — the new site replaces that page entirely — but they still describe what
+the live site does today, which matters until cutover.
 
 ## What was captured
 

@@ -6,7 +6,7 @@
     <h1>Who we have supported</h1>
     <p class="lede">
       <% if (stats.recipientCount) { %>
-        <%= stats.recipientCount %> awarded students across <%= stats.yearCount %> <%= stats.yearCount === 1 ? 'year' : 'years' %><% if (stats.totalAwarded) { %>, totaling <%= formatMoney(stats.totalAwarded) %> in published awards<% } %>.
+        <%= stats.recipientCount %> awarded students<% if (stats.yearCount) { %> across <%= stats.yearCount %> <%= stats.yearCount === 1 ? 'year' : 'years' %><% } %><% if (stats.totalAwarded) { %>, totaling <%= formatMoney(stats.totalAwarded) %> in published awards<% } %>.
       <% } else { %>
         Awarded students are published here after each spring's decisions.
       <% } %>
@@ -33,7 +33,9 @@
     <% } %>
 
     <% groups.forEach(function (group) { %>
-      <h2 class="year-head"><%= group.year %> <span class="count"><%= group.items.length %> awarded</span></h2>
+      <% if (group.year) { %>
+        <h2 class="year-head"><%= group.year %> <span class="count"><%= group.items.length %> awarded</span></h2>
+      <% } %>
       <div class="grid grid-3">
         <% group.items.forEach(function (recipient) { %>
           <%- include('partials/recipient-card', { recipient }) %>

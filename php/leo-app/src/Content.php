@@ -108,7 +108,7 @@ final class Content
     {
         $groups = [];
         foreach ($recipients as $recipient) {
-            $year = (string) ($recipient['year'] ?? 'Other');
+            $year = (string) ($recipient['year'] ?? '');
             $groups[$year][] = $recipient;
         }
         // A numeric-looking key becomes an int in PHP, so cast back: the year

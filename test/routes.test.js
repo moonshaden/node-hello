@@ -12,10 +12,22 @@ const schedule = require('../src/schedule');
 
 process.env.ADMIN_PASSWORD = 'test-password';
 
-/** Boot the real app on an ephemeral port against a throwaway content file. */
-async function withServer(run) {
+/**
+ * Boot the real app on an ephemeral port against a throwaway content file.
+ *
+ * `mutate` gets the parsed seed before the server starts, so a test can add the
+ * record it needs (a draft, an expired window) instead of depending on the seed
+ * happening to contain one.
+ */
+async function withServer(run, mutate) {
   const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), 'leo-routes-')), 'content.json');
   fs.copyFileSync(path.join(__dirname, '..', 'data', 'content.json'), file);
+
+  if (mutate) {
+    const content = JSON.parse(fs.readFileSync(file, 'utf8'));
+    mutate(content);
+    fs.writeFileSync(file, JSON.stringify(content, null, 2));
+  }
 
   const server = createApp({ store: new Store(file) }).listen(0);
   await new Promise((resolve) => server.once('listening', resolve));
@@ -61,10 +73,30 @@ test('a scholarship detail page renders and unknown slugs 404', async () => {
 });
 
 test('draft recipients never reach an anonymous visitor', async () => {
+  await withServer(
+    async (base) => {
+      const body = await (await fetch(`${base}/recipients`)).text();
+      assert.match(body, /Sophia Hamre/);
+      assert.doesNotMatch(body, /Hidden Draft Student/);
+    },
+    (content) => {
+      content.recipients.push({
+        id: 'rec-draft-test',
+        name: 'Hidden Draft Student',
+        scholarship: 'LEO Foundation Scholarship',
+        draft: true,
+      });
+    }
+  );
+});
+
+test('a withdrawn scholarship is not offered to the public', async () => {
   await withServer(async (base) => {
-    const body = await (await fetch(`${base}/recipients`)).text();
-    assert.doesNotMatch(body, /Placeholder record/);
-    assert.match(body, /No recipients published yet/);
+    const list = await (await fetch(`${base}/scholarships`)).text();
+    assert.doesNotMatch(list, /Arvizu/);
+    assert.doesNotMatch(list, /Tim Browning/);
+    assert.equal((await fetch(`${base}/scholarships/arvizu-scholarship`)).status, 404);
+    assert.equal((await fetch(`${base}/scholarships/tim-browning-memorial-scholarship`)).status, 404);
   });
 });
 
@@ -112,12 +144,12 @@ test('editing a scholarship changes the public site immediately', async () => {
     // opening on the UTC date reads as 'upcoming' to the app, and this test
     // failed only during those hours.
     const today = schedule.todayIn('America/Phoenix');
-    await fetch(`${base}/admin/scholarships/sch-arvizu`, {
+    await fetch(`${base}/admin/scholarships/sch-theatre`, {
       method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded', cookie, origin: base },
       body: new URLSearchParams({
-        name: 'Arvizu Scholarship',
-        slug: 'arvizu-scholarship',
+        name: 'Foundation Theatre Scholarship',
+        slug: 'foundation-theatre-scholarship',
         amount: '$2,500',
         'window.type': 'fixed',
         'window.opensOn': today,
@@ -126,7 +158,7 @@ test('editing a scholarship changes the public site immediately', async () => {
       redirect: 'manual',
     });
 
-    const body = await (await fetch(`${base}/scholarships/arvizu-scholarship`)).text();
+    const body = await (await fetch(`${base}/scholarships/foundation-theatre-scholarship`)).text();
     assert.match(body, /\$2,500/);
     assert.match(body, /Accepting applications/);
   });

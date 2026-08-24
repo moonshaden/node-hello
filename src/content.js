@@ -70,7 +70,7 @@ function publicRecipients(store, today, { includeHidden = false } = {}) {
 function groupRecipientsByYear(recipients) {
   const groups = new Map();
   for (const recipient of recipients) {
-    const year = recipient.year || 'Other';
+    const year = recipient.year || '';
     if (!groups.has(year)) groups.set(year, []);
     groups.get(year).push(recipient);
   }

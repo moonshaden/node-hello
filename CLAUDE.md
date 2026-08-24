@@ -144,41 +144,64 @@ access removed, so no Composer, no Node Selector, no SSH.
 Outbound traffic goes through an egress proxy that allows **port 443 only**,
 against a host allowlist. Confirmed by testing, not assumed:
 
-- `leofoundationusa.org`, `www.leofoundationusa.org`, `160.153.181.93` → 403
-  `host_not_allowed` (curl *and* WebFetch)
+- `leofoundationusa.org` and `www.leofoundationusa.org` are now **allowed** (the
+  client opened them up). Its WordPress REST API is public and unauthenticated:
+  `/wp-json/wp/v2/pages?per_page=100` lists every page, and
+  `/wp-json/wp/v2/pages/<id>` returns rendered content. Far cleaner than parsing
+  the theme's HTML. Note the impact counters render as `0` in the markup — the
+  real figures are in the `data-value` attributes.
+- `160.153.181.93` (the client's server) → still 403 `host_not_allowed`
 - port 2083 (cPanel) and 21 (FTP) → connection reset even for allowed hosts
 - `claude.ai` → 403
 
-So: **you cannot upload to the server, verify the live site, or read the old
-WordPress site** unless the client adds those domains to a Custom network
-access list on the cloud environment. Do not promise otherwise, and do not ask
+So: **you cannot upload to the server or verify the deployed site.** Reading the
+old WordPress site does now work. Do not promise otherwise, and do not ask
 for cPanel credentials — the port is closed regardless of credentials. Hand the
 client a zip and File Manager steps, or use the cPanel Git deployment.
 
 ## Content accuracy
 
-Most seeded content was **reconstructed from public search results**, because
-the live site has never been readable from here. Treat it as unverified:
+Scholarships, recipients, and the impact figures were **transcribed from the
+live WordPress site on 2026-08-24** and verified against the published pages.
+`leo-foundation/FINDINGS.md` records the audit, and `leo-foundation/data/`
+keeps the raw scrape as the reference copy.
 
-- Scholarship names, amounts, and criteria need checking against the real site.
-- "Twenty years" / founded 2006 — **confirmed correct by the client**.
-- The three recipient records are **placeholder drafts**. They are marked
-  `draft: true` so they never publish. Do not invent students.
+- 13 published scholarships, each with the amount and qualifying criteria as
+  worded on its own page.
+- Tim Browning Memorial and Arvizu are **not currently being issued** — the
+  client's word. They are kept as `draft: true` so the copy survives without
+  rendering, and a test asserts they stay off the public site. Alex Acosta is
+  the third withdrawn award; it is *not* seeded, because the live site publishes
+  no amount or criteria for it.
+- "Twenty years" / founded 2006 — confirmed correct by the client.
+- The impact figures (20 years, 5,685 students, $6.9M awarded, $8.5M raised)
+  are the counter targets on the live site, replacing earlier reconstructions.
 
-The client's WordPress export (Tools → Export → All content) is the intended
-source of truth for recipients and page copy. If an XML export appears in the
-conversation, load it and reconcile everything against it.
+**The live site publishes no award year and no dollar amount for any
+recipient.** Both fields are deliberately empty on all 15 records; the views
+omit them rather than showing a guess. If the client wants "Class of 2025" or a
+per-student amount, that data has to come from them. Four bios name no specific
+award, so those recipients point at the general LEO Foundation Scholarship.
+
+**Recipient photos are still hosted on the WordPress site**
+(`leofoundationusa.org/wp-content/uploads/...`). Those URLs die the moment
+WordPress is replaced at that domain. Before cutover, either copy the uploads
+directory onto the new server and rewrite `photoUrl`, or preserve
+`/wp-content/uploads/` as a static path. This is the one loose end that would
+visibly break the recipients page.
 
 ## Open work
 
-1. **Recipients are empty** — "The students behind the numbers" on the homepage
-   and all of `/recipients` render an empty state. This is the client's stated
-   focus and the weakest thing on the site. Blocked on real student data.
-2. Verify seeded scholarship copy against the real site.
-3. Confirm **Save works in `/admin`** on the server — depends on file
+1. ~~Recipients are empty~~ — **done.** All 15 published recipients are loaded,
+   with photos and verbatim bios; the homepage features three.
+2. ~~Verify seeded scholarship copy against the real site~~ — **done.** See
+   *Content accuracy*.
+3. **Rehost the recipient photos** before cutover — see *Content accuracy*.
+4. Confirm **Save works in `/admin`** on the server — depends on file
    permissions for `leo-app/data/content.json`, untestable from here.
-4. Old-URL redirect map verification before cutover.
-5. No CI. A workflow running both suites would catch the seed-drift class of
+5. Old-URL redirect map verification before cutover. The scholarship slugs now
+   match the WordPress ones, so most of the map should be one-to-one.
+6. No CI. A workflow running both suites would catch the seed-drift class of
    bug on push.
 
 ## Client context

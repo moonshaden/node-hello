@@ -281,6 +281,22 @@ test('recipients group newest year first, featured leading each year', function 
     is_same($groups[0]['items'][0]['name'], 'Ada');
 });
 
+// The live site publishes no award year for anyone, so every recipient can
+// arrive with year empty. That used to bucket them all under a literal "Other"
+// heading and report "across 0 years".
+test('recipients with no published year group without a year heading', function () use ($base) {
+    $store = tempStore(array_merge($base, ['recipients' => [
+        ['id' => 'y1', 'name' => 'Sophia'],
+        ['id' => 'y2', 'name' => 'Elijah'],
+    ]]));
+    $shown = Content::publicRecipients($store, OPEN_DAY);
+    $groups = Content::groupRecipientsByYear($shown);
+    is_same(count($groups), 1);
+    is_same($groups[0]['year'], '');
+    is_same(count($groups[0]['items']), 2);
+    is_same(Content::awardStats($shown)['yearCount'], 0);
+});
+
 test('award totals count only published recipients', function () use ($base) {
     $store = tempStore($base);
     $stats = Content::awardStats(Content::publicRecipients($store, OPEN_DAY));

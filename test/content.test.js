@@ -87,6 +87,22 @@ test('recipients group newest year first, featured leading each year', () => {
   assert.equal(groups[0].items[0].name, 'Ada');
 });
 
+// The live site publishes no award year for anyone, so every recipient can
+// arrive with year empty. That used to bucket them all under a literal "Other"
+// heading and report "across 0 years".
+test('recipients with no published year group without a year heading', () => {
+  const store = makeStore({
+    ...BASE,
+    recipients: [{ id: 'y1', name: 'Sophia' }, { id: 'y2', name: 'Elijah' }],
+  });
+  const shown = content.publicRecipients(store, OPEN_DAY);
+  const groups = content.groupRecipientsByYear(shown);
+  assert.equal(groups.length, 1);
+  assert.equal(groups[0].year, '');
+  assert.equal(groups[0].items.length, 2);
+  assert.equal(content.awardStats(shown).yearCount, 0);
+});
+
 test('award totals count only published recipients', () => {
   const store = makeStore(BASE);
   const stats = content.awardStats(content.publicRecipients(store, OPEN_DAY));

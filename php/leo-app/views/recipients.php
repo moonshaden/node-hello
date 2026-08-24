@@ -6,7 +6,7 @@
     <h1>Who we have supported</h1>
     <p class="lede">
       <?php if ($stats['recipientCount'] > 0): ?>
-        <?= (int) $stats['recipientCount'] ?> awarded students across <?= (int) $stats['yearCount'] ?> <?= $stats['yearCount'] === 1 ? 'year' : 'years' ?><?php if ($stats['totalAwarded'] > 0): ?>, totaling <?= e(money($stats['totalAwarded'])) ?> in published awards<?php endif; ?>.
+        <?= (int) $stats['recipientCount'] ?> awarded students<?php if ($stats['yearCount'] > 0): ?> across <?= (int) $stats['yearCount'] ?> <?= $stats['yearCount'] === 1 ? 'year' : 'years' ?><?php endif; ?><?php if ($stats['totalAwarded'] > 0): ?>, totaling <?= e(money($stats['totalAwarded'])) ?> in published awards<?php endif; ?>.
       <?php else: ?>
         Awarded students are published here after each spring's decisions.
       <?php endif; ?>
@@ -33,7 +33,9 @@
     <?php endif; ?>
 
     <?php foreach ($groups as $group): ?>
-      <h2 class="year-head"><?= e($group['year']) ?> <span class="count"><?= count($group['items']) ?> awarded</span></h2>
+      <?php if ($group['year'] !== ''): ?>
+        <h2 class="year-head"><?= e($group['year']) ?> <span class="count"><?= count($group['items']) ?> awarded</span></h2>
+      <?php endif; ?>
       <div class="grid grid-3">
         <?php foreach ($group['items'] as $recipient): ?>
           <?php $app->partial('recipient-card', ['recipient' => $recipient]); ?>
