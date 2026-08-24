@@ -218,8 +218,28 @@ Nothing on the site loads an image from the WordPress host any more.
    permissions for `leo-app/data/content.json`, untestable from here.
 5. Old-URL redirect map verification before cutover. The scholarship slugs now
    match the WordPress ones, so most of the map should be one-to-one.
-6. No CI. A workflow running both suites would catch the seed-drift class of
-   bug on push.
+6. ~~No CI~~ — **done.** `.github/workflows/deploy.yml` runs both suites and the
+   PHP lint on every push, which catches the seed-drift class of bug.
+
+## Deploying
+
+`.github/workflows/deploy.yml` uploads the PHP build over FTPS from a GitHub
+runner. It runs there rather than from an agent session because **the sandbox
+reaches port 443 only** — ports 21, 990 and 2083 are all refused from it, so no
+credential makes a direct upload possible. Tested, not assumed.
+
+- Needs three repository secrets: `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`.
+  Without all three the deploy job skips on a push and fails loudly on a manual
+  run. They are never in the repo.
+- Two optional repo variables: `FTP_REMOTE_ROOT` (default `.`) for where the FTP
+  account lands, and `FTP_VERIFY_CERT` (default `true`).
+- Run it by hand with `dry_run` left ticked the first time. It lists the remote
+  tree and transfers nothing, which is how to confirm `FTP_REMOTE_ROOT` before
+  writing to a live site.
+- Code only. `leo-app/data/content.json` and `config.php` are excluded, and
+  neither mirror uses `--delete`.
+- **The seeded `content.json` still has to be uploaded by hand once**, or the
+  site goes live with the placeholder drafts.
 
 ## Client context
 

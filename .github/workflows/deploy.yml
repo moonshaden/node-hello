@@ -53,30 +53,45 @@ jobs:
       - name: PHP suite
         run: php php/test/run.php
 
-  deploy:
-    needs: test
+  # An unconfigured repository is not a failure - it is a repository nobody has
+  # pointed at a server yet, and it must not leave a red X on every PR. Asking
+  # for a deploy by hand and having no credentials *is* a failure, so that case
+  # still stops loudly, in the deploy job below.
+  preflight:
     runs-on: ubuntu-latest
-    environment: production
+    outputs:
+      configured: ${{ steps.check.outputs.configured }}
     steps:
-      - uses: actions/checkout@v4
-
-      # A missing secret should say so plainly rather than fail inside lftp
-      # with a confusing connection error.
-      - name: Check the secrets are set
+      - id: check
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: |
-          missing=
-          for name in FTP_SERVER FTP_USERNAME FTP_PASSWORD; do
-            [ -n "${!name:-}" ] || missing="$missing $name"
-          done
-          if [ -n "$missing" ]; then
-            echo "::error::Missing repository secret(s):$missing"
-            echo "Add them under Settings -> Secrets and variables -> Actions."
-            exit 1
+          if [ -n "${FTP_SERVER:-}" ] && [ -n "${FTP_USERNAME:-}" ] && [ -n "${FTP_PASSWORD:-}" ]; then
+            echo 'configured=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'configured=false' >> "$GITHUB_OUTPUT"
+            echo "::notice::FTP secrets are not set, so there is nothing to deploy to. Skipping."
           fi
+
+  deploy:
+    needs: [test, preflight]
+    if: needs.preflight.outputs.configured == 'true' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      # Only reachable on a manual run, since an automatic one is gated above.
+      - name: Refuse a hand-triggered deploy with no credentials
+        if: needs.preflight.outputs.configured != 'true'
+        env:
+          CONFIGURED: ${{ needs.preflight.outputs.configured }}
+        run: |
+          echo "::error::A deploy was requested by hand, but FTP_SERVER, FTP_USERNAME and FTP_PASSWORD are not all set."
+          echo "Add them under Settings -> Secrets and variables -> Actions."
+          exit 1
 
       - name: Install lftp
         run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
