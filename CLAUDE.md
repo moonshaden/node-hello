@@ -231,6 +231,16 @@ credential makes a direct upload possible. Tested, not assumed.
 - Needs three repository secrets: `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD`.
   Without all three the deploy job skips on a push and fails loudly on a manual
   run. They are never in the repo.
+- **`FTP_SERVER` must be the IP `160.153.181.93`, not the domain.** DNS has not
+  been cut over: `leofoundationusa.org` and `www` both resolve to
+  **198.12.238.168**, which is the old WordPress host. Pointing the deploy at
+  the domain uploads the new site to the wrong server. Checked with a lookup,
+  not assumed — re-check it after cutover, when the domain becomes correct and
+  preferable.
+- FTPS against a bare IP will fail certificate validation, because the
+  certificate is issued for a hostname. Set the repo variable
+  `FTP_VERIFY_CERT` to `false` for the IP, or use the VPS's own hostname (which
+  its certificate does cover) and leave verification on.
 - Two optional repo variables: `FTP_REMOTE_ROOT` (default `.`) for where the FTP
   account lands, and `FTP_VERIFY_CERT` (default `true`).
 - Run it by hand with `dry_run` left ticked the first time. It lists the remote
