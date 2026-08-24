@@ -1,0 +1,133 @@
+name: Test and deploy
+
+# Deploys the PHP build to the cPanel account over FTPS.
+#
+# Why a workflow and not a direct upload: the agent sandbox reaches port 443
+# only, against a host allowlist. Ports 21, 990 and 2083 are refused there, so
+# nothing can be pushed to the server from it regardless of credentials. GitHub
+# runners have no such restriction.
+#
+# Credentials live in repository secrets and are never in this file.
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - 'claude/**'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'List what would transfer, upload nothing'
+        type: boolean
+        default: true
+
+# Never pull_request: on a public repo that would expose secrets to forks.
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Node suite
+        run: npm test
+
+      - name: PHP lint
+        run: find php -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: PHP suite
+        run: php php/test/run.php
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      # A missing secret should say so plainly rather than fail inside lftp
+      # with a confusing connection error.
+      - name: Check the secrets are set
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          missing=
+          for name in FTP_SERVER FTP_USERNAME FTP_PASSWORD; do
+            [ -n "${!name:-}" ] || missing="$missing $name"
+          done
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secret(s):$missing"
+            echo "Add them under Settings -> Secrets and variables -> Actions."
+            exit 1
+          fi
+
+      - name: Install lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
+      # REMOTE_ROOT is where the FTP account lands. If the account is chrooted
+      # to the site directory this is '.'; if it opens at the cPanel home it is
+      # '/home/leofoundationusa'. The dry run below prints the listing so it can
+      # be set correctly before anything is written.
+      - name: Deploy over FTPS
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          REMOTE_ROOT: ${{ vars.FTP_REMOTE_ROOT || '.' }}
+          VERIFY_CERT: ${{ vars.FTP_VERIFY_CERT || 'true' }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+          DRY=""
+          if [ "$DRY_RUN" = "true" ]; then
+            DRY="--dry-run"
+            echo "::notice::Dry run - listing only, nothing will be uploaded."
+          fi
+
+          # No --delete anywhere: this writes to a live site, and a mistaken
+          # exclude must never be able to remove content from the server.
+          lftp -c "
+            set cmd:fail-exit true;
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set ssl:verify-certificate $VERIFY_CERT;
+            set net:max-retries 3;
+            set net:timeout 20;
+            open -u '$FTP_USERNAME','$FTP_PASSWORD' '$FTP_SERVER';
+
+            echo '--- remote root ---';
+            cls -l '$REMOTE_ROOT' || true;
+
+            echo '--- leo-app (excluding data/ and config.php) ---';
+            mirror -R --only-newer --verbose=1 $DRY \
+              --exclude-glob data/ \
+              --exclude-glob config.php \
+              php/leo-app/ '$REMOTE_ROOT/leo-app/';
+
+            echo '--- public_html ---';
+            mirror -R --only-newer --verbose=1 $DRY \
+              php/public_html/ '$REMOTE_ROOT/public_html/';
+          "
+
+      - name: What was not deployed
+        if: success()
+        run: |
+          echo "::notice::leo-app/data/content.json and config.php are never uploaded."
+          echo "Content is edited through /admin. Seed content.json by hand once, at launch."
