@@ -10,6 +10,7 @@ deployment:
     - export DEPLOYPATH=/home/leofoundationusa
     - /bin/mkdir -p $DEPLOYPATH/leo-app/src $DEPLOYPATH/leo-app/views/admin
     - /bin/mkdir -p $DEPLOYPATH/public_html/css $DEPLOYPATH/public_html/js
+    - /bin/mkdir -p $DEPLOYPATH/public_html/img/recipients
 
     - /bin/cp -R php/leo-app/src/. $DEPLOYPATH/leo-app/src/
     - /bin/cp -R php/leo-app/views/. $DEPLOYPATH/leo-app/views/
@@ -19,5 +20,6 @@ deployment:
 
     - /bin/cp -R php/public_html/css/. $DEPLOYPATH/public_html/css/
     - /bin/cp -R php/public_html/js/. $DEPLOYPATH/public_html/js/
+    - /bin/cp -R php/public_html/img/. $DEPLOYPATH/public_html/img/
     - /bin/cp php/public_html/index.php $DEPLOYPATH/public_html/index.php
     - /bin/cp php/public_html/.htaccess $DEPLOYPATH/public_html/.htaccess

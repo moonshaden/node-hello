@@ -284,6 +284,22 @@ test('recipients group newest year first, featured leading each year', function 
 // The live site publishes no award year for anyone, so every recipient can
 // arrive with year empty. That used to bucket them all under a literal "Other"
 // heading and report "across 0 years".
+// The recipient photos used to be hot-linked from the WordPress media library,
+// which would have 404'd the moment the new site took over the domain.
+test('every recipient photo is served from this repo and exists', function () {
+    $root = dirname(__DIR__, 2);
+    $seed = json_decode(file_get_contents($root . '/data/content.json'), true);
+    $withPhotos = array_filter($seed['recipients'], fn ($r) => !empty($r['photoUrl']));
+    ok(count($withPhotos) > 0, 'no recipient has a photo');
+
+    foreach ($withPhotos as $r) {
+        ok(str_starts_with($r['photoUrl'], '/img/recipients/'), $r['name'] . ' is not served locally');
+        foreach (['public', 'php/public_html'] as $base) {
+            ok(is_file($root . '/' . $base . $r['photoUrl']), 'missing ' . $base . $r['photoUrl']);
+        }
+    }
+});
+
 test('recipients with no published year group without a year heading', function () use ($base) {
     $store = tempStore(array_merge($base, ['recipients' => [
         ['id' => 'y1', 'name' => 'Sophia'],

@@ -190,7 +190,10 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 /* recipients — the site's headline content, so they get portraits */
 .recipient { text-align: left; }
 .recipient .portrait {
-  width: 100%; aspect-ratio: 4 / 5; border-radius: 12px; object-fit: cover;
+  /* height:auto is load-bearing. The img carries width/height attributes so the
+     card reserves space before the photo loads, and without it that attribute
+     wins as a presentational hint and overrides the aspect ratio. */
+  width: 100%; height: auto; aspect-ratio: 4 / 5; border-radius: 12px; object-fit: cover;
   background: var(--gold-wash); margin-bottom: 18px;
 }
 .recipient .portrait-fallback {

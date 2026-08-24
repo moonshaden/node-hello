@@ -1,6 +1,6 @@
 <article class="card recipient">
   <% if (recipient.photoUrl) { %>
-    <img class="portrait" src="<%= recipient.photoUrl %>" alt="<%= recipient.name %>">
+    <img class="portrait" src="<%= recipient.photoUrl %>" alt="<%= recipient.name %>" loading="lazy" width="800" height="1000">
   <% } else { %>
     <div class="portrait portrait-fallback"><%= (recipient.name || '?').trim().charAt(0).toUpperCase() %></div>
   <% } %>

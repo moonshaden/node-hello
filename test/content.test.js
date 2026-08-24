@@ -129,6 +129,24 @@ test('money is formatted, and zero renders as nothing', () => {
   assert.equal(content.formatMoney('x'), '');
 });
 
+// The recipient photos used to be hot-linked from the WordPress media library,
+// which would have 404'd the moment the new site took over the domain. Every
+// portrait must resolve inside this repo, in both builds.
+test('every recipient photo is served from this repo and exists', () => {
+  const root = path.join(__dirname, '..');
+  const seed = JSON.parse(fs.readFileSync(path.join(root, 'data', 'content.json'), 'utf8'));
+  const withPhotos = seed.recipients.filter((r) => r.photoUrl);
+  assert.ok(withPhotos.length > 0, 'no recipient has a photo');
+
+  for (const r of withPhotos) {
+    assert.match(r.photoUrl, /^\/img\/recipients\//, `${r.name} is not served locally`);
+    for (const base of ['public', path.join('php', 'public_html')]) {
+      const file = path.join(root, base, r.photoUrl);
+      assert.ok(fs.existsSync(file), `missing ${base}${r.photoUrl}`);
+    }
+  }
+});
+
 // The Node and PHP builds each carry their own copy of the seed content, and
 // they have drifted before: a scholarship lost its summary and criteria in one
 // copy only, so the card rendered blank on the deployed site and nowhere else.

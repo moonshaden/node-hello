@@ -11,8 +11,12 @@ be switched off.
 
 - **Tools → Export → All content** in wp-admin produces a single WXR (XML) file.
   Keep it; it is the archive of record.
-- Save the media library separately (`wp-content/uploads`). Recipient photos are
-  the only images this site needs.
+- Save the media library separately (`wp-content/uploads`) as the archive copy.
+  The recipient photos this site needs are **already carried over** — all 15 are
+  committed under `public/img/recipients/` (Node) and
+  `php/public_html/img/recipients/` (PHP), downscaled to 800px wide and
+  re-encoded as JPEG (5.4 MB down to 1.0 MB). Nothing on the new site loads an
+  image from the WordPress host, so the cutover cannot break a portrait.
 - Note the exact URL of every page that currently exists. That list becomes the
   redirect map in step 4.
 
@@ -82,5 +86,8 @@ missed becomes a 404 for a student mid-application.
   variable and restarting. If several people need separate accounts later, that
   is a real change — say so rather than working around it.
 - **File uploads through the admin.** Recipient photos are referenced by URL.
-  Host them wherever the foundation already keeps images; adding an upload
-  pipeline means adding storage, and that can wait until it is actually wanted.
+  The current set is committed under `img/recipients/`, so a new photo means
+  dropping a file in beside them and pasting `/img/recipients/<file>` into the
+  Photo URL field. An external `https://` URL still works if that is easier.
+  Adding a real upload pipeline means adding storage, and that can wait until it
+  is actually wanted.

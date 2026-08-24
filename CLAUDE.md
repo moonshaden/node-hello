@@ -103,6 +103,12 @@ round-trip test; extend it when adding fields.
 sans container does not constrain a serif `h2` the way you expect. Put the
 constraint on the element whose font it should measure.
 
+**An `img` width/height attribute overrides `aspect-ratio`.** The portraits
+carry `width`/`height` so the card reserves space before the photo loads, but
+that is a presentational hint applied as a real `height`, and the rule only set
+`width` and `aspect-ratio`. Portraits rendered 1000px tall instead of 359px.
+`height: auto` in the CSS is what makes the pair work.
+
 **Cards are flex columns**, so children inherit `align-self: stretch`.
 `display: inline-flex` will not stop a pill filling the card width;
 `align-self: flex-start` will.
@@ -183,12 +189,13 @@ omit them rather than showing a guess. If the client wants "Class of 2025" or a
 per-student amount, that data has to come from them. Four bios name no specific
 award, so those recipients point at the general LEO Foundation Scholarship.
 
-**Recipient photos are still hosted on the WordPress site**
-(`leofoundationusa.org/wp-content/uploads/...`). Those URLs die the moment
-WordPress is replaced at that domain. Before cutover, either copy the uploads
-directory onto the new server and rewrite `photoUrl`, or preserve
-`/wp-content/uploads/` as a static path. This is the one loose end that would
-visibly break the recipients page.
+**Recipient photos are served from this repo.** All 15 are committed under
+`public/img/recipients/` and `php/public_html/img/recipients/`, downscaled to
+800px wide and re-encoded as JPEG (5.4 MB → 1.0 MB). `photoUrl` is an
+app-absolute `/img/recipients/<slug>.jpg`, which `link_url()` prefixes with the
+base path so it survives the `/~leofoundationusa` temporary URL. `.cpanel.yml`
+copies the directory on deploy — if you add a photo, check it still does.
+Nothing on the site loads an image from the WordPress host any more.
 
 ## Open work
 
@@ -196,7 +203,7 @@ visibly break the recipients page.
    with photos and verbatim bios; the homepage features three.
 2. ~~Verify seeded scholarship copy against the real site~~ — **done.** See
    *Content accuracy*.
-3. **Rehost the recipient photos** before cutover — see *Content accuracy*.
+3. ~~Rehost the recipient photos~~ — **done.** See *Content accuracy*.
 4. Confirm **Save works in `/admin`** on the server — depends on file
    permissions for `leo-app/data/content.json`, untestable from here.
 5. Old-URL redirect map verification before cutover. The scholarship slugs now
