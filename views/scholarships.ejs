@@ -1,0 +1,42 @@
+<%- include('partials/head') %>
+
+<div class="page-head">
+  <div class="wrap">
+    <p class="eyebrow">Available scholarships</p>
+    <h1><%= openScholarships.length %> of <%= scholarships.length %> scholarships accepting applications</h1>
+    <p class="lede">
+      <% if (enrollment.state === 'open') { %>
+        The enrollment period runs <%= schedule.formatDate(enrollment.opensOn) %> through <%= schedule.formatDate(enrollment.closesOn) %>.
+        Read the criteria for each award and apply for every one you qualify for.
+      <% } else { %>
+        Applications open <%= schedule.formatDate(enrollment.opensOn) %> and close <%= schedule.formatDate(enrollment.closesOn) %>.
+        The awards below stay listed year-round so you can prepare.
+      <% } %>
+    </p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap">
+    <% if (enrollmentSettings.instructions) { %>
+      <div class="notice" style="margin-bottom:32px">
+        <div>
+          <h3>Before you apply</h3>
+          <p><%= enrollmentSettings.instructions %></p>
+        </div>
+      </div>
+    <% } %>
+
+    <% if (scholarships.length) { %>
+      <div class="grid grid-3">
+        <% scholarships.forEach(function (scholarship) { %>
+          <%- include('partials/scholarship-card', { scholarship }) %>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="empty"><p><strong>No scholarships are listed right now.</strong></p></div>
+    <% } %>
+  </div>
+</section>
+
+<%- include('partials/foot') %>

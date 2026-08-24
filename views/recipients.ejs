@@ -1,0 +1,46 @@
+<%- include('partials/head') %>
+
+<div class="page-head">
+  <div class="wrap">
+    <p class="eyebrow">Scholarship recipients</p>
+    <h1>Who we have supported</h1>
+    <p class="lede">
+      <% if (stats.recipientCount) { %>
+        <%= stats.recipientCount %> awarded students across <%= stats.yearCount %> <%= stats.yearCount === 1 ? 'year' : 'years' %><% if (stats.totalAwarded) { %>, totaling <%= formatMoney(stats.totalAwarded) %> in published awards<% } %>.
+      <% } else { %>
+        Awarded students are published here after each spring's decisions.
+      <% } %>
+    </p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap">
+    <% if (years.length > 1) { %>
+      <div class="filters">
+        <a href="/recipients" class="<%= selectedYear ? '' : 'is-current' %>">All years</a>
+        <% years.forEach(function (year) { %>
+          <a href="/recipients?year=<%= year %>" class="<%= selectedYear === year ? 'is-current' : '' %>"><%= year %></a>
+        <% }) %>
+      </div>
+    <% } %>
+
+    <% if (!groups.length) { %>
+      <div class="empty">
+        <p><strong>No recipients published yet.</strong></p>
+        <p class="small">Once awards are announced, add each student in the admin area to publish them here.</p>
+      </div>
+    <% } %>
+
+    <% groups.forEach(function (group) { %>
+      <h2 class="year-head"><%= group.year %> <span class="count"><%= group.items.length %> awarded</span></h2>
+      <div class="grid grid-3">
+        <% group.items.forEach(function (recipient) { %>
+          <%- include('partials/recipient-card', { recipient }) %>
+        <% }) %>
+      </div>
+    <% }) %>
+  </div>
+</section>
+
+<%- include('partials/foot') %>
