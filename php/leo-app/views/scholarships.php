@@ -7,7 +7,7 @@
     <p class="lede">
       <?php if ($enrollment['state'] === 'open'): ?>
         The enrollment period runs <?= e(fdate($enrollment['opensOn'])) ?> through <?= e(fdate($enrollment['closesOn'])) ?>.
-        Read the criteria for each award and apply for every one you qualify for.
+        Read the criteria for each award, then apply to the one that best fits your direction. Students may submit one application.
       <?php else: ?>
         Applications open <?= e(fdate($enrollment['opensOn'])) ?> and close <?= e(fdate($enrollment['closesOn'])) ?>.
         The awards below stay listed year-round so you can prepare.

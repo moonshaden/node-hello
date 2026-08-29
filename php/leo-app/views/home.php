@@ -120,7 +120,7 @@
         <h2><?= $openScholarships !== [] ? 'Scholarships open right now' : 'Scholarships offered each year' ?></h2>
         <p>
           <?php if ($enrollment['state'] === 'open'): ?>
-            The enrollment period closes <?= e(fdate($enrollment['closesOn'])) ?>. Apply for every award you qualify for.
+            The enrollment period closes <?= e(fdate($enrollment['closesOn'])) ?>. Review the criteria and apply to the award that best fits you.
           <?php else: ?>
             Applications reopen <?= e(fdate($enrollment['opensOn'])) ?>. Review the criteria now so you are ready.
           <?php endif; ?>

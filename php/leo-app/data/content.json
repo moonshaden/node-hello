@@ -40,13 +40,13 @@
         "opensOn": "11-01",
         "closesOn": "03-31",
         "awardedNote": "Awards are announced each spring for the following academic year.",
-        "instructions": "Read the criteria for each scholarship, then apply for every award you qualify for. Applicants must already be admitted to their university before a scholarship can be awarded."
+        "instructions": "Read the criteria for each scholarship, then apply to the one that best fits your direction and situation. Students are limited to one scholarship application. Applicants must already be admitted to their university before a scholarship can be awarded."
     },
     "announcements": [
         {
             "id": "ann-open",
             "title": "Applications are open",
-            "body": "The enrollment period runs November 1 through March 31. Review the available scholarships and apply for every award you qualify for.",
+            "body": "The enrollment period runs November 1 through March 31. Review the available scholarships and apply to the one that best fits you.",
             "ctaLabel": "See available scholarships",
             "ctaUrl": "/scholarships",
             "showWhen": "open"

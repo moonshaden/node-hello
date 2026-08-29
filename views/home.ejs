@@ -120,7 +120,7 @@
         <h2><%= openScholarships.length ? 'Scholarships open right now' : 'Scholarships offered each year' %></h2>
         <p>
           <% if (enrollment.state === 'open') { %>
-            The enrollment period closes <%= schedule.formatDate(enrollment.closesOn) %>. Apply for every award you qualify for.
+            The enrollment period closes <%= schedule.formatDate(enrollment.closesOn) %>. Review the criteria and apply to the award that best fits you.
           <% } else { %>
             Applications reopen <%= schedule.formatDate(enrollment.opensOn) %>. Review the criteria now so you are ready.
           <% } %>

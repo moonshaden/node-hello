@@ -223,3 +223,21 @@ test('both builds ship the same seed content', () => {
   const read = (file) => JSON.parse(fs.readFileSync(path.join(__dirname, '..', file), 'utf8'));
   assert.deepEqual(read('data/content.json'), read('php/leo-app/data/content.json'));
 });
+
+// The live FAQ is explicit: "Students are limited to one scholarship
+// application submission." Reconstructed copy told applicants the opposite in
+// ten places across both builds, which would have cost real applicants a real
+// award. Nothing published may say it again.
+test('no published copy tells applicants to apply for several awards', () => {
+  const root = path.join(__dirname, '..');
+  const files = [
+    'data/content.json', 'php/leo-app/data/content.json',
+    'views/home.ejs', 'views/scholarships.ejs', 'views/partials/page-cta.ejs',
+    'php/leo-app/views/home.php', 'php/leo-app/views/scholarships.php',
+    'php/leo-app/views/partials/page-cta.php',
+  ];
+  for (const file of files) {
+    const text = fs.readFileSync(path.join(root, file), 'utf8');
+    assert.doesNotMatch(text, /apply for every|every award you qualify/i, file);
+  }
+});

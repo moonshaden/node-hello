@@ -7,7 +7,7 @@
     <p class="lede">
       <% if (enrollment.state === 'open') { %>
         The enrollment period runs <%= schedule.formatDate(enrollment.opensOn) %> through <%= schedule.formatDate(enrollment.closesOn) %>.
-        Read the criteria for each award and apply for every one you qualify for.
+        Read the criteria for each award, then apply to the one that best fits your direction. Students may submit one application.
       <% } else { %>
         Applications open <%= schedule.formatDate(enrollment.opensOn) %> and close <%= schedule.formatDate(enrollment.closesOn) %>.
         The awards below stay listed year-round so you can prepare.

@@ -19,7 +19,7 @@ $isOpen = ($enrollment['state'] ?? '') === 'open';
           <p>Gifts are tax deductible, and we will help you set up a named or memorial award.</p>
         <?php else: ?>
           <p class="eyebrow"><?= $isOpen ? 'Applications are open' : 'Plan ahead' ?></p>
-          <h2><?= $isOpen ? 'Apply for every award you qualify for.' : 'Be ready when applications reopen.' ?></h2>
+          <h2><?= $isOpen ? 'Apply to the award that fits you best.' : 'Be ready when applications reopen.' ?></h2>
           <p>
             <?php if ($isOpen): ?>
               The enrollment period closes <?= e(fdate($enrollment['closesOn'] ?? '')) ?>.

@@ -17,7 +17,7 @@
           <p>Gifts are tax deductible, and we will help you set up a named or memorial award.</p>
         <% } else { %>
           <p class="eyebrow"><%= isOpen ? 'Applications are open' : 'Plan ahead' %></p>
-          <h2><%= isOpen ? 'Apply for every award you qualify for.' : 'Be ready when applications reopen.' %></h2>
+          <h2><%= isOpen ? 'Apply to the award that fits you best.' : 'Be ready when applications reopen.' %></h2>
           <p>
             <% if (isOpen) { %>
               The enrollment period closes <%= schedule.formatDate(enrollment.closesOn) %>.
