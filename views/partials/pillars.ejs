@@ -1,0 +1,31 @@
+<%#
+  Leadership, Education, Opportunity. Mirrors partials/pillars.php.
+
+  The foundation's name is the acronym, so the three words are set as the
+  headings and the initial letter is picked out in gold -- the structure is
+  the content here, not decoration.
+%>
+<% if (pillars && pillars.length) { %>
+<section class="band">
+  <div class="wrap">
+    <div class="band-head">
+      <div>
+        <p class="eyebrow">What LEO stands for</p>
+        <h2>Leadership. Education. Opportunity.</h2>
+      </div>
+    </div>
+    <div class="pillars">
+      <% pillars.forEach(function (pillar) { %>
+        <% const word = pillar.word || ''; %>
+        <article class="pillar">
+          <h3 class="pillar-word">
+            <span class="pillar-initial"><%= word.charAt(0) %></span><%= word.slice(1) %>
+          </h3>
+          <% if (pillar.tagline) { %><p class="pillar-tagline"><%= pillar.tagline %></p><% } %>
+          <p class="pillar-body"><%= pillar.body %></p>
+        </article>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>

@@ -36,5 +36,7 @@
   </div>
 </footer>
 
+<script src="<?= e($basePath) ?>/js/site.js" defer></script>
+
 </body>
 </html>

@@ -16,6 +16,8 @@ router.get('/', (req, res) => {
 
   res.render('home', {
     title: store.site.name,
+    slides: store.list('slides'),
+    pillars: store.list('pillars'),
     scholarships,
     openScholarships: content.openScholarships(scholarships),
     featuredRecipients: content.featuredRecipients(recipients, 3),

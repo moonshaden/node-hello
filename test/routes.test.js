@@ -278,3 +278,17 @@ test('the impact heading and supporting lines survive a settings save', async ()
     assert.match(home, /\$9M\+/);
   });
 });
+
+// A hidden slide must not leave a link in the tab order, and the slider must
+// not appear at all when nothing is seeded.
+test('the homepage renders the slider and the LEO pillars', async () => {
+  await withServer(async (base) => {
+    const body = await (await fetch(`${base}/`)).text();
+    assert.match(body, /data-slider/);
+    assert.equal((body.match(/data-slide\b/g) || []).length, 3);
+    assert.equal((body.match(/class="pillar"/g) || []).length, 3);
+    assert.match(body, /fetchpriority="high"/, 'first slide is eager');
+    assert.match(body, /loading="lazy"/, 'later slides are not');
+    assert.match(body, /js\/site\.js/, 'the slider script is loaded');
+  });
+});

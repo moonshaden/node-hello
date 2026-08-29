@@ -13,7 +13,7 @@ namespace Leo;
  */
 final class Store
 {
-    public const COLLECTIONS = ['announcements', 'scholarships', 'recipients', 'pages'];
+    public const COLLECTIONS = ['announcements', 'scholarships', 'recipients', 'pages', 'slides', 'pillars'];
 
     private array $data;
 
@@ -35,6 +35,8 @@ final class Store
             'scholarships' => [],
             'recipients' => [],
             'pages' => [],
+            'slides' => [],
+            'pillars' => [],
         ];
     }
 

@@ -368,3 +368,35 @@ test('no published copy tells applicants to apply for several awards', () => {
     assert.doesNotMatch(text, /apply for every|every award you qualify/i, file);
   }
 });
+
+// The slider is the one part of the site that ships JavaScript to the public,
+// and a slide whose link goes nowhere is worse than a slide with no link, so
+// both halves of that contract are pinned.
+test('every slide has an image and a heading, and links only where a page exists', () => {
+  const store = new Store(path.join(__dirname, '..', 'data', 'content.json'));
+  const slides = store.list('slides');
+  assert.ok(slides.length > 0, 'slides are seeded');
+
+  const routes = new Set(['/faq', '/about', '/donate', '/contact', '/board',
+                          '/scholarships', '/recipients']);
+  for (const slide of slides) {
+    assert.match(slide.image, /^\/img\/slides\/.+\.jpg$/, 'app-absolute image');
+    assert.ok(slide.heading.trim(), 'heading');
+    assert.ok(slide.alt.trim(), 'alt text');
+    for (const key of ['subheading', 'body', 'ctaLabel', 'ctaUrl']) {
+      assert.equal(typeof slide[key], 'string', `${key} is always a string`);
+    }
+    if (slide.ctaUrl) {
+      assert.ok(routes.has(slide.ctaUrl), `${slide.ctaUrl} is a page this site serves`);
+    }
+  }
+});
+
+test('the LEO pillars are the three words of the name', () => {
+  const store = new Store(path.join(__dirname, '..', 'data', 'content.json'));
+  const words = store.list('pillars').map((p) => p.word);
+  assert.deepEqual(words, ['Leadership', 'Education', 'Opportunity']);
+  for (const pillar of store.list('pillars')) {
+    assert.ok(pillar.body.trim().length > 80, `${pillar.word} has its write-up`);
+  }
+});

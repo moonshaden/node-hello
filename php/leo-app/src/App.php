@@ -172,6 +172,8 @@ final class App
 
             $this->render('home', [
                 'title' => $this->shared['site']['name'],
+                'slides' => $this->store->list('slides'),
+                'pillars' => $this->store->list('pillars'),
                 'scholarships' => $scholarships,
                 'openScholarships' => Content::openScholarships($scholarships),
                 'featuredRecipients' => Content::featuredRecipients($recipients, 3),

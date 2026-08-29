@@ -1,5 +1,7 @@
 <?php $app->partial('head'); ?>
 
+<?php $app->partial('slider'); ?>
+
 <section class="hero">
   <div class="wrap hero-grid">
     <div>
@@ -65,6 +67,8 @@
   </div>
 </section>
 <?php endif; ?>
+
+<?php $app->partial('pillars'); ?>
 
 <?php if ($announcements !== []): ?>
 <section class="band" style="padding-bottom:0">
