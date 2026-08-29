@@ -31,6 +31,26 @@ $index = count($article['headings']) >= $indexFrom ? $article['headings'] : [];
   </div>
 </section>
 
+<?php
+// A page can carry a roster of people alongside its prose -- the board is the
+// only one today. It is stored on the page record rather than as its own
+// content type, so the admin page form still edits the copy around it and
+// leaves the roster untouched. Mirrored in page.ejs.
+$members = is_array($page['members'] ?? null) ? $page['members'] : [];
+?>
+<?php if ($members !== []): ?>
+<section class="band tint" id="board">
+  <div class="wrap">
+    <h2 class="section-head">Board of Directors</h2>
+    <div class="grid grid-3">
+      <?php foreach ($members as $member): ?>
+        <?php $app->partial('board-card', ['member' => $member]); ?>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+<?php endif; ?>
+
 <?php if (($page['slug'] ?? '') === 'contact'): ?>
   <?php
   // Rendered from the site settings rather than the page body, so the address

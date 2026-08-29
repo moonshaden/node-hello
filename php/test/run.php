@@ -331,6 +331,82 @@ test('every recipient photo is served from this repo and exists', function () {
     }
 });
 
+// The board is real named people transcribed from /leadership-2/ on the live
+// site. A wrong name, a wrong office, or a reordered roster is worse than no
+// page at all, so the seed is pinned here rather than left to drift. Mirrors
+// the same three assertions in test/content.test.js.
+test('the board page publishes every member in the live order', function () {
+    $root = dirname(__DIR__, 2);
+    $seed = json_decode(file_get_contents($root . '/data/content.json'), true);
+    $page = null;
+    foreach ($seed['pages'] as $candidate) {
+        if (($candidate['slug'] ?? '') === 'board') {
+            $page = $candidate;
+        }
+    }
+    ok($page !== null, 'no board page in the seed');
+    // The client asked for it reachable from Contact, not added to the header.
+    ok(($page['inNav'] ?? true) === false, 'the board page is in the main navigation');
+
+    $expected = [
+        ['Madeline LoConti Winney', 'Chief Executive Officer'],
+        ['Michele Simphoukham', 'Chief Financial Officer'],
+        ['Greg Sharp', 'Board Member'],
+        ['Robb Kottman', 'Board Member and Investment Advisor'],
+        ['Dr. Jennifer Billingsley', 'Board Member'],
+        ['Darrin Anderson', 'Board Member'],
+    ];
+    $actual = array_map(fn ($m) => [$m['name'], $m['role']], $page['members']);
+    is_same($actual, $expected, 'the board roster changed');
+});
+
+// Same failure mode as the recipient portraits: a wp-content URL would 404 the
+// moment the new site took over the domain.
+test('every board photo is served from this repo and exists', function () {
+    $root = dirname(__DIR__, 2);
+    $seed = json_decode(file_get_contents($root . '/data/content.json'), true);
+    $members = [];
+    foreach ($seed['pages'] as $page) {
+        if (($page['slug'] ?? '') === 'board') {
+            $members = array_filter($page['members'], fn ($m) => !empty($m['photoUrl']));
+        }
+    }
+    ok(count($members) === 6, 'a board member lost their photo');
+
+    foreach ($members as $m) {
+        ok(str_starts_with($m['photoUrl'], '/img/board/'), $m['name'] . ' is not served locally');
+        foreach (['public', 'php/public_html'] as $base) {
+            ok(is_file($root . '/' . $base . $m['photoUrl']), 'missing ' . $base . $m['photoUrl']);
+        }
+    }
+});
+
+test('every seeded board bio fits a card once excerpted', function () {
+    $root = dirname(__DIR__, 2);
+    $seed = json_decode(file_get_contents($root . '/data/content.json'), true);
+    foreach ($seed['pages'] as $page) {
+        if (($page['slug'] ?? '') !== 'board') {
+            continue;
+        }
+        foreach ($page['members'] as $m) {
+            $e = Content::excerpt($m['bio']);
+            ok(mb_strlen($e['text']) <= 521, $m['name'] . ': ' . mb_strlen($e['text']));
+        }
+    }
+});
+
+// The board page is off the main nav by design, so the contact page is the only
+// way in. A reworded contact body must not quietly strip the link.
+test('the contact page links to the board page', function () {
+    $root = dirname(__DIR__, 2);
+    $seed = json_decode(file_get_contents($root . '/data/content.json'), true);
+    foreach ($seed['pages'] as $page) {
+        if (($page['slug'] ?? '') === 'contact') {
+            ok(str_contains($page['body'], '](/board)'), 'the contact page no longer links to /board');
+        }
+    }
+});
+
 test('recipients with no published year group without a year heading', function () use ($base) {
     $store = tempStore(array_merge($base, ['recipients' => [
         ['id' => 'y1', 'name' => 'Sophia'],
@@ -398,6 +474,30 @@ test('publish dates round-trip through nested arrays', function () {
     is_same($record['publish']['showFrom'], '2026-04-01');
     is_same($record['publish']['showUntil'], '');
     is_same($record['draft'], false);
+});
+
+// The board roster rides on the page record but has no field in the page form,
+// so a save rebuilds the record from the posted fields alone. applyFields()
+// takes the existing record as its base, which is the only thing keeping an
+// admin edit to the copy from silently deleting six people. Mirrors the same
+// assertion in test/routes.test.js.
+test('editing the board page in admin keeps the roster', function () {
+    $existing = [
+        'id' => 'page-board',
+        'slug' => 'board',
+        'title' => 'Board of Directors',
+        'members' => [['name' => 'Madeline LoConti Winney', 'role' => 'Chief Executive Officer']],
+    ];
+    $fields = Admin::resources()['pages']['fields'];
+    $record = Admin::applyFields($existing, [
+        'title' => 'Board of Directors',
+        'slug' => 'board',
+        'summary' => 'Rewritten in the admin area.',
+        'body' => 'Rewritten too.',
+    ], $fields);
+
+    is_same($record['summary'], 'Rewritten in the admin area.');
+    is_same($record['members'], $existing['members'], 'an admin save dropped the roster');
 });
 
 test('field types coerce the way the store expects', function () {

@@ -650,6 +650,56 @@
       "navLabel": "About"
     },
     {
+      "id": "page-board",
+      "slug": "board",
+      "title": "Board of Directors",
+      "inNav": false,
+      "summary": "We are a team of dedicated and experienced professionals with unique perspectives. We are not only committed to each other’s personal and professional growth, but also to the success of the mission we care so much about and the many people we serve through education, fundraising, and mentoring.",
+      "body": "## LEO Leadership\n\nWe believe that effective leadership and board governance are paramount in building long-term significance for our investors. The vital aspects of our board governance charter include: helping keep the organization mission-focused, providing oversight and support for the CEO, being community advocates, committee work, financial reporting and support, and ensuring legal and ethical integrity and accountability. Our committee structures include fundraising, marketing, communications, investments, and programs.",
+      "navLabel": "Board",
+      "members": [
+        {
+          "name": "Madeline LoConti Winney",
+          "role": "Chief Executive Officer",
+          "photoUrl": "/img/board/madeline-loconti-winney.jpg",
+          "email": "mwinney@leofoundationusa.org",
+          "phone": "602.206.4465",
+          "statement": "I am most passionate about working with AEF as they support teachers and students in providing education for all.\n\nThroughout my accomplishment-driven career in various executive roles, I have cultivated innovative ideas, supported shared vision, and advanced the charitable legacy of others.",
+          "bio": "Madeline has made a career of serving people and igniting powerful, rewarding philanthropy to make Arizona a stronger community for all. With a heart for youth and a vision for building future leaders, she launched LEO Foundation, formerly known as GCU Scholarship Foundation, where she has dedicated nearly 20 years to helping students achieve their educational and career goals through scholarships and leadership opportunities. Madeline also serves as Executive Director of Development for the Arizona Basketball Coaches Association, Inc. raising funds to benefit the annual Section 7 Event and Title 1 and at-risk youth in our community through the Youth Development Academy. Madeline is honored to serve as a board member for the Arizona Educational Foundation (AEF). Their mission is to celebrate excellence and cultivate opportunity in PreK-12 grade Arizona public education.\n\nMadeline is recognized for her expertise in building partnerships with the private and public sectors and with community and philanthropic leaders. She utilizes the foundation’s voice to uplift student needs and develops impactful strategies to drive greater access and opportunities across the community."
+        },
+        {
+          "name": "Michele Simphoukham",
+          "role": "Chief Financial Officer",
+          "photoUrl": "/img/board/michele-simphoukham.jpg",
+          "bio": "Michele Simphoukham proudly serves as the Treasurer for the LEO Foundation. Michele has been in the tax and accounting profession since 1992 and became a CPA in 2000. She currently works as the Nonprofit Tax Manager for a local university.\n\nWhen she is not working, she enjoys spending time with her husband and four young adult children. When not behind a computer crunching numbers, she can be found with her camera capturing beautiful moments."
+        },
+        {
+          "name": "Greg Sharp",
+          "role": "Board Member",
+          "photoUrl": "/img/board/greg-sharp.jpg",
+          "bio": "Greg Sharp is a seasoned sales and business leader with 12 years of experience at NTT Data, a technical and consulting services company, where he currently serves as Area Sales Director for Major Accounts. His professional background also includes successful tenures at Cisco as an IT Sales Executive and Reynolds & Reynolds as a Sales and Strategic Account Executive. This extensive experience in the technology sector has honed his skills in sales, business development, and strategic account management.\n\nBeyond his professional accomplishments, Greg is deeply committed to community service. He is actively involved in both Pinnacle Presbyterian Church and Christ Anglican Church, demonstrating his dedication to faith-based initiatives. Furthermore, he has chaired the NTT Charity Softball Tournament for five years, a significant undertaking that benefits the Steve Westerman Memorial Scholarship, a collaboration between the LEO Foundation and STEM for Christ. This initiative underscores his commitment to supporting education, particularly in the STEM fields.\n\nOn a personal note, Greg has been married to Ju-Leigh for 25 years (together for 32 years) and is the proud parent of Hannah, a freshman at the University of Alabama. His educational background includes an MBA in International Business from the University of St. Thomas and a BBA from New Mexico State University, providing a strong foundation for his business acumen. Greg’s combined professional success, community involvement, and dedication to family make him a valuable asset to the Leo Foundation."
+        },
+        {
+          "name": "Robb Kottman",
+          "role": "Board Member and Investment Advisor",
+          "photoUrl": "/img/board/robb-kottman.jpg",
+          "bio": "Rob is the president and director of Brenbecke, Inc. and NSS Concrete Polishing, commercial subcontractor companies he founded in 2005 and acquired in 2023, respectively. Previously, he was the vice president of a major subcontracting company based in Southern California. Rob has over 35 years of industry experience.\n\nRob is the proud father of four adult children and grandpa to one granddaughter. He’s excited for his family to grow.\n\nRob’s lifelong ambition is to live a Christ-like life, being a godly example to those he encounters. Rob is a benefactor of HOPE International Development Agency and a children’s sponsor with Compassion International.\n\nOutside of work, you will find Rob traveling with friends and family, volunteering on international mission trips, and mentoring the next generation of leaders in moral and ethical business management."
+        },
+        {
+          "name": "Dr. Jennifer Billingsley",
+          "role": "Board Member",
+          "photoUrl": "/img/board/jennifer-billingsley.jpg",
+          "bio": "Dr. Jennifer K. Billingsley is an accomplished academic and healthcare executive with more than two decades of leadership experience in higher education, nursing, and community service. She currently serves as Provost and Chief Academic Officer at United States University, where she provides strategic leadership for academic programs, accreditation, faculty development, and student success initiatives. In addition to her role as Accreditation Liaison Officer for WSCUC, she has led major institutional initiatives focused on innovation, assessment, diversity, and workforce-aligned education. She is also the Owner and CEO of VIP Wellcare, further demonstrating her entrepreneurial leadership and commitment to advancing healthcare access and quality.\n\nAs a board-certified Family Nurse Practitioner and Certified Nurse Educator, Dr. Billingsley has served in several senior academic leadership roles, including Dean of the College of Nursing and Health Sciences and Chair of the Doctor of Nursing Practice Program. She has extensive experience in organizational leadership, governance, curriculum development, and mentoring future healthcare leaders. Deeply committed to serving students and cultivating the next generation of leaders, she is passionate about creating educational environments that empower learners to achieve academic, professional, and personal success. Guided by her Christian faith, she is actively engaged in ministry and community service, including serving as a commissioned Stephen Minister and Bible study leader.\n\nDr. Billingsley’s leadership and values strongly align with the LEO Foundation’s mission to invest in future generations through leadership development, educational opportunity, mentorship, and community impact. Her lifelong commitment to student success, servant leadership, and empowering others reflects the Foundation’s focus on building confident, purpose-driven leaders who strengthen their communities through education, faith, and service."
+        },
+        {
+          "name": "Darrin Anderson",
+          "role": "Board Member",
+          "photoUrl": "/img/board/darrin-anderson.jpg",
+          "bio": "Darrin Anderson is an accomplished executive leader with more than 30 years of experience in education, organizational leadership, and community impact. Throughout his career, he has successfully led schools and multi-site organizations focused on improving outcomes for children, families, and communities through servant leadership, operational excellence, and relationship-driven collaboration.\n\nSince September 2025, Darrin has served as Chief Operating Officer of Valley Pediatric ABA, where he oversees operational growth initiatives, expansion planning, and community outreach in support of children and families receiving behavioral health services. Prior to this role, he served as General Executive Vice President of the Conductive Education Center of Arizona (CECA), helping lead the organization’s strategic planning, operational development, enrollment growth, and community partnerships during its inaugural year of operation.\n\nPrior to his work in the pediatric healthcare sector, Darrin spent more than a decade with Imagine Schools as Regional Director, overseeing operations for 14 campuses across Arizona and California serving approximately 8,500 students and 900 staff members. His leadership experience includes school start-ups, campus expansion projects, budgeting and compliance oversight, facility development, and team leadership. He is widely recognized for his ability to mentor leaders, build strong partnerships, and guide organizations through growth and change with integrity and purpose.\n\nDarrin earned both his B.S. in Elementary Education and M.Ed. in Educational Leadership and Policy Studies from University of Northern Colorado. Guided by his Christian faith, he is passionate about investing in future generations through leadership, mentorship, and service to others. Outside of his professional work, Darrin is actively involved in his church community and enjoys training in Brazilian jiu-jitsu."
+        }
+      ]
+    },
+    {
       "id": "page-faq",
       "slug": "faq",
       "title": "Scholarship FAQs",
@@ -673,7 +723,7 @@
       "title": "Contact us",
       "inNav": true,
       "summary": "Questions about an application, a gift, or a named scholarship.",
-      "body": "We are glad to help with applications, gifts, and questions about establishing a scholarship.\n\nDuring the enrollment period we answer application questions as quickly as we can, but please allow a few business days in March as the deadline approaches.",
+      "body": "We are glad to help with applications, gifts, and questions about establishing a scholarship.\n\nDuring the enrollment period we answer application questions as quickly as we can, but please allow a few business days in March as the deadline approaches.\n\nIf you are weighing a gift or a named scholarship and want to know who stands behind it, our [Board of Directors](/board) page introduces the people who govern the foundation.",
       "navLabel": "Contact"
     }
   ],

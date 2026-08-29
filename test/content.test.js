@@ -181,6 +181,62 @@ test('every recipient photo is served from this repo and exists', () => {
   }
 });
 
+// The board is real named people transcribed from /leadership-2/ on the live
+// site. A wrong name, a wrong office, or a reordered roster is worse than no
+// page at all, so the seed is pinned here rather than left to drift.
+const BOARD = [
+  ['Madeline LoConti Winney', 'Chief Executive Officer'],
+  ['Michele Simphoukham', 'Chief Financial Officer'],
+  ['Greg Sharp', 'Board Member'],
+  ['Robb Kottman', 'Board Member and Investment Advisor'],
+  ['Dr. Jennifer Billingsley', 'Board Member'],
+  ['Darrin Anderson', 'Board Member'],
+];
+
+function seedBoard() {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  return seed.pages.find((p) => p.slug === 'board');
+}
+
+test('the board page publishes every member in the live order', () => {
+  const page = seedBoard();
+  assert.ok(page, 'no board page in the seed');
+  // The client asked for it reachable from Contact, not added to the header.
+  assert.equal(page.inNav, false, 'the board page is in the main navigation');
+  assert.deepEqual(page.members.map((m) => [m.name, m.role]), BOARD);
+});
+
+// Same failure mode as the recipient portraits: a wp-content URL would 404 the
+// moment the new site took over the domain.
+test('every board photo is served from this repo and exists', () => {
+  const root = path.join(__dirname, '..');
+  const members = seedBoard().members.filter((m) => m.photoUrl);
+  assert.equal(members.length, BOARD.length, 'a board member lost their photo');
+
+  for (const m of members) {
+    assert.match(m.photoUrl, /^\/img\/board\//, `${m.name} is not served locally`);
+    for (const base of ['public', path.join('php', 'public_html')]) {
+      assert.ok(fs.existsSync(path.join(root, base, m.photoUrl)), `missing ${base}${m.photoUrl}`);
+    }
+  }
+});
+
+test('every seeded board bio fits a card once excerpted', () => {
+  for (const m of seedBoard().members) {
+    const e = content.excerpt(m.bio);
+    assert.ok(e.text.length <= 521, `${m.name}: ${e.text.length}`);
+    if (e.truncated) assert.equal(e.full, m.bio.replace(/\s+/g, ' ').trim());
+  }
+});
+
+// The board page is off the main nav by design, so the contact page is the only
+// way in. A reworded contact body must not quietly strip the link.
+test('the contact page links to the board page', () => {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  const contact = seed.pages.find((p) => p.slug === 'contact');
+  assert.match(contact.body, /\]\(\/board\)/, 'the contact page no longer links to /board');
+});
+
 // The page title is the only h1 on the page, so a lone '#' in admin copy is
 // clamped up to h2. Markdown::render() in the PHP build does the same.
 test('a body heading never renders as a second h1', () => {

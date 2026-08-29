@@ -183,6 +183,33 @@ test('editing a scholarship changes the public site immediately', async () => {
   });
 });
 
+// The board roster rides on the page record but has no field in the page form,
+// so a save rebuilds the record from the posted fields alone. applyFields()
+// spreads the existing record first, which is the only thing keeping an admin
+// edit to the copy from silently deleting six people.
+test('editing the board page in admin keeps the roster', async () => {
+  await withServer(async (base) => {
+    const cookie = await signIn(base);
+    await fetch(`${base}/admin/pages/page-board`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded', cookie, origin: base },
+      body: new URLSearchParams({
+        title: 'Board of Directors',
+        slug: 'board',
+        summary: 'Rewritten in the admin area.',
+        body: '## LEO Leadership\n\nRewritten too.',
+      }).toString(),
+      redirect: 'manual',
+    });
+
+    const body = await (await fetch(`${base}/board`)).text();
+    assert.match(body, /Rewritten in the admin area\./);
+    for (const name of ['Madeline LoConti Winney', 'Darrin Anderson', 'Dr. Jennifer Billingsley']) {
+      assert.ok(body.includes(name), `${name} was dropped by an admin save`);
+    }
+  });
+});
+
 test('cross-site posts are refused', async () => {
   await withServer(async (base) => {
     const cookie = await signIn(base);

@@ -40,8 +40,8 @@ once in `php/leo-app/views` + `php/public_html/css`, once in `views/` +
 ## Commands
 
 ```bash
-npm test                                    # 40 tests
-php php/test/run.php                        # 45 tests
+npm test                                    # 57 tests
+php php/test/run.php                        # 59 tests
 find php -name '*.php' -exec php -l {} \;   # lint
 
 ADMIN_PASSWORD='...' npm start              # Node build, :3000
@@ -239,6 +239,33 @@ recipient.** Both fields are deliberately empty on all 15 records; the views
 omit them rather than showing a guess. If the client wants "Class of 2025" or a
 per-student amount, that data has to come from them. Four bios name no specific
 award, so those recipients point at the general LEO Foundation Scholarship.
+
+The **Board of Directors page is the live `/leadership-2/` page** ("LEADERSHIP"),
+transcribed on 2026-08-29: six members, in the live order, with each office and
+bio word for word. It is seeded as a page with slug `board` and `inNav: false` —
+the client asked for it reachable from Contact, not added to the header — and
+the contact page body carries the link so `/admin` can edit it like any other
+copy. Two spots to know about:
+
+- The roster lives in a `members` array **on the page record**, not as its own
+  content type. Nothing in the page form edits it, so it survives an admin save
+  only because `applyFields()` spreads the existing record first. A test in each
+  suite posts the page form and asserts the six people are still there.
+- Michele Simphoukham's published office is **Chief Financial Officer** while her
+  own bio calls her Treasurer, and **Robb** Kottman's bio spells him Rob
+  throughout. Both are as published; do not "fix" them. The one deviation from
+  verbatim is a dropped letter in Darrin Anderson's bio ("mproving" → improving).
+
+**Board photos are served from this repo**, the same way the recipient photos
+are. All six are committed under `public/img/board/` and
+`php/public_html/img/board/` as `/img/board/<slug>.jpg`. The published portraits
+are circular gold-ringed badges matted on white at four different aspect ratios
+and with different amounts of padding, so each was cropped to the ring's
+bounding box, squared, capped at 800px and re-encoded as JPEG (1.8 MB → 0.19 MB).
+That crop is what makes the cards frame consistently — scaling the originals
+as-is left one portrait visibly smaller than its neighbour. Greg Sharp's
+published photo is a **group photo, not a headshot**; it is carried as published
+and is the obvious thing to ask the client to replace.
 
 **Recipient photos are served from this repo.** All 15 are committed under
 `public/img/recipients/` and `php/public_html/img/recipients/`, downscaled to

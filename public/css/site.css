@@ -228,6 +228,68 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .recipient .story[open] .when-open { display: inline; }
 .recipient .story[open] .story-excerpt { display: none; }
 
+/* board members — the same card as a recipient, but the published portraits
+   are circular badges already matted on white, so they sit square and centred
+   rather than filling the card in a 4:5 crop. */
+.section-head {
+  font-family: var(--serif); font-size: 1.6rem; margin: 0 0 28px;
+  display: flex; align-items: center; gap: 18px;
+}
+.section-head::after { content: ''; flex: 1; height: 1px; background: var(--rule); }
+
+.board-member { text-align: left; }
+.board-member .portrait-round {
+  /* height:auto is load-bearing for the same reason as the recipient portraits:
+     the width/height attributes apply as a presentational height and would
+     otherwise beat aspect-ratio. object-fit stays 'contain' so a later upload
+     that is not square is matted rather than cropped through someone's face. */
+  width: 100%; max-width: 210px; height: auto; aspect-ratio: 1 / 1;
+  object-fit: contain; background: #fff; border-radius: 50%;
+  /* the card is a flex column, so without this the portrait stretches full width */
+  align-self: center; margin-bottom: 18px;
+}
+.board-member .portrait-fallback {
+  display: grid; place-items: center;
+  font-family: var(--serif); font-size: 3rem; color: var(--gold);
+  background: var(--gold-wash); border: 1px solid var(--rule);
+}
+.board-member .name {
+  font-family: var(--serif); font-size: 1.3rem; margin: 0 0 4px; text-align: center;
+}
+.board-member .role {
+  color: var(--gold); font-weight: 600; font-size: .92rem;
+  margin: 0; text-align: center;
+}
+.board-member .member-contact {
+  list-style: none; margin: 10px 0 0; padding: 0;
+  text-align: center; font-size: .88rem; color: var(--ink-faint);
+}
+.board-member .member-statement {
+  margin: 18px 0 0; padding-left: 16px; border-left: 3px solid var(--gold-bright);
+  font-family: var(--serif); font-style: italic; color: var(--ink-soft);
+}
+.board-member .member-statement p { margin: 0 0 .6em; }
+.board-member .member-statement p:last-child { margin-bottom: 0; }
+
+/* A 1,993-character bio next to a 446-character one would leave one card in the
+   row several times the height of its neighbour. Same disclosure the recipient
+   stories use: excerpt by default, full text on open, no script. */
+.board-member .story { margin-top: 16px; }
+.board-member .story > summary { list-style: none; cursor: pointer; display: block; }
+.board-member .story > summary::-webkit-details-marker { display: none; }
+.board-member .story-toggle {
+  display: inline-block; margin-top: 10px;
+  color: var(--gold); font-size: .85rem; font-weight: 600;
+}
+.board-member .story > summary:hover .story-toggle { text-decoration: underline; }
+.board-member .story .when-open,
+.board-member .story[open] .when-shut { display: none; }
+.board-member .story[open] .when-open { display: inline; }
+.board-member .story[open] .story-excerpt { display: none; }
+.board-member .story-excerpt,
+.board-member .story-full p { margin: 0 0 .8em; color: var(--ink-soft); font-size: .95rem; }
+.board-member .story-full p:last-child { margin-bottom: 0; }
+
 .year-head {
   display: flex; align-items: center; gap: 18px; margin: 48px 0 24px;
   font-family: var(--serif); font-size: 1.6rem;
