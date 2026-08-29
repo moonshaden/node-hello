@@ -292,3 +292,21 @@ test('the homepage renders the slider and the LEO pillars', async () => {
     assert.match(body, /js\/site\.js/, 'the slider script is loaded');
   });
 });
+
+// The header carried a CSS placeholder mark for months. Now that real artwork
+// is in the repo, nothing should render the site's identity from type again.
+test('the real lockup and favicons are served, not a placeholder', async () => {
+  await withServer(async (base) => {
+    const home = await (await fetch(`${base}/`)).text();
+    assert.match(home, /img\/brand\/leo-lockup-white-trim\.png/, 'header lockup');
+    assert.match(home, /apple-touch-icon/, 'apple touch icon');
+    assert.match(home, /favicon-32\.png/, 'png favicon');
+    assert.doesNotMatch(home, /<span class="mark">LEO<\/span>/, 'placeholder is gone');
+
+    for (const asset of ['/img/brand/leo-lockup-white-trim.png',
+                         '/img/brand/leo-lion-white.png',
+                         '/img/brand/favicon-180.png']) {
+      assert.equal((await fetch(`${base}${asset}`)).status, 200, asset);
+    }
+  });
+});

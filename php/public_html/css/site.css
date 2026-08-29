@@ -51,6 +51,34 @@ img { max-width: 100%; display: block; }
   text-transform: uppercase; color: var(--gold); margin-bottom: .75rem;
 }
 
+/* ---------- brand marks ----------
+   The lockup is a wide raster with its own baked-in spacing, so it is sized by
+   height and left to find its own width. width/height attributes are on the
+   img so the header does not reflow when it loads. */
+.wordmark img { height: 40px; width: auto; display: block; }
+.foot-mark { height: 38px; width: auto; margin-bottom: 16px; }
+
+@media (max-width: 780px) {
+  .wordmark img { height: 32px; }
+}
+
+/* The lion is a near-white line drawing published as a watermark. Recovered to
+   transparency, it is used the same way here: a trace behind a navy band,
+   never at a size or contrast that competes with the figures in front of it. */
+.impact { position: relative; }
+.impact::after {
+  content: '';
+  position: absolute; right: -40px; top: 50%; transform: translateY(-50%);
+  width: min(360px, 34vw); aspect-ratio: 368 / 433;
+  background: url('../img/brand/leo-lion-white.png') no-repeat center / contain;
+  opacity: .16; pointer-events: none;
+}
+.impact > .wrap { position: relative; z-index: 1; }
+
+@media (max-width: 900px) {
+  .impact::after { display: none; }   /* nothing to spare behind the panels */
+}
+
 /* ---------- header ---------- */
 
 .masthead { background: var(--ink); color: #fff; }
@@ -60,15 +88,6 @@ img { max-width: 100%; display: block; }
   padding-top: 18px; padding-bottom: 18px; flex-wrap: wrap;
 }
 .wordmark { display: flex; align-items: center; gap: 12px; }
-.wordmark .mark {
-  width: 44px; height: 44px; flex: none; border-radius: 50%;
-  background: linear-gradient(150deg, var(--gold-bright), var(--gold));
-  color: var(--ink); font-family: var(--serif); font-size: 1.25rem; font-weight: 700;
-  display: grid; place-items: center; letter-spacing: .02em;
-}
-.wordmark .name { font-family: var(--serif); font-size: 1.3rem; line-height: 1.1; }
-.wordmark .tag { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: #a9bccd; }
-
 .nav { margin-left: auto; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 .nav a { font-size: .95rem; padding: 4px 0; border-bottom: 2px solid transparent; }
 .nav a:hover, .nav a.is-current { border-bottom-color: var(--gold-bright); color: #fff; }

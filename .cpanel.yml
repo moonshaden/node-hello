@@ -24,3 +24,4 @@ deployment:
     - /bin/cp -R php/public_html/img/. $DEPLOYPATH/public_html/img/
     - /bin/cp php/public_html/index.php $DEPLOYPATH/public_html/index.php
     - /bin/cp php/public_html/.htaccess $DEPLOYPATH/public_html/.htaccess
+    - /bin/cp php/public_html/favicon.ico $DEPLOYPATH/public_html/favicon.ico

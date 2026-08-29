@@ -6,6 +6,11 @@
 <title><?= e($title) ?><?= $title === ($site['name'] ?? '') ? '' : ' — ' . e($site['name'] ?? '') ?></title>
 <meta name="description" content="<?= e($description ?? ($site['mission'] ?? $site['tagline'] ?? '')) ?>">
 <link rel="stylesheet" href="<?= e($basePath) ?>/css/site.css">
+<link rel="icon" href="<?= e($basePath) ?>/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="<?= e($basePath) ?>/img/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="<?= e($basePath) ?>/img/brand/favicon-512.png">
+<link rel="apple-touch-icon" href="<?= e($basePath) ?>/img/brand/favicon-180.png">
+<meta name="theme-color" content="#10263d">
 </head>
 <body>
 
@@ -26,12 +31,11 @@
 
 <header class="masthead">
   <div class="wrap masthead-inner">
-    <a class="wordmark" href="<?= e($basePath) ?>/">
-      <span class="mark">LEO</span>
-      <span>
-        <span class="name"><?= e($site['name'] ?? '') ?></span><br>
-        <span class="tag"><?= e($site['tagline'] ?? '') ?></span>
-      </span>
+    <a class="wordmark" href="<?= e($basePath) ?>/" aria-label="<?= e($site['name'] ?? '') ?> home">
+      <!-- The lockup already reads Leadership - Education - Opportunity, so the
+           tagline is not repeated beside it. -->
+      <img src="<?= e(link_url('/img/brand/leo-lockup-white-trim.png', $basePath)) ?>"
+           alt="<?= e($site['name'] ?? '') ?>" width="679" height="146">
     </a>
     <nav class="nav">
       <a href="<?= e($basePath) ?>/scholarships" class="<?= str_starts_with($currentPath, '/scholarships') ? 'is-current' : '' ?>">Scholarships</a>
