@@ -32,10 +32,14 @@
 <header class="masthead">
   <div class="wrap masthead-inner">
     <a class="wordmark" href="<?= e($basePath) ?>/" aria-label="<?= e($site['name'] ?? '') ?> home">
-      <!-- The lockup already reads Leadership - Education - Opportunity, so the
-           tagline is not repeated beside it. -->
-      <img src="<?= e(link_url('/img/brand/leo-lockup-white-trim.png', $basePath)) ?>"
-           alt="<?= e($site['name'] ?? '') ?>" width="679" height="146">
+      <!-- The lion is the mark; the name is set in type rather than shipped as a
+           raster, so it stays sharp at any size and can be restyled in CSS. -->
+      <img class="wordmark-lion" src="<?= e(link_url('/img/brand/leo-lion-gold-solid.png', $basePath)) ?>"
+           alt="" aria-hidden="true" width="368" height="433">
+      <span class="wordmark-type">
+        <span class="wordmark-name"><?= e($site['name'] ?? '') ?></span>
+        <span class="wordmark-strap">Leadership &middot; Education &middot; Opportunity</span>
+      </span>
     </a>
     <nav class="nav">
       <a href="<?= e($basePath) ?>/scholarships" class="<?= str_starts_with($currentPath, '/scholarships') ? 'is-current' : '' ?>">Scholarships</a>

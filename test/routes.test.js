@@ -298,12 +298,15 @@ test('the homepage renders the slider and the LEO pillars', async () => {
 test('the real lockup and favicons are served, not a placeholder', async () => {
   await withServer(async (base) => {
     const home = await (await fetch(`${base}/`)).text();
-    assert.match(home, /img\/brand\/leo-lockup-white-trim\.png/, 'header lockup');
+    assert.match(home, /class="wordmark-lion"[^>]*leo-lion-gold-solid\.png/, 'the lion is the masthead mark');
+    assert.match(home, /class="wordmark-name"/, 'the name is set in type, not shipped as a raster');
+    assert.match(home, /foot-mark[^>]*leo-lockup-white-trim\.png/, 'the footer keeps the full lockup');
     assert.match(home, /apple-touch-icon/, 'apple touch icon');
     assert.match(home, /favicon-32\.png/, 'png favicon');
     assert.doesNotMatch(home, /<span class="mark">LEO<\/span>/, 'placeholder is gone');
 
-    for (const asset of ['/img/brand/leo-lockup-white-trim.png',
+    for (const asset of ['/img/brand/leo-lion-gold-solid.png',
+                         '/img/brand/leo-lockup-white-trim.png',
                          '/img/brand/leo-lion-white.png',
                          '/img/brand/favicon-180.png']) {
       assert.equal((await fetch(`${base}${asset}`)).status, 200, asset);
