@@ -210,6 +210,30 @@ six or more headings a jump-to index and an anchor per heading
 (`Markdown::renderSections()` / `markdown.renderSections()`); the id rules are
 duplicated across the builds and a test asserts they agree.
 
+The **Giving page is the live `/ways-to-give/` page**, transcribed on
+2026-08-29: eleven ways to give, in the live order, with the copy word for word.
+The live site publishes them twice, as two Avada tab widgets on the same page —
+one desktop, one `fusion-no-medium-visibility fusion-no-large-visibility`
+mobile-only. The two are *not* the same: the desktop copy carries a check-payable
+line under Annual funds and an estate-plans paragraph under Set up scholarship
+fund; the mobile copy carries the per-way Aplos donate buttons and drops both
+paragraphs. The seeded page is the **union**, so nothing the site publishes is
+lost. `/donate/` (the header's Donate link) is a third, staler copy of the same
+eleven tabs with no donate buttons; `/give/` and `/leo-events/` are untouched
+Avada demo boilerplate, Lorem ipsum and all — do not seed from them.
+
+**The live donate processor is Aplos, not Mightycause.** `site.donateUrl` pointed
+at `mightycause.com/organization/LEOFoundation`, which appears nowhere on the live
+site; it is now `https://www.aplos.com/aws/give/LEOFoundation/Donation`. Three ways
+to give have their own Aplos endpoints, carried in the body: `/donate-now`
+(existing scholarship), `/fieldorstudy` (field or study) and `/donate` (set up a
+fund). Re-check these with the client before cutover — they are the money path.
+
+**EIN 20-4879525 is confirmed** against the live footer, which reads "Leo
+Foundation is a 501(c)3 organization. Federal Identification Number: (EIN)
+20-4879525". The giving page's own tax claim is the unqualified "And, it's
+tax-deductible", so the page says that rather than "to the extent allowed by law".
+
 **The live site publishes no award year and no dollar amount for any
 recipient.** Both fields are deliberately empty on all 15 records; the views
 omit them rather than showing a guess. If the client wants "Class of 2025" or a
@@ -243,9 +267,13 @@ Nothing on the site loads an image from the WordPress host any more.
    "3,000 / $5 million" wording appears nowhere. Left unchanged deliberately:
    picking one would be guessing which set the client considers current. Ask
    them, then make the About copy and the impact band agree.
-6. Old-URL redirect map verification before cutover. The scholarship slugs now
+6. **Confirm the four Aplos giving links with the client.** The live site sends
+   donors to `aplos.com/aws/give/LEOFoundation/{Donation,donate-now,fieldorstudy,donate}`.
+   Those are transcribed as published, but a dead giving link is the one bug that
+   costs money, so have the client click each before cutover.
+7. Old-URL redirect map verification before cutover. The scholarship slugs now
    match the WordPress ones, so most of the map should be one-to-one.
-7. ~~No CI~~ — **done.** `.github/workflows/deploy.yml` runs both suites and the
+8. ~~No CI~~ — **done.** `.github/workflows/deploy.yml` runs both suites and the
    PHP lint on every push, which catches the seed-drift class of bug.
 
 ## Deploying
