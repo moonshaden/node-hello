@@ -54,7 +54,10 @@
       <%- include('partials/board-card', { member: lead, lead: true }) %>
     <% } %>
     <% if (rest.length) { %>
-      <div class="grid grid-3"<%= lead ? ' style="margin-top:28px"' : '' %>>
+      <%# Unescaped on purpose: this interpolation builds an attribute, and the
+          escaping form turns its quotes into entities, which yields a broken
+          attribute and silently drops the rule in this build only. %>
+      <div class="grid grid-3"<%- lead ? ' style="margin-top:28px"' : '' %>>
         <% rest.forEach(function (member) { %>
           <%- include('partials/board-card', { member, lead: false }) %>
         <% }) %>

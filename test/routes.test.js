@@ -210,6 +210,18 @@ test('editing the board page in admin keeps the roster', async () => {
   });
 });
 
+// The lead row's spacing is applied by interpolating a style attribute, and
+// EJS's escaping form turns its quotes into entities -- a broken attribute that
+// drops the rule in the Node build only, while PHP renders it fine. The two
+// builds looked identical in the seed and differed in the browser.
+test('the board grid spacing renders as a real attribute', async () => {
+  await withServer(async (base) => {
+    const body = await (await fetch(`${base}/board`)).text();
+    assert.match(body, /class="grid grid-3" style="margin-top:28px"/);
+    assert.ok(!body.includes('style=&#34;'), 'an attribute was HTML-escaped into entities');
+  });
+});
+
 test('cross-site posts are refused', async () => {
   await withServer(async (base) => {
     const cookie = await signIn(base);
