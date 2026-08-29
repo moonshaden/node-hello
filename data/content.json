@@ -60,6 +60,64 @@
       "showWhen": "closed"
     }
   ],
+  "slides": [
+    {
+      "id": "slide-programs-partnerships",
+      "image": "/img/slides/programs-partnerships.jpg",
+      "alt": "Students in a workshop leaning over the red shell of a car they have built, one pointing out a fitting to another.",
+      "heading": "PROGRAMS & PARTNERSHIPS",
+      "subheading": "",
+      "body": "",
+      "ctaLabel": "",
+      "ctaUrl": "",
+      "order": 1
+    },
+    {
+      "id": "slide-scholarship-faqs",
+      "image": "/img/slides/scholarship-faqs.jpg",
+      "alt": "Two students studying at a library table with a laptop and notebooks while others browse the shelves behind them.",
+      "heading": "SCHOLARSHIP FAQ's",
+      "subheading": "",
+      "body": "",
+      "ctaLabel": "",
+      "ctaUrl": "/faq",
+      "order": 2
+    },
+    {
+      "id": "slide-leo-foundation-news",
+      "image": "/img/slides/leo-foundation-news.jpg",
+      "alt": "Graduates in black gowns throwing their mortarboards into the air in a university atrium.",
+      "heading": "LEO FOUNDATION NEWS",
+      "subheading": "",
+      "body": "",
+      "ctaLabel": "",
+      "ctaUrl": "",
+      "order": 3
+    }
+  ],
+  "pillars": [
+    {
+      "id": "pillar-leadership",
+      "word": "Leadership",
+      "tagline": "",
+      "body": "At LEO Foundation, we believe leadership support directly impacts future careers and success. Our programs empower the next generation of leaders by helping students develop essential skills such as analyzing their own strengths and weaknesses, setting goals, and having the confidence, motivation, and ability to carry them out. Graduates are challenged to become individuals whose skills, integrity and sense of purpose distinguish them in the workplace and in the world.",
+      "order": 1
+    },
+    {
+      "id": "pillar-education",
+      "word": "Education",
+      "tagline": "",
+      "body": "Through our scholarship programs, higher-educational experiences are more accessible to students who might not otherwise have the opportunity to pursue their academic and career goals. In addition, with financial support through scholarships, students have a greater academic focus and an increased chance of staying in school and successfully graduating. The real measure of LEO Foundation’s success lies in the outcome of our students.",
+      "order": 2
+    },
+    {
+      "id": "pillar-opportunity",
+      "word": "Opportunity",
+      "tagline": "",
+      "body": "LEO Foundation has a long history of connecting students to a wide variety of growth opportunities, such as educational and athletic programming and leadership and mentorship development. Linking today’s leaders with the leaders of tomorrow is a future investment that builds strong communities, transforms individuals, while developing next generations of philanthropists.",
+      "order": 3
+    }
+  ],
   "scholarships": [
     {
       "id": "sch-leo",

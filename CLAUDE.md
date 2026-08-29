@@ -40,8 +40,8 @@ once in `php/leo-app/views` + `php/public_html/css`, once in `views/` +
 ## Commands
 
 ```bash
-npm test                                    # 57 tests
-php php/test/run.php                        # 59 tests
+npm test                                    # 63 tests
+php php/test/run.php                        # 64 tests
 find php -name '*.php' -exec php -l {} \;   # lint
 
 ADMIN_PASSWORD='...' npm start              # Node build, :3000
@@ -275,6 +275,47 @@ base path so it survives the `/~leofoundationusa` temporary URL. `.cpanel.yml`
 copies the directory on deploy — if you add a photo, check it still does.
 Nothing on the site loads an image from the WordPress host any more.
 
+**The homepage hero is a `slides` array, seeded from the live hero on
+2026-08-29.** The live homepage publishes the same three-item hero *twice*, the
+way `/ways-to-give/` publishes its tabs twice:
+
+- `fusion-builder-row-4`, three full-bleed panels, desktop only
+  (`fusion-no-small-visibility`). Headings PROGRAMS / SCHOLARSHIP FAQ's / LEO
+  NEWS over `pexels-jeswin-5265284-scaled.jpg`, `students-in-library.jpg`,
+  `graduation.jpg`.
+- `fusion-builder-row-5`, a **LayerSlider** (`ls-wp-container`, 240×300,
+  `fusion-no-medium-visibility fusion-no-large-visibility`), mobile only. Same
+  three destinations, fuller headings, and two different photographs —
+  `Basketball.png` (children with a basketball, square) and
+  `pexels-pixabay-267885-1.jpg` (an alternate mortarboard-toss).
+
+There is **no Avada fusion-slider and no Revolution slider**: `#sliders-container`
+renders empty. The LayerSlider is the only slider on the page.
+
+The seed is the union: the slider's fuller headings over the panels' larger
+full-bleed photographs. Nothing published has body copy, a subheading, or a
+button — the whole slide is the link — so `subheading`, `body` and `ctaLabel` are
+empty strings on every slide and a component should make the slide itself
+clickable. **`ctaUrl` is set only where this site has somewhere to send you:**
+`/scholarship-faqs/` maps to `/faq`, but `/programs-partnerships/` and
+`/mission-moments-newsletter/` are real live pages that have not been
+transcribed, so those two slides link nowhere rather than 404. A test in each
+suite asserts no slide points at a path this site does not serve.
+
+Slide images are committed to `public/img/slides/` and
+`php/public_html/img/slides/` as `/img/slides/<slug>.jpg`, capped at 2000px wide
+and re-encoded as JPEG — 0.78 MB of originals down to **0.61 MB** for all three.
+The live media library publishes **no alt text on any image**, so the alt in the
+seed was written here from the photograph.
+
+**The three LEO write-ups are a `pillars` array.** The name is an acronym and
+`fusion-builder-row-21` on the homepage publishes a paragraph for each word —
+Leadership, Education, Opportunity, in that order. That row is the *only* place
+they appear; `/who-we-are-2/` and `/what-we-do/` do not carry them. Each has a
+circled Font Awesome icon (`fa-user-tie`, `fa-book-reader`, `fa-hands-helping`)
+and **no tagline** — the live markup is icon, word, one paragraph — so `tagline`
+is an empty string on all three. Do not compose one.
+
 ## Open work
 
 1. ~~Recipients are empty~~ — **done.** All 15 published recipients are loaded,
@@ -298,9 +339,14 @@ Nothing on the site loads an image from the WordPress host any more.
    donors to `aplos.com/aws/give/LEOFoundation/{Donation,donate-now,fieldorstudy,donate}`.
    Those are transcribed as published, but a dead giving link is the one bug that
    costs money, so have the client click each before cutover.
-7. Old-URL redirect map verification before cutover. The scholarship slugs now
+7. **Two homepage slides link nowhere.** `/programs-partnerships/` and
+   `/mission-moments-newsletter/` are published live and are where two of the
+   three hero slides point, but neither page is transcribed, so their `ctaUrl`
+   is empty. Seed those two pages the way the FAQ and Giving pages were seeded,
+   then fill the slides' `ctaUrl` in.
+8. Old-URL redirect map verification before cutover. The scholarship slugs now
    match the WordPress ones, so most of the map should be one-to-one.
-8. ~~No CI~~ — **done.** `.github/workflows/deploy.yml` runs both suites and the
+9. ~~No CI~~ — **done.** `.github/workflows/deploy.yml` runs both suites and the
    PHP lint on every push, which catches the seed-drift class of bug.
 
 ## Deploying

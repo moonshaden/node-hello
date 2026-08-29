@@ -229,6 +229,77 @@ test('every seeded board bio fits a card once excerpted', () => {
   }
 });
 
+// The homepage hero is published twice on the live site: three full-bleed
+// panels for desktop and a mobile-only LayerSlider. Both carry the same three
+// destinations, so the seed is the union — the slider's fuller headings over
+// the panels' larger photographs. Order is the live order.
+const SLIDES = ['PROGRAMS & PARTNERSHIPS', "SCHOLARSHIP FAQ's", 'LEO FOUNDATION NEWS'];
+
+function seedSlides() {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  return seed.slides;
+}
+
+test('the homepage slider carries every live slide, in the live order', () => {
+  const slides = seedSlides();
+  assert.deepEqual(slides.map((s) => s.heading), SLIDES);
+  assert.deepEqual(slides.map((s) => s.order), [1, 2, 3]);
+});
+
+// A slider component reads the same keys off every slide. A slide that drops
+// one because the live site published nothing there would read as undefined
+// rather than empty, so the shape is uniform and the keys are always strings.
+test('every slide carries the same keys', () => {
+  const keys = ['id', 'image', 'alt', 'heading', 'subheading', 'body', 'ctaLabel', 'ctaUrl', 'order'];
+  for (const s of seedSlides()) {
+    assert.deepEqual(Object.keys(s), keys, s.id);
+    for (const k of keys.filter((x) => x !== 'order')) {
+      assert.equal(typeof s[k], 'string', `${s.id}.${k}`);
+    }
+    assert.ok(s.alt.length > 20, `${s.id} has no real alt text`);
+  }
+});
+
+// Same failure mode as the recipient and board photos: a wp-content URL would
+// 404 the moment the new site took over the domain.
+test('every slide image is served from this repo and exists', () => {
+  const root = path.join(__dirname, '..');
+  const slides = seedSlides();
+  assert.equal(slides.length, SLIDES.length, 'a slide lost its image');
+
+  for (const s of slides) {
+    assert.match(s.image, /^\/img\/slides\//, `${s.id} is not served locally`);
+    for (const base of ['public', path.join('php', 'public_html')]) {
+      assert.ok(fs.existsSync(path.join(root, base, s.image)), `missing ${base}${s.image}`);
+    }
+  }
+});
+
+// A slide may link nowhere — two of the three live destinations have no page on
+// this site yet — but it must never link somewhere that 404s.
+test('no slide links to a page this site does not serve', () => {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  const served = new Set(['/', '/scholarships', '/recipients', ...seed.pages.map((p) => `/${p.slug}`)]);
+  for (const s of seed.slides) {
+    if (!s.ctaUrl) continue;
+    assert.ok(served.has(s.ctaUrl), `${s.id} links to ${s.ctaUrl}, which nothing serves`);
+  }
+});
+
+// LEO is an acronym and the live homepage publishes a write-up for each word.
+// The words carry the brand, so a reordered or reworded set is a real change.
+test('the LEO pillars spell out Leadership, Education, Opportunity', () => {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  assert.deepEqual(seed.pillars.map((p) => p.word), ['Leadership', 'Education', 'Opportunity']);
+  assert.deepEqual(seed.pillars.map((p) => p.order), [1, 2, 3]);
+  assert.equal(seed.pillars.map((p) => p.word[0]).join(''), 'LEO');
+  for (const p of seed.pillars) {
+    assert.deepEqual(Object.keys(p), ['id', 'word', 'tagline', 'body', 'order'], p.id);
+    // The live site publishes the word and one paragraph, no tagline.
+    assert.ok(p.body.length > 300, `${p.word} lost its write-up`);
+  }
+});
+
 // The board page is off the main nav by design, so the contact page is the only
 // way in. A reworded contact body must not quietly strip the link.
 test('the contact page links to the board page', () => {

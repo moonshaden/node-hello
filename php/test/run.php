@@ -395,6 +395,81 @@ test('every seeded board bio fits a card once excerpted', function () {
     }
 });
 
+// The homepage hero is published twice on the live site: three full-bleed
+// panels for desktop and a mobile-only LayerSlider. Both carry the same three
+// destinations, so the seed is the union — the slider's fuller headings over
+// the panels' larger photographs. Order is the live order.
+test('the homepage slider carries every live slide, in the live order', function () {
+    $seed = json_decode(file_get_contents(dirname(__DIR__, 2) . '/data/content.json'), true);
+    $headings = array_map(fn ($s) => $s['heading'], $seed['slides']);
+    is_same($headings, ['PROGRAMS & PARTNERSHIPS', "SCHOLARSHIP FAQ's", 'LEO FOUNDATION NEWS'], 'the slider changed');
+    is_same(array_map(fn ($s) => $s['order'], $seed['slides']), [1, 2, 3], 'the slides reordered');
+});
+
+// A slider component reads the same keys off every slide. A slide that dropped
+// one because the live site published nothing there would read as null rather
+// than empty, so the shape is uniform and the keys are always strings.
+test('every slide carries the same keys', function () {
+    $seed = json_decode(file_get_contents(dirname(__DIR__, 2) . '/data/content.json'), true);
+    $keys = ['id', 'image', 'alt', 'heading', 'subheading', 'body', 'ctaLabel', 'ctaUrl', 'order'];
+    foreach ($seed['slides'] as $s) {
+        is_same(array_keys($s), $keys, $s['id'] . ' has the wrong keys');
+        foreach ($keys as $k) {
+            if ($k === 'order') {
+                continue;
+            }
+            ok(is_string($s[$k]), $s['id'] . '.' . $k . ' is not a string');
+        }
+        ok(mb_strlen($s['alt']) > 20, $s['id'] . ' has no real alt text');
+    }
+});
+
+// Same failure mode as the recipient and board photos: a wp-content URL would
+// 404 the moment the new site took over the domain.
+test('every slide image is served from this repo and exists', function () {
+    $root = dirname(__DIR__, 2);
+    $seed = json_decode(file_get_contents($root . '/data/content.json'), true);
+    ok(count($seed['slides']) === 3, 'a slide went missing');
+
+    foreach ($seed['slides'] as $s) {
+        ok(str_starts_with($s['image'], '/img/slides/'), $s['id'] . ' is not served locally');
+        foreach (['public', 'php/public_html'] as $base) {
+            ok(is_file($root . '/' . $base . $s['image']), 'missing ' . $base . $s['image']);
+        }
+    }
+});
+
+// A slide may link nowhere — two of the three live destinations have no page on
+// this site yet — but it must never link somewhere that 404s.
+test('no slide links to a page this site does not serve', function () {
+    $seed = json_decode(file_get_contents(dirname(__DIR__, 2) . '/data/content.json'), true);
+    $served = ['/', '/scholarships', '/recipients'];
+    foreach ($seed['pages'] as $page) {
+        $served[] = '/' . $page['slug'];
+    }
+    foreach ($seed['slides'] as $s) {
+        if ($s['ctaUrl'] === '') {
+            continue;
+        }
+        ok(in_array($s['ctaUrl'], $served, true), $s['id'] . ' links to ' . $s['ctaUrl'] . ', which nothing serves');
+    }
+});
+
+// LEO is an acronym and the live homepage publishes a write-up for each word.
+// The words carry the brand, so a reordered or reworded set is a real change.
+test('the LEO pillars spell out Leadership, Education, Opportunity', function () {
+    $seed = json_decode(file_get_contents(dirname(__DIR__, 2) . '/data/content.json'), true);
+    $words = array_map(fn ($p) => $p['word'], $seed['pillars']);
+    is_same($words, ['Leadership', 'Education', 'Opportunity'], 'the pillars changed');
+    is_same(array_map(fn ($p) => $p['order'], $seed['pillars']), [1, 2, 3], 'the pillars reordered');
+    is_same(implode('', array_map(fn ($w) => $w[0], $words)), 'LEO', 'the pillars no longer spell LEO');
+    foreach ($seed['pillars'] as $p) {
+        is_same(array_keys($p), ['id', 'word', 'tagline', 'body', 'order'], $p['id'] . ' has the wrong keys');
+        // The live site publishes the word and one paragraph, no tagline.
+        ok(mb_strlen($p['body']) > 300, $p['word'] . ' lost its write-up');
+    }
+});
+
 // The board page is off the main nav by design, so the contact page is the only
 // way in. A reworded contact body must not quietly strip the link.
 test('the contact page links to the board page', function () {
