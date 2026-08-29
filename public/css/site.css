@@ -79,6 +79,34 @@ img { max-width: 100%; display: block; }
   .impact::after { display: none; }   /* nothing to spare behind the panels */
 }
 
+/* The lion again, on the two other navy grounds. Restraint is the whole point:
+   one trace per band, never behind body copy, and gone on narrow screens where
+   there is no margin to spare. A watermark on every surface stops reading as a
+   watermark and starts reading as noise. */
+.page-head { position: relative; overflow: hidden; }
+.page-head::after {
+  content: '';
+  position: absolute; right: -30px; bottom: -60px;
+  width: min(300px, 30vw); aspect-ratio: 368 / 433;
+  background: url('../img/brand/leo-lion-white.png') no-repeat center / contain;
+  opacity: .12; pointer-events: none;
+}
+.page-head > .wrap { position: relative; z-index: 1; }
+
+.foot { position: relative; overflow: hidden; }
+.foot::after {
+  content: '';
+  position: absolute; right: 2%; top: 50%; transform: translateY(-50%);
+  width: min(240px, 22vw); aspect-ratio: 368 / 433;
+  background: url('../img/brand/leo-lion-white.png') no-repeat center / contain;
+  opacity: .07; pointer-events: none;
+}
+.foot > .wrap { position: relative; z-index: 1; }
+
+@media (max-width: 900px) {
+  .page-head::after, .foot::after { display: none; }
+}
+
 /* ---------- header ---------- */
 
 .masthead { background: var(--ink); color: #fff; }
