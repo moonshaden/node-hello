@@ -4,7 +4,7 @@ Replaces the WordPress site at leofoundationusa.org. No WordPress, no database,
 no build step. Read this before changing anything — most of it is here because
 something bit us.
 
-Branch for all work: `claude/leo-foundation-site-redesign-knr6vv`. PR #1 (draft).
+Branch for all work: `claude/leo-foundation-site-redesign-knr6vv`. PR #3 (draft).
 
 ## What the client asked for
 
