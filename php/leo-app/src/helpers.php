@@ -16,6 +16,12 @@ function md(?string $value): string
     return Leo\Markdown::render($value);
 }
 
+/** Markdown plus its anchored headings — for a page long enough to need an index. */
+function md_sections(?string $value): array
+{
+    return Leo\Markdown::renderSections($value);
+}
+
 /**
  * Prefix a stored link with the site's mount point, if it is internal.
  *

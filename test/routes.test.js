@@ -61,6 +61,25 @@ test('every public page renders', async () => {
   });
 });
 
+// Thirteen questions in one prose column read as a wall, so the FAQ opens on a
+// jump-to index. The index is only worth its space on a long page, so a short
+// one — About has two headings — must not sprout one.
+test('the FAQ carries a jump-to index and an anchor per question', async () => {
+  await withServer(async (base) => {
+    const faq = await (await fetch(`${base}/faq`)).text();
+    assert.match(faq, /class="page-index"/);
+
+    const ids = [...faq.matchAll(/<h2 id="([^"]+)">/g)].map((m) => m[1]);
+    assert.equal(ids.length, 13);
+    for (const id of ids) {
+      assert.ok(faq.includes(`href="#${id}"`), `no index entry links to #${id}`);
+    }
+
+    const about = await (await fetch(`${base}/about`)).text();
+    assert.ok(!about.includes('class="page-index"'), 'a short page grew an index');
+  });
+});
+
 test('a scholarship detail page renders and unknown slugs 404', async () => {
   await withServer(async (base) => {
     const found = await fetch(`${base}/scholarships/leo-foundation-scholarship`);

@@ -7,9 +7,26 @@
   </div>
 </div>
 
+<?php
+// Past this many questions a single prose column reads as a wall, so the page
+// gets a jump-to index and every heading an anchor. Mirrored in page.ejs.
+$indexFrom = 6;
+$article = md_sections($page['body'] ?? '');
+$index = count($article['headings']) >= $indexFrom ? $article['headings'] : [];
+?>
 <section class="band">
   <div class="wrap split">
-    <div class="prose"><?= md($page['body'] ?? '') ?></div>
+    <div class="prose">
+      <?php if ($index !== []): ?>
+      <nav class="page-index" aria-label="On this page">
+        <p class="eyebrow">On this page</p>
+        <ol>
+          <?php foreach ($index as $heading): ?><li><a href="#<?= e($heading['id']) ?>"><?= $heading['html'] ?></a></li><?php endforeach; ?>
+        </ol>
+      </nav>
+      <?php endif; ?>
+      <?= $article['html'] ?>
+    </div>
     <?php $app->partial('page-aside'); ?>
   </div>
 </section>

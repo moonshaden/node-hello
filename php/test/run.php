@@ -489,10 +489,53 @@ test('stored links are prefixed only when internal', function () {
 echo "\nMarkdown\n";
 
 test('headings, lists and emphasis render', function () {
-    ok(str_contains(Markdown::render('## Who can apply'), '<h3>Who can apply</h3>'));
+    ok(str_contains(Markdown::render('## Who can apply'), '<h2>Who can apply</h2>'));
+    ok(str_contains(Markdown::render('### Deadlines'), '<h3>Deadlines</h3>'));
     ok(str_contains(Markdown::render("- One\n- Two"), '<ul>'));
     ok(str_contains(Markdown::render('**bold**'), '<strong>bold</strong>'));
     ok(str_contains(Markdown::render('Plain text'), '<p>Plain text</p>'));
+});
+
+// The page title is the only h1 on the page, so a lone '#' in admin copy is
+// clamped up to h2. The Node build's render() does the same.
+test('a body heading never renders as a second h1', function () {
+    $rendered = Markdown::render('# Top level');
+    ok(!str_contains($rendered, '<h1'), 'body copy produced an h1');
+    ok(str_contains($rendered, '<h2>Top level</h2>'));
+});
+
+test('renderSections anchors each heading and lists them in order', function () {
+    $result = Markdown::renderSections("## How do I apply?\n\nBody.\n\n## What next?\n\nMore.");
+    is_same(array_column($result['headings'], 'id'), ['how-do-i-apply', 'what-next'], 'ids');
+    ok(str_contains($result['html'], '<h2 id="how-do-i-apply">How do I apply?</h2>'));
+    ok(str_contains($result['html'], '<h2 id="what-next">What next?</h2>'));
+});
+
+test('repeated headings get distinct ids', function () {
+    $result = Markdown::renderSections("## Same\n\n## Same\n\n## Same");
+    is_same(array_column($result['headings'], 'id'), ['same', 'same-2', 'same-3'], 'ids');
+});
+
+// The FAQ was transcribed verbatim from the live WordPress page, which carries
+// thirteen questions. Both builds must anchor them identically or a link into
+// one build's FAQ lands nowhere in the other.
+test('the seeded FAQ carries every question, anchored', function () {
+    $seed = json_decode(file_get_contents(__DIR__ . '/../leo-app/data/content.json'), true);
+    $faq = null;
+    foreach ($seed['pages'] as $page) {
+        if ($page['slug'] === 'faq') {
+            $faq = $page;
+        }
+    }
+    ok($faq !== null, 'no faq page in the seed');
+
+    $result = Markdown::renderSections($faq['body']);
+    is_same(count($result['headings']), 13, 'question count');
+    is_same($result['headings'][0]['id'], 'how-do-i-know-if-i-am-eligible-to-apply', 'first anchor');
+    is_same($result['headings'][12]['id'], 'how-is-my-scholarship-awarded', 'last anchor');
+    foreach ($result['headings'] as $heading) {
+        ok($heading['id'] !== '', 'a question produced an empty anchor');
+    }
 });
 
 test('html in admin copy is escaped, not executed', function () {

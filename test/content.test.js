@@ -8,6 +8,7 @@ const path = require('node:path');
 
 const { Store } = require('../src/store');
 const content = require('../src/content');
+const markdown = require('../src/markdown');
 
 const OPEN_DAY = '2026-01-15';
 const CLOSED_DAY = '2026-08-21';
@@ -178,6 +179,41 @@ test('every recipient photo is served from this repo and exists', () => {
       assert.ok(fs.existsSync(file), `missing ${base}${r.photoUrl}`);
     }
   }
+});
+
+// The page title is the only h1 on the page, so a lone '#' in admin copy is
+// clamped up to h2. Markdown::render() in the PHP build does the same.
+test('a body heading never renders as a second h1', () => {
+  const html = markdown.render('# Top level');
+  assert.ok(!html.includes('<h1'), 'body copy produced an h1');
+  assert.match(html, /<h2>Top level<\/h2>/);
+});
+
+test('renderSections anchors each heading and lists them in order', () => {
+  const { html, headings } = markdown.renderSections('## How do I apply?\n\nBody.\n\n## What next?\n\nMore.');
+  assert.deepEqual(headings.map((h) => h.id), ['how-do-i-apply', 'what-next']);
+  assert.match(html, /<h2 id="how-do-i-apply">How do I apply\?<\/h2>/);
+  assert.match(html, /<h2 id="what-next">What next\?<\/h2>/);
+});
+
+test('repeated headings get distinct ids', () => {
+  const { headings } = markdown.renderSections('## Same\n\n## Same\n\n## Same');
+  assert.deepEqual(headings.map((h) => h.id), ['same', 'same-2', 'same-3']);
+});
+
+// The FAQ was transcribed verbatim from the live WordPress page, which carries
+// thirteen questions. The jump-to index in page.ejs/page.php is built from
+// these, so a lost heading silently loses an entry from the index too.
+test('the seeded FAQ carries every question, anchored', () => {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  const faq = seed.pages.find((p) => p.slug === 'faq');
+  assert.ok(faq, 'no faq page in the seed');
+
+  const { headings } = markdown.renderSections(faq.body);
+  assert.equal(headings.length, 13);
+  assert.equal(headings[0].id, 'how-do-i-know-if-i-am-eligible-to-apply');
+  assert.equal(headings[12].id, 'how-is-my-scholarship-awarded');
+  for (const h of headings) assert.notEqual(h.id, '', 'a question produced an empty anchor');
 });
 
 // The Node and PHP builds each carry their own copy of the seed content, and

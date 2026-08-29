@@ -39,8 +39,9 @@ final class Markdown
 
             if (preg_match('/^(#{1,4})\s+(.*)$/', $trimmed, $match)) {
                 $closeList();
-                $level = strlen($match[1]) + 1; // '#' becomes h2 — h1 is the page title
-                $level = min($level, 6);
+                // '##' is h2, matching marked in the Node build. A lone '#' is
+                // clamped up to h2 rather than becoming a second page h1.
+                $level = min(max(strlen($match[1]), 2), 6);
                 $html .= "<h$level>" . self::inline($match[2]) . "</h$level>\n";
                 continue;
             }
@@ -77,6 +78,50 @@ final class Markdown
 
         $closeList();
         return $html;
+    }
+
+    /**
+     * Rendered Markdown plus its anchored top-level headings, in document order.
+     *
+     * A long page — the FAQ runs to thirteen questions — reads as a wall in one
+     * prose column, so its headings get stable ids and the view puts a jump-to
+     * index above them. The slug rules are mirrored in renderSections() in
+     * src/markdown.js, and a test asserts the two agree on the seeded content.
+     *
+     * @return array{html: string, headings: list<array{id: string, html: string}>}
+     */
+    public static function renderSections(?string $value): array
+    {
+        $headings = [];
+        $seen = [];
+
+        $html = preg_replace_callback(
+            '/<h2>(.*?)<\/h2>/s',
+            static function (array $m) use (&$headings, &$seen): string {
+                $base = self::slug($m[1]);
+                if ($base === '') {
+                    $base = 'section';
+                }
+                $nth = ($seen[$base] ?? 0) + 1;
+                $seen[$base] = $nth;
+                $id = $nth > 1 ? $base . '-' . $nth : $base;
+                $headings[] = ['id' => $id, 'html' => $m[1]];
+
+                return '<h2 id="' . $id . '">' . $m[1] . '</h2>';
+            },
+            self::render($value)
+        );
+
+        return ['html' => $html ?? '', 'headings' => $headings];
+    }
+
+    /** The id for a heading, from its rendered inner HTML. */
+    private static function slug(string $inner): string
+    {
+        $text = html_entity_decode(strip_tags($inner), ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+        $text = preg_replace('/[^a-z0-9]+/', '-', strtolower($text)) ?? $text;
+
+        return trim($text, '-');
     }
 
     /** Markdown with no block wrapper — for one-line summaries. */

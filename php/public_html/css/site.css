@@ -278,6 +278,31 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
    the bullet above would disappear into it. */
 .criteria .prose { max-width: none; }
 
+/* ---------- jump-to index ----------
+   Thirteen FAQ questions in one prose column read as a wall, so the page opens
+   on a table of contents and each question carries an anchor to link to. */
+
+.page-index {
+  background: var(--gold-wash); border: 1px solid var(--rule);
+  border-radius: 14px; padding: 22px 26px 24px; margin-bottom: 6px;
+}
+.page-index .eyebrow { margin-bottom: .7rem; }
+.page-index ol {
+  margin: 0; padding-left: 1.15em; font-size: .95rem;
+  columns: 2; column-gap: 34px;
+}
+.page-index li { margin-bottom: .5em; break-inside: avoid; }
+.page-index li:last-child { margin-bottom: 0; }
+.page-index a { color: var(--ink-soft); text-decoration-color: rgba(184, 134, 43, .45); }
+.page-index a:hover { color: var(--gold); }
+
+/* The anchor target sits flush against the viewport top otherwise. */
+.prose h2[id] { scroll-margin-top: 20px; }
+
+@media (max-width: 720px) {
+  .page-index ol { columns: 1; }
+}
+
 /* ---------- contact details ---------- */
 
 .contact-grid {

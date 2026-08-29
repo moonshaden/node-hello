@@ -7,9 +7,26 @@
   </div>
 </div>
 
+<%
+  // Past this many questions a single prose column reads as a wall, so the page
+  // gets a jump-to index and every heading an anchor. Mirrored in page.php.
+  const INDEX_FROM = 6;
+  const article = markdown.renderSections(page.body);
+  const index = article.headings.length >= INDEX_FROM ? article.headings : [];
+%>
 <section class="band">
   <div class="wrap split">
-    <div class="prose"><%- markdown.render(page.body) %></div>
+    <div class="prose">
+      <% if (index.length) { %>
+      <nav class="page-index" aria-label="On this page">
+        <p class="eyebrow">On this page</p>
+        <ol>
+          <% index.forEach(function (heading) { %><li><a href="#<%= heading.id %>"><%- heading.html %></a></li><% }) %>
+        </ol>
+      </nav>
+      <% } %>
+      <%- article.html %>
+    </div>
     <%- include('partials/page-aside') %>
   </div>
 </section>

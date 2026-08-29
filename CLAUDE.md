@@ -119,6 +119,13 @@ that is a presentational hint applied as a real `height`, and the rule only set
 `width` and `aspect-ratio`. Portraits rendered 1000px tall instead of 359px.
 `height: auto` in the CSS is what makes the pair work.
 
+**Both builds must map `##` to `<h2>`.** The PHP `Markdown` used to render a
+heading one level down from marked (`##` → `<h3>`), so the About page's section
+headings were unstyled on the deployed site and styled on the dev twin —
+`.prose h2` is what carries the rule and the spacing. Both now clamp a lone `#`
+up to `h2` (the page title is the only `h1`) and render `##` as `h2`. A test in
+each suite pins it.
+
 **Cards are flex columns**, so children inherit `align-self: stretch`.
 `display: inline-flex` will not stop a pill filling the card width;
 `align-self: flex-start` will.
@@ -193,6 +200,16 @@ keeps the raw scrape as the reference copy.
 - The impact figures (20 years, 5,685 students, $6.9M awarded, $8.5M raised)
   are the counter targets on the live site, replacing earlier reconstructions.
 
+The **FAQ is the live page verbatim**, transcribed from
+`/scholarship-faqs/` on 2026-08-29: thirteen questions, in the live order, with
+the answers word for word. The two links in the answers point at `/scholarships`
+rather than the old absolute WordPress URLs, so they work in both builds today
+instead of depending on the DNS cutover and the redirect map. Thirteen questions
+in one prose column read as a wall, so `page.ejs` / `page.php` give a page with
+six or more headings a jump-to index and an anchor per heading
+(`Markdown::renderSections()` / `markdown.renderSections()`); the id rules are
+duplicated across the builds and a test asserts they agree.
+
 **The live site publishes no award year and no dollar amount for any
 recipient.** Both fields are deliberately empty on all 15 records; the views
 omit them rather than showing a guess. If the client wants "Class of 2025" or a
@@ -216,9 +233,19 @@ Nothing on the site loads an image from the WordPress host any more.
 3. ~~Rehost the recipient photos~~ — **done.** See *Content accuracy*.
 4. Confirm **Save works in `/admin`** on the server — depends on file
    permissions for `leo-app/data/content.json`, untestable from here.
-5. Old-URL redirect map verification before cutover. The scholarship slugs now
+5. **The About page's figures disagree with the impact band, and the live site
+   disagrees with itself.** About says "more than 3,000 young people to over
+   $5 million"; the impact band says 5,685 students and $6.9M. Neither is what
+   the live site publishes. Its homepage prose reads "over 4,500 youth to over
+   $6M"; its counter widgets (on nine inner pages) read 5,685 students /
+   $6.9M awarded / $8.5M raised — except `/ways-to-give` ($8.9M raised) and
+   `/financial-statements` (4,500 students / $6M / $8M, evidently stale). The
+   "3,000 / $5 million" wording appears nowhere. Left unchanged deliberately:
+   picking one would be guessing which set the client considers current. Ask
+   them, then make the About copy and the impact band agree.
+6. Old-URL redirect map verification before cutover. The scholarship slugs now
    match the WordPress ones, so most of the map should be one-to-one.
-6. ~~No CI~~ — **done.** `.github/workflows/deploy.yml` runs both suites and the
+7. ~~No CI~~ — **done.** `.github/workflows/deploy.yml` runs both suites and the
    PHP lint on every push, which catches the seed-drift class of bug.
 
 ## Deploying
