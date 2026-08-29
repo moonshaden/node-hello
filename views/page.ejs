@@ -1,14 +1,45 @@
 <%- include('partials/head', { description: page.summary }) %>
 
 <div class="page-head">
-  <div class="wrap narrow">
+  <div class="wrap">
     <h1><%= page.title %></h1>
     <% if (page.summary) { %><p class="lede"><%= page.summary %></p><% } %>
   </div>
 </div>
 
 <section class="band">
-  <div class="wrap narrow prose"><%- markdown.render(page.body) %></div>
+  <div class="wrap split">
+    <div class="prose"><%- markdown.render(page.body) %></div>
+    <%- include('partials/page-aside') %>
+  </div>
 </section>
 
+<%
+  // Rendered from the site settings rather than the page body, so the address
+  // block cannot drift from the footer and the admin only edits it once.
+  const details = page.slug === 'contact'
+    ? [['Email', site.email], ['Phone', site.phone], ['Location', site.location]]
+        .filter(([, value]) => (value || '').trim())
+    : [];
+%>
+<% if (details.length) { %>
+<section class="band" style="padding-top:0">
+  <div class="wrap">
+    <dl class="contact-grid">
+      <% details.forEach(function ([label, value]) { %>
+        <div>
+          <dt><%= label %></dt>
+          <dd>
+            <% if (label === 'Email') { %><a href="mailto:<%= value %>"><%= value %></a>
+            <% } else if (label === 'Phone') { %><a href="tel:<%= value.replace(/[^0-9+]/g, '') %>"><%= value %></a>
+            <% } else { %><%= value %><% } %>
+          </dd>
+        </div>
+      <% }) %>
+    </dl>
+  </div>
+</section>
+<% } %>
+
+<%- include('partials/page-cta') %>
 <%- include('partials/foot') %>

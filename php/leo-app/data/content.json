@@ -1,681 +1,681 @@
 {
-  "site": {
-    "name": "LEO Foundation",
-    "tagline": "Leadership. Education. Opportunity.",
-    "timezone": "America/Phoenix",
-    "legalName": "LEO Foundation USA",
-    "mission": "LEO Foundation is an independent nonprofit 501(c)(3) organization whose mission is to provide educational opportunities and scholarships to students attending university with a traditional full-time status.",
-    "email": "mwinney@leofoundationusa.org",
-    "phone": "602.206.4465",
-    "location": "Phoenix, Arizona",
-    "ein": "20-4879525",
-    "donateUrl": "https://www.mightycause.com/organization/LEOFoundation",
-    "facebookUrl": "https://www.facebook.com/LEOFoundationUSA/",
-    "impactTitle": "Twenty years of scholarships, one student at a time.",
-    "impact": [
-      {
-        "value": "20",
-        "label": "years of scholarships",
-        "detail": "The foundation was founded in 2006."
-      },
-      {
-        "value": "5,685",
-        "label": "students awarded",
-        "detail": "Across every LEO scholarship program."
-      },
-      {
-        "value": "$6.9M",
-        "label": "awarded in scholarships",
-        "detail": "Paid directly toward students' education."
-      },
-      {
-        "value": "$8.5M",
-        "label": "raised",
-        "detail": "Given by donors, partners, and estates."
-      }
-    ]
-  },
-  "enrollment": {
-    "type": "annual",
-    "opensOn": "11-01",
-    "closesOn": "03-31",
-    "awardedNote": "Awards are announced each spring for the following academic year.",
-    "instructions": "Read the criteria for each scholarship, then apply for every award you qualify for. Applicants must already be admitted to their university before a scholarship can be awarded."
-  },
-  "announcements": [
-    {
-      "id": "ann-open",
-      "title": "Applications are open",
-      "body": "The enrollment period runs November 1 through March 31. Review the available scholarships and apply for every award you qualify for.",
-      "ctaLabel": "See available scholarships",
-      "ctaUrl": "/scholarships",
-      "showWhen": "open"
+    "site": {
+        "name": "LEO Foundation",
+        "tagline": "Leadership. Education. Opportunity.",
+        "timezone": "America/Phoenix",
+        "legalName": "LEO Foundation USA",
+        "mission": "LEO Foundation is an independent nonprofit 501(c)(3) organization whose mission is to provide educational opportunities and scholarships to students attending university with a traditional full-time status.",
+        "email": "mwinney@leofoundationusa.org",
+        "phone": "602.206.4465",
+        "location": "Phoenix, Arizona",
+        "ein": "20-4879525",
+        "donateUrl": "https://www.mightycause.com/organization/LEOFoundation",
+        "facebookUrl": "https://www.facebook.com/LEOFoundationUSA/",
+        "impactTitle": "Twenty years of scholarships, one student at a time.",
+        "impact": [
+            {
+                "value": "20",
+                "label": "years of scholarships",
+                "detail": "The foundation was founded in 2006."
+            },
+            {
+                "value": "5,685",
+                "label": "students awarded",
+                "detail": "Across every LEO scholarship program."
+            },
+            {
+                "value": "$6.9M",
+                "label": "awarded in scholarships",
+                "detail": "Paid directly toward students' education."
+            },
+            {
+                "value": "$8.5M",
+                "label": "raised",
+                "detail": "Given by donors, partners, and estates."
+            }
+        ]
     },
-    {
-      "id": "ann-closed",
-      "title": "Applications reopen November 1",
-      "body": "This year's enrollment period has closed. Browse the scholarships now so you are ready when the next cycle opens, and see who was awarded this year.",
-      "ctaLabel": "Meet our recipients",
-      "ctaUrl": "/recipients",
-      "showWhen": "closed"
-    }
-  ],
-  "scholarships": [
-    {
-      "id": "sch-leo",
-      "slug": "leo-foundation-scholarship",
-      "name": "LEO Foundation Scholarship",
-      "amount": "Varies depending on available funds",
-      "summary": "The foundation's general scholarship for traditional, full-time undergraduates carrying at least 12 credit hours.",
-      "criteria": "- Applicant must be a university undergraduate, traditional ground campus student taking at least 12 hours per semester\n- Applicant must meet admissions requirements\n- Applicant must pursue being a full time student\n- Applicant shall demonstrate documented financial need as defined by the college or university Office of Financial Aid\n- Applicant must have a minimum of 3.5 GPA\n- Applicant must submit a one-page personal narrative word document",
-      "details": "",
-      "essayPrompts": [],
-      "applyUrl": "",
-      "window": {
-        "type": "inherit"
-      },
-      "featured": true,
-      "hideWhenClosed": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      },
-      "draft": false
+    "enrollment": {
+        "type": "annual",
+        "opensOn": "11-01",
+        "closesOn": "03-31",
+        "awardedNote": "Awards are announced each spring for the following academic year.",
+        "instructions": "Read the criteria for each scholarship, then apply for every award you qualify for. Applicants must already be admitted to their university before a scholarship can be awarded."
     },
-    {
-      "id": "sch-gcu-guild",
-      "slug": "gcu-guild-continuing-student-scholarship",
-      "name": "GCU Guild Continuing Student Scholarship",
-      "amount": "$1,000",
-      "summary": "An endowed award from the GCU Guild for a continuing Grand Canyon University undergraduate active on campus.",
-      "criteria": "- Student must meet university admissions requirements\n- Applicant must be enrolled full-time as a traditional ground student (12 credit hours per semester)\n- Applicant must maintain a 2.75 GPA and be a university freshman applying for their sophomore, junior or senior year of study\n- Applicant must be involved in campus activities\n- Scholarships will be awarded in spring 2026 for the 2026/2027 academic year\n- Scholarship recipients must acknowledge their award in the form of an email thank you within three weeks of notification to mwinney@leofoundationusa.org",
-      "details": "The Grand Canyon University Guild established a scholarship fund through the gifts and fundraising efforts of the members while they were an active Club serving the GCU Campus students from 1994 until they retired from serving on campus in 2016. An Endowed Scholarship Fund was established in 1997 to provide GCU student scholarships each year, this endowed fund is managed by the Grand Canyon University Scholarship Foundation (GCUSF). The intent of this scholarship is to help offset the costs of education for a Grand Canyon University (GCU) traditional undergraduate student.",
-      "essayPrompts": [],
-      "applyUrl": "",
-      "window": {
-        "type": "inherit"
-      },
-      "featured": false,
-      "hideWhenClosed": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      },
-      "draft": false
-    },
-    {
-      "id": "sch-mccurdy",
-      "slug": "richard-mccurdy-club-sports-golf-scholarship",
-      "name": "Richard McCurdy Club Sports Golf Scholarship",
-      "amount": "$1,000",
-      "summary": "A memorial award for a registered member of the Club Sports golf team.",
-      "criteria": "- Applicant must meet university admissions requirements\n- Applicant must be an undergraduate Grand Canyon University traditional ground campus student taking at least 12 hours per semester\n- Applicant shall demonstrate documented financial need as defined by the university’s Office of Financial Aid\n- Applicant must be a current registered Club Sports golf team member\n- Scholarships will be awarded in spring of 2026 for the 2026/2027 academic year\n- Scholarship recipients must acknowledge their award in the form of an email thank you within three weeks of notification to mwinney@leofoundationusa.org",
-      "details": "Dick began his love of golf in college where he played on local golf courses. Throughout his education career (teacher, principal, and coach) in Frederick, Maryland, he enjoyed golfing in local and “long distance” golf outings. He coached High School football, girl’s basketball, and golf. He always felt that sports not only help to develop the physical body but enriched the life skills of the student. After retirement, he worked at a golf club setting up daily play, outings and tournaments. Upon moving the Sun City Grand, he joined the Men’s club and competed in many local tournaments. He taught his wife, Vivian, to play and soon after he was organizing Sunday couples play and golf trips for up to 24 players. He arranged trips from Mesquite, Nevada to Myrtle Beach, South Carolina.\n\nHe also loved basketball and was an avid University of Maryland fan. He had volunteered as an usher during the Lefty Drisell era. Grand Canyon basketball provided an excellent alternative. You would often find the couple in the stands cheering on the Lopes.\n\nDick is missed very much but he would be thrilled to know that he is helping a fellow golfer fulfill his dreams. (Dick McCurdy, August 5, 1943 – January 4, 2021)",
-      "essayPrompts": [],
-      "applyUrl": "",
-      "window": {
-        "type": "inherit"
-      },
-      "featured": false,
-      "hideWhenClosed": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      },
-      "draft": false
-    },
-    {
-      "id": "sch-entrepreneurial",
-      "slug": "leo-foundation-entrepreneurial-scholarship",
-      "name": "LEO Foundation Entrepreneurial Scholarship",
-      "amount": "$1,000",
-      "summary": "For full-time students majoring in business entrepreneurial studies who show initiative, need, and character.",
-      "criteria": "- Applicant must meet university admissions requirements\n- Applicant must pursue being a full-time student\n- Applicant must be pursuing an academic degree in Business Entrepreneurial Studies\n- The applicant shall demonstrate documented financial need as defined by their university’s office of financial aid\n- Applicant must have a minimum of 3.0 GPA\n- Applicant must demonstrate Entrepreneurial endeavor history\n- Applicant must demonstrate they have Christian and conservative values\n- Applicant must submit a 300-word document on what Christian and conservative values mean to them\n- Applicant must submit a 300-word document on their goals of becoming a business owner\n- Scholarships will be awarded in spring 2026 for the 2026/2027 academic year\n- Scholarship recipients must acknowledge their award in the form of an email thank you within three weeks of notification to mwinney@leofoundationusa.org",
-      "details": "",
-      "essayPrompts": [
-        "Describe a venture or idea you have pursued and what it taught you (300 words).",
-        "Describe how your values shape the way you intend to lead (300 words)."
-      ],
-      "applyUrl": "",
-      "window": {
-        "type": "inherit"
-      },
-      "featured": true,
-      "hideWhenClosed": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      },
-      "draft": false
-    },
-    {
-      "id": "sch-christian-studies",
-      "slug": "leo-foundation-christian-studies-scholarship",
-      "name": "LEO Foundation Christian Studies Scholarship",
-      "amount": "Varies depending on available funds",
-      "summary": "For full-time students pursuing Christian studies, awarded annually.",
-      "criteria": "- Applicant must meet university admissions requirements\n- Applicant must pursue being a full-time student\n- The applicant shall demonstrate documented financial need as defined by their university’s office of financial aid\n- Applicant must possess a cumulative 2.5 GPA or higher\n- Applicant must demonstrate they have Christian and conservative values, representative of the University’s Mission and Vision\n- Applicant must submit a 300-word document on what Christian character and integrity mean to them",
-      "details": "",
-      "essayPrompts": [],
-      "applyUrl": "",
-      "window": {
-        "type": "inherit"
-      },
-      "featured": true,
-      "hideWhenClosed": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      },
-      "draft": false
-    },
-    {
-      "id": "sch-baker",
-      "slug": "lavern-sharky-and-leona-baker-educational-scholarship",
-      "name": "LaVern “Sharky” and Leona Baker Educational Scholarship",
-      "amount": "Varies depending on available funds",
-      "summary": "A memorial award honouring two lifelong Arizona educators, for students studying education.",
-      "criteria": "- Applicant must be pursing a degree in education\n- Applicant must be a university undergraduate, traditional ground campus student taking at least 12 hours per semester\n- Applicant must meet admissions requirements\n- Applicant must submit a one-page personal narrative word document",
-      "details": "The LaVern “Sharky” and Leona Baker Educational Scholarship was created to honor Sharky and Leona’s lifelong dedication to education.\n\nLaVern “Sharky” Baker, age 96, of Peoria, Arizona, passed away on March 24, 2023. Sharky’s smile, quick wit, humor, teasing, nicknames, bad jokes, and hugs will be missed by all who knew and loved him.\n\nSharky was born on June 12, 1926, in Roff, Oklahoma. His family moved to Arizona in 1938, and Sharky considered Chandler, Arizona, his hometown. Sharky attended Grand Canyon College on an athletic scholarship and eventually found his beautiful bride on that campus. He graduated in 1956 and then began a 34-year career in education, retiring as the Payson Unified School District Superintendent.\n\nSharky and Leona wed in 1957 and began their family while living, teaching, and coaching in Hayden, Arizona. Sharky moved his family to Payson, Arizona, in 1968, where he and Leona continued their educational careers, were active in many clubs, and enjoyed serving in their church. Sharky, also known as Coach Baker, enjoyed teaching and coaching but truly loved the students he mentored and encouraged.\n\nSharky loved serving the Lord, and he used his talents in different positions in his church. He loved music and loved to sing. He used those gifts to lead music in church and a Barber Shop Quartet. Sharky wore many hats in life, that of a husband, father, grandfather, great-grandfather, son, brother, uncle, coach, educator, and administrator but none more important to him than being a Christ follower. He loved people, he loved to talk to people, and he had a heart for people to know the Lord. Sharky knew from his own experience that God changes lives.",
-      "essayPrompts": [],
-      "applyUrl": "",
-      "window": {
-        "type": "inherit"
-      },
-      "featured": false,
-      "hideWhenClosed": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      },
-      "draft": false
-    },
-    {
-      "id": "sch-music",
-      "slug": "skw-play-it-forward-music-scholarship",
-      "name": "SKW Play It Forward Music Scholarship",
-      "amount": "$1,000",
-      "summary": "For a full-time student pursuing an academic degree in music.",
-      "criteria": "- Applicant must meet university admissions requirements\n- Applicant must be a full-time student\n- Applicant must be pursuing an academic degree in music\n- Applicant shall demonstrate documented financial need as defined by the college or university office of financial aid\n- Applicant must have a minimum GPA of 3.50\n- Applicant must submit a one-page essay on why they are pursuing a degree in music and on one of the following: how it will benefit their community and the world of music; how they demonstrate the value of service in their everyday life, or within clubs and organizations in which they have participated",
-      "details": "",
-      "essayPrompts": [],
-      "applyUrl": "",
-      "window": {
-        "type": "inherit"
-      },
-      "featured": false,
-      "hideWhenClosed": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      },
-      "draft": false
-    },
-    {
-      "id": "sch-theatre",
-      "slug": "foundation-theatre-scholarship",
-      "name": "Foundation Theatre Scholarship",
-      "amount": "$1,000",
-      "summary": "For a full-time undergraduate pursuing theatre or theatre education.",
-      "criteria": "- Applicant must be a university undergraduate, traditional ground campus student taking at least 12 hours per semester\n- Applicant must be pursuing an academic degree in Theatre / Theatre Education\n- Applicant must meet admissions requirements\n- Applicant must pursue being a full-time student\n- Applicant shall demonstrate documented financial need as defined by the college or university Office of Financial Aid\n- Applicant must have a minimum of 3.0 GPA\n- Applicant must submit a one-page personal narrative word document",
-      "details": "",
-      "essayPrompts": [],
-      "applyUrl": "",
-      "window": {
-        "type": "inherit"
-      },
-      "featured": false,
-      "hideWhenClosed": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      },
-      "draft": false
-    },
-    {
-      "id": "sch-foster",
-      "slug": "foster-youth-scholarships",
-      "name": "Foster Youth Scholarships",
-      "amount": "Varies, depending on need",
-      "summary": "For students who reached age 18 as a ward of the State of Arizona or in tribal foster care.",
-      "criteria": "- Must reach or have reached age 18 as a Ward of the State of Arizona or in tribal foster care in Arizona\n- Must be a university or 4-year college undergraduate, traditional ground campus student taking at least 12 hours per semester\n- Must maintain a minimum GPA of 2.5 or higher",
-      "details": "",
-      "essayPrompts": [],
-      "applyUrl": "",
-      "window": {
-        "type": "inherit"
-      },
-      "featured": true,
-      "hideWhenClosed": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      },
-      "draft": false
-    },
-    {
-      "id": "sch-nursing",
-      "slug": "joyce-k-smith-nursing-memorial-scholarship",
-      "name": "Joyce K. Smith Nursing Memorial Scholarship",
-      "amount": "$1,000",
-      "summary": "A memorial award for in-state students pursuing an academic degree in nursing.",
-      "criteria": "- Meet a university’s admissions requirements\n- Must be pursuing an academic degree in Nursing\n- Applicants shall demonstrate documented financial needs as defined by their university’s office of financial aid\n- Applicants must have a 3.5 GPA\n- Applicant must be an in-state, traditional ground student\n- Scholarships will be awarded in spring 2026 for the 2026/2027 academic year\n- Scholarship recipients must acknowledge their award in the form of an email thank you within three weeks of notification to mwinney@leofoundationusa.org",
-      "details": "This Scholarship was established to provide financial assistance to deserving students pursuing an academic degree in Nursing.\n\nJoyce Smith was born in 1936 in Chicago, Illinois. She was the 4th of 7 children. Joyce enjoyed traveling and lived in Texas before eventually calling Arizona her “home.”\n\nJoyce had a great love for God, fishing, southwest artwork, and nursing. She loved helping others and was the inspiration for her niece, Donna, who also became a nurse.",
-      "essayPrompts": [],
-      "applyUrl": "",
-      "window": {
-        "type": "inherit"
-      },
-      "featured": false,
-      "hideWhenClosed": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      },
-      "draft": false
-    },
-    {
-      "id": "sch-bhhs",
-      "slug": "bhhs-legacy-nursing-health-related-scholarship",
-      "name": "BHHS Legacy Nursing & Health Related Scholarship",
-      "amount": "Varies",
-      "summary": "Funded by BHHS Legacy Foundation, for students in nursing or a health-related field.",
-      "criteria": "- Candidate must be pursuing a degree in nursing or a health-related field\n- Candidate must meet university or college admissions requirements\n- Candidate must pursue being a full time student\n- Candidate shall demonstrate documented financial need as defined by the university or college Office of Financial Aid\n- Candidate must have a minimum of 3.0 GPA\n- Candidate must submit a one-page personal narrative\n- Candidate must submit a 300-word document on what Community Service mean to them and show how they have demonstrated the value of “service” in their lives through everyday life as well as within organizations, clubs, and services in which they have participated\n- Candidate must prepare and mail an acknowledgement/thank you to the LEO Foundation on behalf of BHHS Legacy Foundation Board of Directors expressing appreciation for the scholarship funding",
-      "details": "",
-      "essayPrompts": [],
-      "applyUrl": "",
-      "window": {
-        "type": "inherit"
-      },
-      "featured": false,
-      "hideWhenClosed": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      },
-      "draft": false
-    },
-    {
-      "id": "sch-mealman",
-      "slug": "tiffany-d-mealman-women-excellence-in-chemistry-and-christian-character-scholarship",
-      "name": "Tiffany D. Mealman Women Excellence in Chemistry and Christian Character Scholarship",
-      "amount": "Varies depending on available funds",
-      "summary": "A memorial award for a junior woman majoring in the sciences who leads with excellence and character.",
-      "criteria": "- Candidate must meet university admissions requirements\n- Candidate must be an in-state traditional ground student\n- Candidate must be a woman with a declared major in the sciences and of junior status\n- Candidate must possess a cumulative 3.2 GPA or higher and have received the grade of A in her Biochemistry class\n- Candidate must submit a letter of recommendation (one) from a Chemistry or Biochemistry faculty\n- Candidate must submit a 300-word personal statement about the importance of integrity, character, and Christian service in her life\n- Scholarships will be awarded in spring 2025 for the 2025/2026 academic year. Scholarship recipients must acknowledge their award in the form of an email thank you within three weeks of notification to mwinney@leofoundationusa.org ",
-      "details": "TIFFANY D. MEALMAN WOMEN EXCELLENCE IN CHEMISTRY AND CHRISTIAN CHARACTER SCHOLARSHIP\n\nTiffany Mealman was a passionate researcher, caring educator, and devoted friend who touched the lives of many. Tiffany will be remembered for her quiet resilience and incredible endurance with which she continued her academic pursuits, despite the odds. She was a great mentor for many students, sharing her passion for science and inspiring them to be their best and achieve their goals. She will be dearly missed, but her legacy will endure.",
-      "essayPrompts": [],
-      "applyUrl": "",
-      "window": {
-        "type": "inherit"
-      },
-      "featured": false,
-      "hideWhenClosed": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      },
-      "draft": false
-    },
-    {
-      "id": "sch-gary",
-      "slug": "evan-c-gary-memorial-scholarship",
-      "name": "Evan C. Gary Memorial Scholarship",
-      "amount": "$1,000",
-      "summary": "A memorial award for homeschooled students entering engineering, science, or pre-med study at Grand Canyon University.",
-      "criteria": "- Applicants must be Engineering, Science, or Pre-Med majors at Grand Canyon University\n- Applicants must have been homeschooled for a minimum of their high school years\n- Applicants must maintain a 3.5 GPA to qualify for subsequent awards\n- Applicants must submit two letters of recommendation from non-family members who have known the student for at least three years. One must be a letter from a pastor or staff member at the student’s home church",
-      "details": "The Scholarship was created to honor the life of homeschooled student Evan C. Gary, son of Grant, and Carol Gary, GCU alumni.\n\nEvan had a keen interest in mechanical engineering, historical science, and biology and had hoped to one day attend GCU. However, through his various projects and creative interests, he had an even bigger heart to see that those around him knew the saving love of Jesus Christ.\n\nAt the age of 12, Evan was diagnosed with an aggressive form of leukemia. With his whole family by his side, he sought treatment over 25 months at four different internationally known medical institutions across the United States.\n\nAs he bravely battled cancer in all of these various settings and circumstances, Evan continued to excel in almost everything he did while maintaining a positive attitude and an eternal perspective on life.\n\nOnce a person met Evan, their life was changed for the better, forever. The evening before he passed away, at the age of 14, Evan declared, “I’m going to serve Jesus and Him alone. I’m going to focus on what is right. How about you?” It is, therefore, the hope of Evan’s parents that his words continue to live on and inspire the dedicated, home-educated youth of tomorrow who seek to faithfully pursue their respective fields in engineering, science, or pre-medicine.",
-      "essayPrompts": [],
-      "applyUrl": "",
-      "window": {
-        "type": "inherit"
-      },
-      "featured": false,
-      "hideWhenClosed": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      },
-      "draft": false
-    },
-    {
-      "id": "sch-browning",
-      "slug": "tim-browning-memorial-scholarship",
-      "name": "Tim Browning Memorial Scholarship",
-      "amount": "$1,000",
-      "summary": "A memorial award for students who have lost a parent and carried that loss forward into their education.",
-      "criteria": "- Traditional, full-time undergraduate status\n- Essay describing how the loss of a parent impacted your life",
-      "details": "Not currently being issued. Retained so the copy is ready if the award is offered again.",
-      "essayPrompts": [
-        "Describe how the loss of a parent impacted your life."
-      ],
-      "applyUrl": "",
-      "window": {
-        "type": "inherit"
-      },
-      "featured": false,
-      "hideWhenClosed": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      },
-      "draft": true
-    },
-    {
-      "id": "sch-arvizu",
-      "slug": "arvizu-scholarship",
-      "name": "Arvizu Scholarship",
-      "amount": "$1,000",
-      "summary": "An award supporting an Arizona undergraduate of Latino heritage.",
-      "criteria": "- Students must be of Latino heritage",
-      "details": "Not currently being issued. Retained so the copy is ready if the award is offered again.",
-      "essayPrompts": [],
-      "applyUrl": "",
-      "window": {
-        "type": "inherit"
-      },
-      "featured": false,
-      "hideWhenClosed": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      },
-      "draft": true
-    }
-  ],
-  "recipients": [
-    {
-      "id": "rec-sophia-hamre",
-      "name": "Sophia Hamre",
-      "year": "",
-      "scholarship": "LEO Foundation Scholarship",
-      "school": "Grand Canyon University",
-      "major": "",
-      "amount": "",
-      "quote": "Sophia Hamre will be a senior at Grand Canyon University next fall, with plans to graduate in Spring 2027. The Leo Foundation has been such a blessing in my life, helping to ease the financial burden of tuition and allowing me to stay focused on my academic and professional goals. Their generosity has made a meaningful impact on my college experience, and I am incredibly grateful for their support. I look forward to carrying forward the impact of their investment in my future. Receiving the LEO Foundation scholarship is a transformative gift. Raised in a home centered on faith, Sophia has always valued learning and spiritual growth. allowing her to continue her studies with a sense of relief and determination. This scholarship empowers her to focus on her academic journey while deepening her faith and personal growth. She is excited to contribute to the community and support others who may be facing their own challenges. The generous support of the Leo Foundation, Madeline Winney, CEO and the Board of Directors has alleviated financial burden, but also reminds her that she is surrounded by people who believe in her abilities and her future. With this scholarship, she is inspired to move forward with confidence, perseverance, and a heart full of faith.",
-      "photoUrl": "/img/recipients/sophia-hamre.jpg",
-      "featured": true,
-      "draft": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      }
-    },
-    {
-      "id": "rec-sydney-hamre",
-      "name": "Sydney Hamre",
-      "year": "",
-      "scholarship": "LEO Foundation Scholarship",
-      "school": "Grand Canyon University",
-      "major": "Occupational Therapy (career goal)",
-      "amount": "",
-      "quote": "My name is Sydney Hamre, and I am currently a junior at Grand Canyon University. I am incredibly grateful for the opportunity to receive this scholarship, as it greatly supports both my academic journey and financial needs. This support allows me to focus more on my studies and continue working toward my goal of becoming an occupational therapist without the added stress of financial burden. I truly appreciate this investment in my future, and it motivates me to work hard and make the most of my education.",
-      "photoUrl": "/img/recipients/sydney-hamre.jpg",
-      "featured": true,
-      "draft": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      }
-    },
-    {
-      "id": "rec-elijah",
-      "name": "Elijah",
-      "year": "",
-      "scholarship": "LEO Foundation Scholarship",
-      "school": "Grand Canyon University",
-      "major": "Sports Management",
-      "amount": "",
-      "quote": "For Elijah, receiving a scholarship from the Leo Foundation is an incredible blessing that fills him with gratitude and purpose. It is a powerful reminder of the belief others have in his ability to graduate with a Sports Management Degree. Raised in a family grounded in faith, Elijah values both education and spiritual growth. His time working directly with Ms. Winney has deepened his faith, shaping him into a more confident and intentional individual. This scholarship enables him to focus on his studies, spiritual journey, and personal growth. Elijah is also serving as a Resident Assistant on campus, where he encourages and supports his peers. The generosity of the Leo Foundation and Ms. Madeline Winney lightens his financial burden, allowing him to embrace his calling and reminding him that he is part of a community that values education, faith, and perseverance!",
-      "photoUrl": "/img/recipients/elijah.jpg",
-      "featured": true,
-      "draft": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      }
-    },
-    {
-      "id": "rec-matthew",
-      "name": "Matthew",
-      "year": "",
-      "scholarship": "LEO Foundation Christian Studies Scholarship",
-      "school": "",
-      "major": "Christian Studies",
-      "amount": "",
-      "quote": "Matthew became a Christian at 18 years old despite his upbringing in a religiously unaffiliated home. Since that time, he has pursued pastoral ministry whole-heartedly. He has served at Christian youth camps and is currently working on his bachelor’s degree in Christian studies. This summer, Matthew will lead and serve youth as the Assistant Director at Hume Lake Christian Camp. “Without the help from LEO Foundation, I wouldn’t be here and wouldn’t have the opportunity to pursue my dream.”",
-      "photoUrl": "/img/recipients/matthew.jpg",
-      "featured": false,
-      "draft": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      }
-    },
-    {
-      "id": "rec-jacob",
-      "name": "Jacob",
-      "year": "",
-      "scholarship": "BHHS Legacy Nursing & Health Related Scholarship",
-      "school": "",
-      "major": "Biology, pre-medicine emphasis; now MBS master’s program",
-      "amount": "",
-      "quote": "I would like to express my deepest gratitude to the LEO Foundation for awarding me the BHHS Legacy Nursing and Health-Related Scholarship. This generous support has been instrumental in allowing me to complete my bachelor’s degree in biology with an emphasis in pre-medicine. With this academic foundation, I am now enrolled in an MBS master’s program, which serves as a direct pathway to medical school. This opportunity would not have been possible without the kindness and generosity of the LEO Foundation. Thank you for helping me pursue my dreams.",
-      "photoUrl": "/img/recipients/jacob.jpg",
-      "featured": false,
-      "draft": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      }
-    },
-    {
-      "id": "rec-natalie",
-      "name": "Natalie",
-      "year": "",
-      "scholarship": "LEO Foundation Scholarship",
-      "school": "",
-      "major": "Bachelor of Science in Nursing (accelerated)",
-      "amount": "",
-      "quote": "Thanks to the LEO Foundation Scholarship, Natalie graduated with honors from an accelerated Bachelor of Science in Nursing program. She knew from an early age that this profession was her calling. The academic and book scholarship award allowed her to focus on schoolwork and studying. Natalie is now a registered nurse at an outpatient surgery center, helping dialysis patients. She is a registered nurse employed at Phoenix Children’s Hospital.",
-      "photoUrl": "/img/recipients/natalie.jpg",
-      "featured": false,
-      "draft": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      }
-    },
-    {
-      "id": "rec-isabelle",
-      "name": "Isabelle",
-      "year": "",
-      "scholarship": "LEO Foundation Scholarship",
-      "school": "Grand Canyon University (transferred from UC Santa Cruz)",
-      "major": "MBA in Finance; BS Business Management, minor Finance",
-      "amount": "",
-      "quote": "I am currently a Master’s student at Grand Canyon University studying to receive my MBA in Finance. The LEO Foundation has supported me with scholarships for my Master’s degree program. My studies started at the University of California, Santa Cruz, before transferring and graduating from GCU with a Bachelor’s Degree in Business Management and a minor in Finance. I played NCAA Women’s Tennis at both UCSC and GCU. I currently hold a position as Assistant Director of Corporate Affairs for a Phoenix company, where I manage Operations, HR, Marketing, and Payroll.",
-      "photoUrl": "/img/recipients/isabelle.jpg",
-      "featured": false,
-      "draft": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      }
-    },
-    {
-      "id": "rec-eunice",
-      "name": "Eunice",
-      "year": "",
-      "scholarship": "LEO Foundation Scholarship",
-      "school": "",
-      "major": "Electrical Engineering",
-      "amount": "",
-      "quote": "Thanks to LEO Foundation Scholarships, Eunice graduated in 2021 as an electrical engineer. She is thriving on the east coast with her dream job at Google. Her six-year journey, which started when she was a 15-year-old girl living on another continent, had many twists and turns, but her faith, patience, and strength always prevailed.",
-      "photoUrl": "/img/recipients/eunice.jpg",
-      "featured": false,
-      "draft": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      }
-    },
-    {
-      "id": "rec-sebastian",
-      "name": "Sebastian",
-      "year": "",
-      "scholarship": "LEO Foundation Scholarship",
-      "school": "",
-      "major": "Business Administration/Management; Master of Management, Communications and IT",
-      "amount": "",
-      "quote": "Sebastian began his collegiate career with a soccer scholarship until an injury forced him to retire his jersey. With new scholarship funding from LEO Foundation, he was able to continue school and graduate with a degree in Business Administration/Management and obtain a Master of Management, Communications, and IT. Sebastian now owns a business providing IT project management support and solutions.",
-      "photoUrl": "/img/recipients/sebastian.jpg",
-      "featured": false,
-      "draft": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      }
-    },
-    {
-      "id": "rec-joshua",
-      "name": "Joshua",
-      "year": "",
-      "scholarship": "LEO Foundation Scholarship",
-      "school": "Grand Canyon University",
-      "major": "Christian ministry (accelerated 3-year program)",
-      "amount": "",
-      "quote": "Through the support of the LEO Foundation and dedication to his goal, Joshua is in his second year of an accelerated three-year undergraduate program to become a pastor in Christian ministry. He realized his calling from God during his junior year of high school and continues to pursue God’s plan for his life. Joshua’s journey has included ministering to youth in the community through his church and summer camps. After graduation, Joshua will pursue a Master of Divinity with plans for a life of ministry as a teaching pastor and serving in various capacities for which he is called and equipped. “I am incredibly thankful for the scholarship funding from the LEO Foundation. It makes all of this possible. After finishing my undergraduate degree at GCU, I will now be attending classes August 2024 pursuing a Masters of Divinity in Theological and Biblical Studies at Phoenix Seminary.”",
-      "photoUrl": "/img/recipients/joshua.jpg",
-      "featured": false,
-      "draft": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      }
-    },
-    {
-      "id": "rec-jaiden",
-      "name": "Jaiden",
-      "year": "",
-      "scholarship": "LEO Foundation Scholarship",
-      "school": "Yavapai College",
-      "major": "Business Management",
-      "amount": "",
-      "quote": "Basketball is more than a game; it’s my structure, my community. I’ve been playing since I was five years old. As a kid, I moved schools a lot. Moving was never easy, especially because I have a learning disability and hearing difficulties. The court became my safe place, and my teammates developed into a sisterhood. I’m grateful and excited to have the opportunity to study business management at Yavapai College. Playing basketball made this possible. The game’s fast-paced environment helped me with my problem-solving, creativity, and self-confidence. It also helped me get out of my social shell and have the courage to express myself.",
-      "photoUrl": "/img/recipients/jaiden.jpg",
-      "featured": false,
-      "draft": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      }
-    },
-    {
-      "id": "rec-keian",
-      "name": "Keian",
-      "year": "",
-      "scholarship": "LEO Foundation Scholarship",
-      "school": "Grand Canyon University",
-      "major": "",
-      "amount": "",
-      "quote": "I am Keian and a freshman at GCU. After graduating from high school, I had a great opportunity to go on a humanitarian trip to Guatemala. It was one of the best experiences of my life! My father served his LDS mission in Guatemala, and ever since I was born, he has wanted to take me there and show me all the places he lived during his two-year mission. The trip was a life-changer. I spent two weeks serving others by building houses, laying and mixing cement, visiting families and giving them clothes and food, and helping little kids at a school in the areas we served. My favorite part of this entire trip was being able to visit families experiencing poverty and giving them food and clothes, which put the biggest smiles on their faces. I wanted to thank the LEO Foundation for the scholarship. Paying for school was one of my biggest fears and one thing holding me back from going. So thank you, thank you, THANK YOU!",
-      "photoUrl": "/img/recipients/keian.jpg",
-      "featured": false,
-      "draft": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      }
-    },
-    {
-      "id": "rec-caleb",
-      "name": "Caleb",
-      "year": "",
-      "scholarship": "LEO Foundation Scholarship",
-      "school": "Grand Canyon University",
-      "major": "Entrepreneurial Studies and Digital Production (screenwriting emphasis) — double major",
-      "amount": "",
-      "quote": "I am a Senior at Grand Canyon University, double majoring in entrepreneurial studies and digital production with an emphasis on screenwriting. Two polar opposites, right? I’d tend to agree, but as I enter my senior year, I am amazed at how much of a role each major has played in the success of the other. The organizational skills learned in my business classes have proven to be essential as the very nature of film is teamwork. Likewise, my creativity has tremendously supported my pursuit of a business degree. The LEO Foundation has helped me in every step of my college career and has given me the opportunity to finish my Bachelor’s program on a high note. The LEO Foundation CEO, Madeline Winney, said, “God’s gift to you is who you are, and your gift to God is what you do with it.” With encouragement like this, one can not help but feel reassured that they are on the right path. The support of the LEO Foundation has allowed me to receive an education that not only has played a critical factor in who I am today but has given me the skills and knowledge I will use to help build a better tomorrow.",
-      "photoUrl": "/img/recipients/caleb.jpg",
-      "featured": false,
-      "draft": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      }
-    },
-    {
-      "id": "rec-brooklyn",
-      "name": "Brooklyn",
-      "year": "",
-      "scholarship": "LEO Foundation Scholarship",
-      "school": "",
-      "major": "Biology (pre-medical)",
-      "amount": "",
-      "quote": "I am so grateful for the LEO Foundation and everything you do to make things like a college education possible. With support from the LEO Foundation, I can study Biology with the intent of going to medical school after obtaining my bachelor’s degree. Scholarship opportunities like this give other students and me time to focus on studies and get involved on campus. I am incredibly thankful for the funding that has made this foundation possible, giving students more opportunities to achieve their dreams.",
-      "photoUrl": "/img/recipients/brooklyn.jpg",
-      "featured": false,
-      "draft": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      }
-    },
-    {
-      "id": "rec-julian",
-      "name": "Julian",
-      "year": "",
-      "scholarship": "LEO Foundation Scholarship",
-      "school": "",
-      "major": "Business IT",
-      "amount": "",
-      "quote": "Through my scholarship opportunity, I have met some amazing people and have found my path in life and a new relationship with God. The Leo Foundation Scholarship Award has given me, a first-generation Hispanic higher-education student, the opportunity to accomplish my goals of getting a Business IT degree, making a name for myself in this precious life, and making my family proud. This opportunity has changed my life!",
-      "photoUrl": "/img/recipients/julian.jpg",
-      "featured": false,
-      "draft": false,
-      "publish": {
-        "showFrom": "",
-        "showUntil": ""
-      }
-    }
-  ],
-  "pages": [
-    {
-      "id": "page-about",
-      "slug": "about",
-      "title": "About the foundation",
-      "inNav": true,
-      "summary": "Who we are and why we invest in students.",
-      "body": "LEO Foundation — Leadership, Education and Opportunity — is an independent nonprofit 501(c)(3) organization. Our mission is to invest in future generations by supporting student leadership and educational opportunities through scholarships, mentoring, and athletic programs.\n\nFor nearly twenty years, the foundation — formerly the GCU Scholarship Foundation — has connected more than 3,000 young people to over $5 million in scholarships and to educational and athletic opportunities that promote higher-learning academic achievement.\n\n## Who we serve\n\nOur primary exempt purpose is to provide scholarships to traditional, full-time undergraduate students enrolled at universities and colleges in Arizona.\n\n## How we are funded\n\nThe foundation is funded by individual donors, families who establish memorial scholarships, and community partners. Gifts are tax deductible to the extent allowed by law.",
-      "navLabel": "About"
-    },
-    {
-      "id": "page-faq",
-      "slug": "faq",
-      "title": "Scholarship FAQs",
-      "inNav": true,
-      "summary": "How applications, deadlines, and awards work.",
-      "body": "## When can I apply?\n\nThe enrollment period runs from November 1 through March 31 each year. Awards are announced in the spring for the following academic year.\n\n## How many scholarships can I apply for?\n\nRead the instructions and criteria for each scholarship, then apply for every award you qualify for. Only one application per scholarship is accepted.\n\n## Do I need to be admitted to a university first?\n\nYes. In most cases foundation scholarships are open only to students who have already been accepted into a program at that university. You must have completed the university application process and been admitted to qualify for an award.\n\n## Who is eligible?\n\nTraditional, full-time undergraduate students enrolled at universities and colleges in Arizona. Individual scholarships add their own criteria — major, GPA, background — which are listed on each scholarship page.\n\n## When will I hear back?\n\nRecipients are notified in the spring, and awarded students are featured on our recipients page.",
-      "navLabel": "FAQs"
-    },
-    {
-      "id": "page-donate",
-      "slug": "donate",
-      "title": "Support a student",
-      "inNav": true,
-      "summary": "Fund a scholarship, or establish one in a loved one's name.",
-      "body": "Every dollar given to the LEO Foundation goes toward opening a door for a student in Arizona. In the 2024/2025 school year alone, the foundation awarded more than $225,000 in scholarships.\n\n## Ways to give\n\n- **Give once or monthly.** A recurring gift lets us commit to students earlier in the cycle.\n- **Establish a memorial or named scholarship.** Several of our awards were created by families to carry a name forward. We will help you set the criteria and steward the fund.\n- **Employer matching.** Many Arizona employers match charitable gifts — ask your HR team.\n\nThe LEO Foundation is a 501(c)(3) organization, EIN 20-4879525. Contributions are tax deductible to the extent allowed by law.",
-      "navLabel": "Giving"
-    },
-    {
-      "id": "page-contact",
-      "slug": "contact",
-      "title": "Contact us",
-      "inNav": true,
-      "summary": "Questions about an application, a gift, or a named scholarship.",
-      "body": "We are glad to help with applications, gifts, and questions about establishing a scholarship.\n\n- **Email:** mwinney@leofoundationusa.org\n- **Phone:** 602.206.4465\n- **Location:** Phoenix, Arizona\n\nDuring the enrollment period we answer application questions as quickly as we can, but please allow a few business days in March as the deadline approaches.",
-      "navLabel": "Contact"
-    }
-  ],
-  "_note": "Scholarship and recipient content transcribed from leofoundationusa.org (read 2026-08-24) and verified against the published pages. Impact figures are the counter targets on the live site. The live site publishes no award year or dollar amount for any recipient, so those fields are intentionally empty. Everything here is editable at /admin."
+    "announcements": [
+        {
+            "id": "ann-open",
+            "title": "Applications are open",
+            "body": "The enrollment period runs November 1 through March 31. Review the available scholarships and apply for every award you qualify for.",
+            "ctaLabel": "See available scholarships",
+            "ctaUrl": "/scholarships",
+            "showWhen": "open"
+        },
+        {
+            "id": "ann-closed",
+            "title": "Applications reopen November 1",
+            "body": "This year's enrollment period has closed. Browse the scholarships now so you are ready when the next cycle opens, and see who was awarded this year.",
+            "ctaLabel": "Meet our recipients",
+            "ctaUrl": "/recipients",
+            "showWhen": "closed"
+        }
+    ],
+    "scholarships": [
+        {
+            "id": "sch-leo",
+            "slug": "leo-foundation-scholarship",
+            "name": "LEO Foundation Scholarship",
+            "amount": "Varies depending on available funds",
+            "summary": "The foundation's general scholarship for traditional, full-time undergraduates carrying at least 12 credit hours.",
+            "criteria": "- Applicant must be a university undergraduate, traditional ground campus student taking at least 12 hours per semester\n- Applicant must meet admissions requirements\n- Applicant must pursue being a full time student\n- Applicant shall demonstrate documented financial need as defined by the college or university Office of Financial Aid\n- Applicant must have a minimum of 3.5 GPA\n- Applicant must submit a one-page personal narrative word document",
+            "details": "",
+            "essayPrompts": [],
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "featured": true,
+            "hideWhenClosed": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            },
+            "draft": false
+        },
+        {
+            "id": "sch-gcu-guild",
+            "slug": "gcu-guild-continuing-student-scholarship",
+            "name": "GCU Guild Continuing Student Scholarship",
+            "amount": "$1,000",
+            "summary": "An endowed award from the GCU Guild for a continuing Grand Canyon University undergraduate active on campus.",
+            "criteria": "- Student must meet university admissions requirements\n- Applicant must be enrolled full-time as a traditional ground student (12 credit hours per semester)\n- Applicant must maintain a 2.75 GPA and be a university freshman applying for their sophomore, junior or senior year of study\n- Applicant must be involved in campus activities\n- Scholarships will be awarded in spring 2026 for the 2026/2027 academic year\n- Scholarship recipients must acknowledge their award in the form of an email thank you within three weeks of notification to mwinney@leofoundationusa.org",
+            "details": "The Grand Canyon University Guild established a scholarship fund through the gifts and fundraising efforts of the members while they were an active Club serving the GCU Campus students from 1994 until they retired from serving on campus in 2016. An Endowed Scholarship Fund was established in 1997 to provide GCU student scholarships each year, this endowed fund is managed by the Grand Canyon University Scholarship Foundation (GCUSF). The intent of this scholarship is to help offset the costs of education for a Grand Canyon University (GCU) traditional undergraduate student.",
+            "essayPrompts": [],
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "featured": false,
+            "hideWhenClosed": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            },
+            "draft": false
+        },
+        {
+            "id": "sch-mccurdy",
+            "slug": "richard-mccurdy-club-sports-golf-scholarship",
+            "name": "Richard McCurdy Club Sports Golf Scholarship",
+            "amount": "$1,000",
+            "summary": "A memorial award for a registered member of the Club Sports golf team.",
+            "criteria": "- Applicant must meet university admissions requirements\n- Applicant must be an undergraduate Grand Canyon University traditional ground campus student taking at least 12 hours per semester\n- Applicant shall demonstrate documented financial need as defined by the university’s Office of Financial Aid\n- Applicant must be a current registered Club Sports golf team member\n- Scholarships will be awarded in spring of 2026 for the 2026/2027 academic year\n- Scholarship recipients must acknowledge their award in the form of an email thank you within three weeks of notification to mwinney@leofoundationusa.org",
+            "details": "Dick began his love of golf in college where he played on local golf courses. Throughout his education career (teacher, principal, and coach) in Frederick, Maryland, he enjoyed golfing in local and “long distance” golf outings. He coached High School football, girl’s basketball, and golf. He always felt that sports not only help to develop the physical body but enriched the life skills of the student. After retirement, he worked at a golf club setting up daily play, outings and tournaments. Upon moving the Sun City Grand, he joined the Men’s club and competed in many local tournaments. He taught his wife, Vivian, to play and soon after he was organizing Sunday couples play and golf trips for up to 24 players. He arranged trips from Mesquite, Nevada to Myrtle Beach, South Carolina.\n\nHe also loved basketball and was an avid University of Maryland fan. He had volunteered as an usher during the Lefty Drisell era. Grand Canyon basketball provided an excellent alternative. You would often find the couple in the stands cheering on the Lopes.\n\nDick is missed very much but he would be thrilled to know that he is helping a fellow golfer fulfill his dreams. (Dick McCurdy, August 5, 1943 – January 4, 2021)",
+            "essayPrompts": [],
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "featured": false,
+            "hideWhenClosed": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            },
+            "draft": false
+        },
+        {
+            "id": "sch-entrepreneurial",
+            "slug": "leo-foundation-entrepreneurial-scholarship",
+            "name": "LEO Foundation Entrepreneurial Scholarship",
+            "amount": "$1,000",
+            "summary": "For full-time students majoring in business entrepreneurial studies who show initiative, need, and character.",
+            "criteria": "- Applicant must meet university admissions requirements\n- Applicant must pursue being a full-time student\n- Applicant must be pursuing an academic degree in Business Entrepreneurial Studies\n- The applicant shall demonstrate documented financial need as defined by their university’s office of financial aid\n- Applicant must have a minimum of 3.0 GPA\n- Applicant must demonstrate Entrepreneurial endeavor history\n- Applicant must demonstrate they have Christian and conservative values\n- Applicant must submit a 300-word document on what Christian and conservative values mean to them\n- Applicant must submit a 300-word document on their goals of becoming a business owner\n- Scholarships will be awarded in spring 2026 for the 2026/2027 academic year\n- Scholarship recipients must acknowledge their award in the form of an email thank you within three weeks of notification to mwinney@leofoundationusa.org",
+            "details": "",
+            "essayPrompts": [
+                "Describe a venture or idea you have pursued and what it taught you (300 words).",
+                "Describe how your values shape the way you intend to lead (300 words)."
+            ],
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "featured": true,
+            "hideWhenClosed": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            },
+            "draft": false
+        },
+        {
+            "id": "sch-christian-studies",
+            "slug": "leo-foundation-christian-studies-scholarship",
+            "name": "LEO Foundation Christian Studies Scholarship",
+            "amount": "Varies depending on available funds",
+            "summary": "For full-time students pursuing Christian studies, awarded annually.",
+            "criteria": "- Applicant must meet university admissions requirements\n- Applicant must pursue being a full-time student\n- The applicant shall demonstrate documented financial need as defined by their university’s office of financial aid\n- Applicant must possess a cumulative 2.5 GPA or higher\n- Applicant must demonstrate they have Christian and conservative values, representative of the University’s Mission and Vision\n- Applicant must submit a 300-word document on what Christian character and integrity mean to them",
+            "details": "",
+            "essayPrompts": [],
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "featured": true,
+            "hideWhenClosed": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            },
+            "draft": false
+        },
+        {
+            "id": "sch-baker",
+            "slug": "lavern-sharky-and-leona-baker-educational-scholarship",
+            "name": "LaVern “Sharky” and Leona Baker Educational Scholarship",
+            "amount": "Varies depending on available funds",
+            "summary": "A memorial award honouring two lifelong Arizona educators, for students studying education.",
+            "criteria": "- Applicant must be pursing a degree in education\n- Applicant must be a university undergraduate, traditional ground campus student taking at least 12 hours per semester\n- Applicant must meet admissions requirements\n- Applicant must submit a one-page personal narrative word document",
+            "details": "The LaVern “Sharky” and Leona Baker Educational Scholarship was created to honor Sharky and Leona’s lifelong dedication to education.\n\nLaVern “Sharky” Baker, age 96, of Peoria, Arizona, passed away on March 24, 2023. Sharky’s smile, quick wit, humor, teasing, nicknames, bad jokes, and hugs will be missed by all who knew and loved him.\n\nSharky was born on June 12, 1926, in Roff, Oklahoma. His family moved to Arizona in 1938, and Sharky considered Chandler, Arizona, his hometown. Sharky attended Grand Canyon College on an athletic scholarship and eventually found his beautiful bride on that campus. He graduated in 1956 and then began a 34-year career in education, retiring as the Payson Unified School District Superintendent.\n\nSharky and Leona wed in 1957 and began their family while living, teaching, and coaching in Hayden, Arizona. Sharky moved his family to Payson, Arizona, in 1968, where he and Leona continued their educational careers, were active in many clubs, and enjoyed serving in their church. Sharky, also known as Coach Baker, enjoyed teaching and coaching but truly loved the students he mentored and encouraged.\n\nSharky loved serving the Lord, and he used his talents in different positions in his church. He loved music and loved to sing. He used those gifts to lead music in church and a Barber Shop Quartet. Sharky wore many hats in life, that of a husband, father, grandfather, great-grandfather, son, brother, uncle, coach, educator, and administrator but none more important to him than being a Christ follower. He loved people, he loved to talk to people, and he had a heart for people to know the Lord. Sharky knew from his own experience that God changes lives.",
+            "essayPrompts": [],
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "featured": false,
+            "hideWhenClosed": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            },
+            "draft": false
+        },
+        {
+            "id": "sch-music",
+            "slug": "skw-play-it-forward-music-scholarship",
+            "name": "SKW Play It Forward Music Scholarship",
+            "amount": "$1,000",
+            "summary": "For a full-time student pursuing an academic degree in music.",
+            "criteria": "- Applicant must meet university admissions requirements\n- Applicant must be a full-time student\n- Applicant must be pursuing an academic degree in music\n- Applicant shall demonstrate documented financial need as defined by the college or university office of financial aid\n- Applicant must have a minimum GPA of 3.50\n- Applicant must submit a one-page essay on why they are pursuing a degree in music and on one of the following: how it will benefit their community and the world of music; how they demonstrate the value of service in their everyday life, or within clubs and organizations in which they have participated",
+            "details": "",
+            "essayPrompts": [],
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "featured": false,
+            "hideWhenClosed": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            },
+            "draft": false
+        },
+        {
+            "id": "sch-theatre",
+            "slug": "foundation-theatre-scholarship",
+            "name": "Foundation Theatre Scholarship",
+            "amount": "$1,000",
+            "summary": "For a full-time undergraduate pursuing theatre or theatre education.",
+            "criteria": "- Applicant must be a university undergraduate, traditional ground campus student taking at least 12 hours per semester\n- Applicant must be pursuing an academic degree in Theatre / Theatre Education\n- Applicant must meet admissions requirements\n- Applicant must pursue being a full-time student\n- Applicant shall demonstrate documented financial need as defined by the college or university Office of Financial Aid\n- Applicant must have a minimum of 3.0 GPA\n- Applicant must submit a one-page personal narrative word document",
+            "details": "",
+            "essayPrompts": [],
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "featured": false,
+            "hideWhenClosed": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            },
+            "draft": false
+        },
+        {
+            "id": "sch-foster",
+            "slug": "foster-youth-scholarships",
+            "name": "Foster Youth Scholarships",
+            "amount": "Varies, depending on need",
+            "summary": "For students who reached age 18 as a ward of the State of Arizona or in tribal foster care.",
+            "criteria": "- Must reach or have reached age 18 as a Ward of the State of Arizona or in tribal foster care in Arizona\n- Must be a university or 4-year college undergraduate, traditional ground campus student taking at least 12 hours per semester\n- Must maintain a minimum GPA of 2.5 or higher",
+            "details": "",
+            "essayPrompts": [],
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "featured": true,
+            "hideWhenClosed": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            },
+            "draft": false
+        },
+        {
+            "id": "sch-nursing",
+            "slug": "joyce-k-smith-nursing-memorial-scholarship",
+            "name": "Joyce K. Smith Nursing Memorial Scholarship",
+            "amount": "$1,000",
+            "summary": "A memorial award for in-state students pursuing an academic degree in nursing.",
+            "criteria": "- Meet a university’s admissions requirements\n- Must be pursuing an academic degree in Nursing\n- Applicants shall demonstrate documented financial needs as defined by their university’s office of financial aid\n- Applicants must have a 3.5 GPA\n- Applicant must be an in-state, traditional ground student\n- Scholarships will be awarded in spring 2026 for the 2026/2027 academic year\n- Scholarship recipients must acknowledge their award in the form of an email thank you within three weeks of notification to mwinney@leofoundationusa.org",
+            "details": "This Scholarship was established to provide financial assistance to deserving students pursuing an academic degree in Nursing.\n\nJoyce Smith was born in 1936 in Chicago, Illinois. She was the 4th of 7 children. Joyce enjoyed traveling and lived in Texas before eventually calling Arizona her “home.”\n\nJoyce had a great love for God, fishing, southwest artwork, and nursing. She loved helping others and was the inspiration for her niece, Donna, who also became a nurse.",
+            "essayPrompts": [],
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "featured": false,
+            "hideWhenClosed": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            },
+            "draft": false
+        },
+        {
+            "id": "sch-bhhs",
+            "slug": "bhhs-legacy-nursing-health-related-scholarship",
+            "name": "BHHS Legacy Nursing & Health Related Scholarship",
+            "amount": "Varies",
+            "summary": "Funded by BHHS Legacy Foundation, for students in nursing or a health-related field.",
+            "criteria": "- Candidate must be pursuing a degree in nursing or a health-related field\n- Candidate must meet university or college admissions requirements\n- Candidate must pursue being a full time student\n- Candidate shall demonstrate documented financial need as defined by the university or college Office of Financial Aid\n- Candidate must have a minimum of 3.0 GPA\n- Candidate must submit a one-page personal narrative\n- Candidate must submit a 300-word document on what Community Service mean to them and show how they have demonstrated the value of “service” in their lives through everyday life as well as within organizations, clubs, and services in which they have participated\n- Candidate must prepare and mail an acknowledgement/thank you to the LEO Foundation on behalf of BHHS Legacy Foundation Board of Directors expressing appreciation for the scholarship funding",
+            "details": "",
+            "essayPrompts": [],
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "featured": false,
+            "hideWhenClosed": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            },
+            "draft": false
+        },
+        {
+            "id": "sch-mealman",
+            "slug": "tiffany-d-mealman-women-excellence-in-chemistry-and-christian-character-scholarship",
+            "name": "Tiffany D. Mealman Women Excellence in Chemistry and Christian Character Scholarship",
+            "amount": "Varies depending on available funds",
+            "summary": "A memorial award for a junior woman majoring in the sciences who leads with excellence and character.",
+            "criteria": "- Candidate must meet university admissions requirements\n- Candidate must be an in-state traditional ground student\n- Candidate must be a woman with a declared major in the sciences and of junior status\n- Candidate must possess a cumulative 3.2 GPA or higher and have received the grade of A in her Biochemistry class\n- Candidate must submit a letter of recommendation (one) from a Chemistry or Biochemistry faculty\n- Candidate must submit a 300-word personal statement about the importance of integrity, character, and Christian service in her life\n- Scholarships will be awarded in spring 2025 for the 2025/2026 academic year. Scholarship recipients must acknowledge their award in the form of an email thank you within three weeks of notification to mwinney@leofoundationusa.org ",
+            "details": "TIFFANY D. MEALMAN WOMEN EXCELLENCE IN CHEMISTRY AND CHRISTIAN CHARACTER SCHOLARSHIP\n\nTiffany Mealman was a passionate researcher, caring educator, and devoted friend who touched the lives of many. Tiffany will be remembered for her quiet resilience and incredible endurance with which she continued her academic pursuits, despite the odds. She was a great mentor for many students, sharing her passion for science and inspiring them to be their best and achieve their goals. She will be dearly missed, but her legacy will endure.",
+            "essayPrompts": [],
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "featured": false,
+            "hideWhenClosed": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            },
+            "draft": false
+        },
+        {
+            "id": "sch-gary",
+            "slug": "evan-c-gary-memorial-scholarship",
+            "name": "Evan C. Gary Memorial Scholarship",
+            "amount": "$1,000",
+            "summary": "A memorial award for homeschooled students entering engineering, science, or pre-med study at Grand Canyon University.",
+            "criteria": "- Applicants must be Engineering, Science, or Pre-Med majors at Grand Canyon University\n- Applicants must have been homeschooled for a minimum of their high school years\n- Applicants must maintain a 3.5 GPA to qualify for subsequent awards\n- Applicants must submit two letters of recommendation from non-family members who have known the student for at least three years. One must be a letter from a pastor or staff member at the student’s home church",
+            "details": "The Scholarship was created to honor the life of homeschooled student Evan C. Gary, son of Grant, and Carol Gary, GCU alumni.\n\nEvan had a keen interest in mechanical engineering, historical science, and biology and had hoped to one day attend GCU. However, through his various projects and creative interests, he had an even bigger heart to see that those around him knew the saving love of Jesus Christ.\n\nAt the age of 12, Evan was diagnosed with an aggressive form of leukemia. With his whole family by his side, he sought treatment over 25 months at four different internationally known medical institutions across the United States.\n\nAs he bravely battled cancer in all of these various settings and circumstances, Evan continued to excel in almost everything he did while maintaining a positive attitude and an eternal perspective on life.\n\nOnce a person met Evan, their life was changed for the better, forever. The evening before he passed away, at the age of 14, Evan declared, “I’m going to serve Jesus and Him alone. I’m going to focus on what is right. How about you?” It is, therefore, the hope of Evan’s parents that his words continue to live on and inspire the dedicated, home-educated youth of tomorrow who seek to faithfully pursue their respective fields in engineering, science, or pre-medicine.",
+            "essayPrompts": [],
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "featured": false,
+            "hideWhenClosed": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            },
+            "draft": false
+        },
+        {
+            "id": "sch-browning",
+            "slug": "tim-browning-memorial-scholarship",
+            "name": "Tim Browning Memorial Scholarship",
+            "amount": "$1,000",
+            "summary": "A memorial award for students who have lost a parent and carried that loss forward into their education.",
+            "criteria": "- Traditional, full-time undergraduate status\n- Essay describing how the loss of a parent impacted your life",
+            "details": "Not currently being issued. Retained so the copy is ready if the award is offered again.",
+            "essayPrompts": [
+                "Describe how the loss of a parent impacted your life."
+            ],
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "featured": false,
+            "hideWhenClosed": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            },
+            "draft": true
+        },
+        {
+            "id": "sch-arvizu",
+            "slug": "arvizu-scholarship",
+            "name": "Arvizu Scholarship",
+            "amount": "$1,000",
+            "summary": "An award supporting an Arizona undergraduate of Latino heritage.",
+            "criteria": "- Students must be of Latino heritage",
+            "details": "Not currently being issued. Retained so the copy is ready if the award is offered again.",
+            "essayPrompts": [],
+            "applyUrl": "",
+            "window": {
+                "type": "inherit"
+            },
+            "featured": false,
+            "hideWhenClosed": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            },
+            "draft": true
+        }
+    ],
+    "recipients": [
+        {
+            "id": "rec-sophia-hamre",
+            "name": "Sophia Hamre",
+            "year": "",
+            "scholarship": "LEO Foundation Scholarship",
+            "school": "Grand Canyon University",
+            "major": "",
+            "amount": "",
+            "quote": "Sophia Hamre will be a senior at Grand Canyon University next fall, with plans to graduate in Spring 2027. The Leo Foundation has been such a blessing in my life, helping to ease the financial burden of tuition and allowing me to stay focused on my academic and professional goals. Their generosity has made a meaningful impact on my college experience, and I am incredibly grateful for their support. I look forward to carrying forward the impact of their investment in my future. Receiving the LEO Foundation scholarship is a transformative gift. Raised in a home centered on faith, Sophia has always valued learning and spiritual growth. allowing her to continue her studies with a sense of relief and determination. This scholarship empowers her to focus on her academic journey while deepening her faith and personal growth. She is excited to contribute to the community and support others who may be facing their own challenges. The generous support of the Leo Foundation, Madeline Winney, CEO and the Board of Directors has alleviated financial burden, but also reminds her that she is surrounded by people who believe in her abilities and her future. With this scholarship, she is inspired to move forward with confidence, perseverance, and a heart full of faith.",
+            "photoUrl": "/img/recipients/sophia-hamre.jpg",
+            "featured": true,
+            "draft": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            }
+        },
+        {
+            "id": "rec-sydney-hamre",
+            "name": "Sydney Hamre",
+            "year": "",
+            "scholarship": "LEO Foundation Scholarship",
+            "school": "Grand Canyon University",
+            "major": "Occupational Therapy (career goal)",
+            "amount": "",
+            "quote": "My name is Sydney Hamre, and I am currently a junior at Grand Canyon University. I am incredibly grateful for the opportunity to receive this scholarship, as it greatly supports both my academic journey and financial needs. This support allows me to focus more on my studies and continue working toward my goal of becoming an occupational therapist without the added stress of financial burden. I truly appreciate this investment in my future, and it motivates me to work hard and make the most of my education.",
+            "photoUrl": "/img/recipients/sydney-hamre.jpg",
+            "featured": true,
+            "draft": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            }
+        },
+        {
+            "id": "rec-elijah",
+            "name": "Elijah",
+            "year": "",
+            "scholarship": "LEO Foundation Scholarship",
+            "school": "Grand Canyon University",
+            "major": "Sports Management",
+            "amount": "",
+            "quote": "For Elijah, receiving a scholarship from the Leo Foundation is an incredible blessing that fills him with gratitude and purpose. It is a powerful reminder of the belief others have in his ability to graduate with a Sports Management Degree. Raised in a family grounded in faith, Elijah values both education and spiritual growth. His time working directly with Ms. Winney has deepened his faith, shaping him into a more confident and intentional individual. This scholarship enables him to focus on his studies, spiritual journey, and personal growth. Elijah is also serving as a Resident Assistant on campus, where he encourages and supports his peers. The generosity of the Leo Foundation and Ms. Madeline Winney lightens his financial burden, allowing him to embrace his calling and reminding him that he is part of a community that values education, faith, and perseverance!",
+            "photoUrl": "/img/recipients/elijah.jpg",
+            "featured": true,
+            "draft": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            }
+        },
+        {
+            "id": "rec-matthew",
+            "name": "Matthew",
+            "year": "",
+            "scholarship": "LEO Foundation Christian Studies Scholarship",
+            "school": "",
+            "major": "Christian Studies",
+            "amount": "",
+            "quote": "Matthew became a Christian at 18 years old despite his upbringing in a religiously unaffiliated home. Since that time, he has pursued pastoral ministry whole-heartedly. He has served at Christian youth camps and is currently working on his bachelor’s degree in Christian studies. This summer, Matthew will lead and serve youth as the Assistant Director at Hume Lake Christian Camp. “Without the help from LEO Foundation, I wouldn’t be here and wouldn’t have the opportunity to pursue my dream.”",
+            "photoUrl": "/img/recipients/matthew.jpg",
+            "featured": false,
+            "draft": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            }
+        },
+        {
+            "id": "rec-jacob",
+            "name": "Jacob",
+            "year": "",
+            "scholarship": "BHHS Legacy Nursing & Health Related Scholarship",
+            "school": "",
+            "major": "Biology, pre-medicine emphasis; now MBS master’s program",
+            "amount": "",
+            "quote": "I would like to express my deepest gratitude to the LEO Foundation for awarding me the BHHS Legacy Nursing and Health-Related Scholarship. This generous support has been instrumental in allowing me to complete my bachelor’s degree in biology with an emphasis in pre-medicine. With this academic foundation, I am now enrolled in an MBS master’s program, which serves as a direct pathway to medical school. This opportunity would not have been possible without the kindness and generosity of the LEO Foundation. Thank you for helping me pursue my dreams.",
+            "photoUrl": "/img/recipients/jacob.jpg",
+            "featured": false,
+            "draft": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            }
+        },
+        {
+            "id": "rec-natalie",
+            "name": "Natalie",
+            "year": "",
+            "scholarship": "LEO Foundation Scholarship",
+            "school": "",
+            "major": "Bachelor of Science in Nursing (accelerated)",
+            "amount": "",
+            "quote": "Thanks to the LEO Foundation Scholarship, Natalie graduated with honors from an accelerated Bachelor of Science in Nursing program. She knew from an early age that this profession was her calling. The academic and book scholarship award allowed her to focus on schoolwork and studying. Natalie is now a registered nurse at an outpatient surgery center, helping dialysis patients. She is a registered nurse employed at Phoenix Children’s Hospital.",
+            "photoUrl": "/img/recipients/natalie.jpg",
+            "featured": false,
+            "draft": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            }
+        },
+        {
+            "id": "rec-isabelle",
+            "name": "Isabelle",
+            "year": "",
+            "scholarship": "LEO Foundation Scholarship",
+            "school": "Grand Canyon University (transferred from UC Santa Cruz)",
+            "major": "MBA in Finance; BS Business Management, minor Finance",
+            "amount": "",
+            "quote": "I am currently a Master’s student at Grand Canyon University studying to receive my MBA in Finance. The LEO Foundation has supported me with scholarships for my Master’s degree program. My studies started at the University of California, Santa Cruz, before transferring and graduating from GCU with a Bachelor’s Degree in Business Management and a minor in Finance. I played NCAA Women’s Tennis at both UCSC and GCU. I currently hold a position as Assistant Director of Corporate Affairs for a Phoenix company, where I manage Operations, HR, Marketing, and Payroll.",
+            "photoUrl": "/img/recipients/isabelle.jpg",
+            "featured": false,
+            "draft": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            }
+        },
+        {
+            "id": "rec-eunice",
+            "name": "Eunice",
+            "year": "",
+            "scholarship": "LEO Foundation Scholarship",
+            "school": "",
+            "major": "Electrical Engineering",
+            "amount": "",
+            "quote": "Thanks to LEO Foundation Scholarships, Eunice graduated in 2021 as an electrical engineer. She is thriving on the east coast with her dream job at Google. Her six-year journey, which started when she was a 15-year-old girl living on another continent, had many twists and turns, but her faith, patience, and strength always prevailed.",
+            "photoUrl": "/img/recipients/eunice.jpg",
+            "featured": false,
+            "draft": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            }
+        },
+        {
+            "id": "rec-sebastian",
+            "name": "Sebastian",
+            "year": "",
+            "scholarship": "LEO Foundation Scholarship",
+            "school": "",
+            "major": "Business Administration/Management; Master of Management, Communications and IT",
+            "amount": "",
+            "quote": "Sebastian began his collegiate career with a soccer scholarship until an injury forced him to retire his jersey. With new scholarship funding from LEO Foundation, he was able to continue school and graduate with a degree in Business Administration/Management and obtain a Master of Management, Communications, and IT. Sebastian now owns a business providing IT project management support and solutions.",
+            "photoUrl": "/img/recipients/sebastian.jpg",
+            "featured": false,
+            "draft": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            }
+        },
+        {
+            "id": "rec-joshua",
+            "name": "Joshua",
+            "year": "",
+            "scholarship": "LEO Foundation Scholarship",
+            "school": "Grand Canyon University",
+            "major": "Christian ministry (accelerated 3-year program)",
+            "amount": "",
+            "quote": "Through the support of the LEO Foundation and dedication to his goal, Joshua is in his second year of an accelerated three-year undergraduate program to become a pastor in Christian ministry. He realized his calling from God during his junior year of high school and continues to pursue God’s plan for his life. Joshua’s journey has included ministering to youth in the community through his church and summer camps. After graduation, Joshua will pursue a Master of Divinity with plans for a life of ministry as a teaching pastor and serving in various capacities for which he is called and equipped. “I am incredibly thankful for the scholarship funding from the LEO Foundation. It makes all of this possible. After finishing my undergraduate degree at GCU, I will now be attending classes August 2024 pursuing a Masters of Divinity in Theological and Biblical Studies at Phoenix Seminary.”",
+            "photoUrl": "/img/recipients/joshua.jpg",
+            "featured": false,
+            "draft": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            }
+        },
+        {
+            "id": "rec-jaiden",
+            "name": "Jaiden",
+            "year": "",
+            "scholarship": "LEO Foundation Scholarship",
+            "school": "Yavapai College",
+            "major": "Business Management",
+            "amount": "",
+            "quote": "Basketball is more than a game; it’s my structure, my community. I’ve been playing since I was five years old. As a kid, I moved schools a lot. Moving was never easy, especially because I have a learning disability and hearing difficulties. The court became my safe place, and my teammates developed into a sisterhood. I’m grateful and excited to have the opportunity to study business management at Yavapai College. Playing basketball made this possible. The game’s fast-paced environment helped me with my problem-solving, creativity, and self-confidence. It also helped me get out of my social shell and have the courage to express myself.",
+            "photoUrl": "/img/recipients/jaiden.jpg",
+            "featured": false,
+            "draft": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            }
+        },
+        {
+            "id": "rec-keian",
+            "name": "Keian",
+            "year": "",
+            "scholarship": "LEO Foundation Scholarship",
+            "school": "Grand Canyon University",
+            "major": "",
+            "amount": "",
+            "quote": "I am Keian and a freshman at GCU. After graduating from high school, I had a great opportunity to go on a humanitarian trip to Guatemala. It was one of the best experiences of my life! My father served his LDS mission in Guatemala, and ever since I was born, he has wanted to take me there and show me all the places he lived during his two-year mission. The trip was a life-changer. I spent two weeks serving others by building houses, laying and mixing cement, visiting families and giving them clothes and food, and helping little kids at a school in the areas we served. My favorite part of this entire trip was being able to visit families experiencing poverty and giving them food and clothes, which put the biggest smiles on their faces. I wanted to thank the LEO Foundation for the scholarship. Paying for school was one of my biggest fears and one thing holding me back from going. So thank you, thank you, THANK YOU!",
+            "photoUrl": "/img/recipients/keian.jpg",
+            "featured": false,
+            "draft": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            }
+        },
+        {
+            "id": "rec-caleb",
+            "name": "Caleb",
+            "year": "",
+            "scholarship": "LEO Foundation Scholarship",
+            "school": "Grand Canyon University",
+            "major": "Entrepreneurial Studies and Digital Production (screenwriting emphasis) — double major",
+            "amount": "",
+            "quote": "I am a Senior at Grand Canyon University, double majoring in entrepreneurial studies and digital production with an emphasis on screenwriting. Two polar opposites, right? I’d tend to agree, but as I enter my senior year, I am amazed at how much of a role each major has played in the success of the other. The organizational skills learned in my business classes have proven to be essential as the very nature of film is teamwork. Likewise, my creativity has tremendously supported my pursuit of a business degree. The LEO Foundation has helped me in every step of my college career and has given me the opportunity to finish my Bachelor’s program on a high note. The LEO Foundation CEO, Madeline Winney, said, “God’s gift to you is who you are, and your gift to God is what you do with it.” With encouragement like this, one can not help but feel reassured that they are on the right path. The support of the LEO Foundation has allowed me to receive an education that not only has played a critical factor in who I am today but has given me the skills and knowledge I will use to help build a better tomorrow.",
+            "photoUrl": "/img/recipients/caleb.jpg",
+            "featured": false,
+            "draft": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            }
+        },
+        {
+            "id": "rec-brooklyn",
+            "name": "Brooklyn",
+            "year": "",
+            "scholarship": "LEO Foundation Scholarship",
+            "school": "",
+            "major": "Biology (pre-medical)",
+            "amount": "",
+            "quote": "I am so grateful for the LEO Foundation and everything you do to make things like a college education possible. With support from the LEO Foundation, I can study Biology with the intent of going to medical school after obtaining my bachelor’s degree. Scholarship opportunities like this give other students and me time to focus on studies and get involved on campus. I am incredibly thankful for the funding that has made this foundation possible, giving students more opportunities to achieve their dreams.",
+            "photoUrl": "/img/recipients/brooklyn.jpg",
+            "featured": false,
+            "draft": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            }
+        },
+        {
+            "id": "rec-julian",
+            "name": "Julian",
+            "year": "",
+            "scholarship": "LEO Foundation Scholarship",
+            "school": "",
+            "major": "Business IT",
+            "amount": "",
+            "quote": "Through my scholarship opportunity, I have met some amazing people and have found my path in life and a new relationship with God. The Leo Foundation Scholarship Award has given me, a first-generation Hispanic higher-education student, the opportunity to accomplish my goals of getting a Business IT degree, making a name for myself in this precious life, and making my family proud. This opportunity has changed my life!",
+            "photoUrl": "/img/recipients/julian.jpg",
+            "featured": false,
+            "draft": false,
+            "publish": {
+                "showFrom": "",
+                "showUntil": ""
+            }
+        }
+    ],
+    "pages": [
+        {
+            "id": "page-about",
+            "slug": "about",
+            "title": "About the foundation",
+            "inNav": true,
+            "summary": "Who we are and why we invest in students.",
+            "body": "LEO Foundation — Leadership, Education and Opportunity — is an independent nonprofit 501(c)(3) organization. Our mission is to invest in future generations by supporting student leadership and educational opportunities through scholarships, mentoring, and athletic programs.\n\nFor nearly twenty years, the foundation — formerly the GCU Scholarship Foundation — has connected more than 3,000 young people to over $5 million in scholarships and to educational and athletic opportunities that promote higher-learning academic achievement.\n\n## Who we serve\n\nOur primary exempt purpose is to provide scholarships to traditional, full-time undergraduate students enrolled at universities and colleges in Arizona.\n\n## How we are funded\n\nThe foundation is funded by individual donors, families who establish memorial scholarships, and community partners. Gifts are tax deductible to the extent allowed by law.",
+            "navLabel": "About"
+        },
+        {
+            "id": "page-faq",
+            "slug": "faq",
+            "title": "Scholarship FAQs",
+            "inNav": true,
+            "summary": "How applications, deadlines, and awards work.",
+            "body": "## When can I apply?\n\nThe enrollment period runs from November 1 through March 31 each year. Awards are announced in the spring for the following academic year.\n\n## How many scholarships can I apply for?\n\nRead the instructions and criteria for each scholarship, then apply for every award you qualify for. Only one application per scholarship is accepted.\n\n## Do I need to be admitted to a university first?\n\nYes. In most cases foundation scholarships are open only to students who have already been accepted into a program at that university. You must have completed the university application process and been admitted to qualify for an award.\n\n## Who is eligible?\n\nTraditional, full-time undergraduate students enrolled at universities and colleges in Arizona. Individual scholarships add their own criteria — major, GPA, background — which are listed on each scholarship page.\n\n## When will I hear back?\n\nRecipients are notified in the spring, and awarded students are featured on our recipients page.",
+            "navLabel": "FAQs"
+        },
+        {
+            "id": "page-donate",
+            "slug": "donate",
+            "title": "Support a student",
+            "inNav": true,
+            "summary": "Fund a scholarship, or establish one in a loved one's name.",
+            "body": "Every dollar given to the LEO Foundation goes toward opening a door for a student in Arizona. In the 2024/2025 school year alone, the foundation awarded more than $225,000 in scholarships.\n\n## Ways to give\n\n- **Give once or monthly.** A recurring gift lets us commit to students earlier in the cycle.\n- **Establish a memorial or named scholarship.** Several of our awards were created by families to carry a name forward. We will help you set the criteria and steward the fund.\n- **Employer matching.** Many Arizona employers match charitable gifts — ask your HR team.\n\nThe LEO Foundation is a 501(c)(3) organization, EIN 20-4879525. Contributions are tax deductible to the extent allowed by law.",
+            "navLabel": "Giving"
+        },
+        {
+            "id": "page-contact",
+            "slug": "contact",
+            "title": "Contact us",
+            "inNav": true,
+            "summary": "Questions about an application, a gift, or a named scholarship.",
+            "body": "We are glad to help with applications, gifts, and questions about establishing a scholarship.\n\nDuring the enrollment period we answer application questions as quickly as we can, but please allow a few business days in March as the deadline approaches.",
+            "navLabel": "Contact"
+        }
+    ],
+    "_note": "Scholarship and recipient content transcribed from leofoundationusa.org (read 2026-08-24) and verified against the published pages. Impact figures are the counter targets on the live site. The live site publishes no award year or dollar amount for any recipient, so those fields are intentionally empty. Everything here is editable at /admin."
 }
