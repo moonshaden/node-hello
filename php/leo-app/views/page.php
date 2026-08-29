@@ -39,14 +39,33 @@ $index = count($article['headings']) >= $indexFrom ? $article['headings'] : [];
 $members = is_array($page['members'] ?? null) ? $page['members'] : [];
 ?>
 <?php if ($members !== []): ?>
+<?php
+// The chief executive leads the page in a full-width row; everyone else keeps
+// the three-up grid. Driven by a lead flag on the record rather than by
+// position, so reordering the roster cannot silently promote someone.
+$lead = null;
+$rest = [];
+foreach ($members as $member) {
+    if ($lead === null && !empty($member['lead'])) {
+        $lead = $member;
+        continue;
+    }
+    $rest[] = $member;
+}
+?>
 <section class="band tint" id="board">
   <div class="wrap">
     <h2 class="section-head">Board of Directors</h2>
-    <div class="grid grid-3">
-      <?php foreach ($members as $member): ?>
-        <?php $app->partial('board-card', ['member' => $member]); ?>
-      <?php endforeach; ?>
-    </div>
+    <?php if ($lead !== null): ?>
+      <?php $app->partial('board-card', ['member' => $lead, 'lead' => true]); ?>
+    <?php endif; ?>
+    <?php if ($rest !== []): ?>
+      <div class="grid grid-3"<?= $lead !== null ? ' style="margin-top:28px"' : '' ?>>
+        <?php foreach ($rest as $member): ?>
+          <?php $app->partial('board-card', ['member' => $member]); ?>
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
   </div>
 </section>
 <?php endif; ?>

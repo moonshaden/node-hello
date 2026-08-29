@@ -5,10 +5,12 @@
 // same excerpt() the recipient stories use and the full text sits behind a
 // disclosure -- nothing published is lost, and one card cannot end up four
 // times the height of its neighbour.
+$isLead = !empty($lead);
+// The lead has a full-width row to itself, so its bio needs no excerpting.
 $story = excerpt($member['bio'] ?? '');
 $paragraphs = static fn (string $text): array => preg_split('/\n{2,}/', trim($text)) ?: [];
 ?>
-<article class="card board-member">
+<article class="card board-member<?= $isLead ? ' board-lead' : '' ?>">
   <?php if (!empty($member['photoUrl'])): ?>
     <img class="portrait portrait-round" src="<?= e(link_url($member['photoUrl'], $basePath)) ?>" alt="<?= e($member['name'] ?? '') ?>" loading="lazy" width="800" height="800">
   <?php else: ?>
@@ -32,7 +34,7 @@ $paragraphs = static fn (string $text): array => preg_split('/\n{2,}/', trim($te
   <?php endif; ?>
 
   <?php if (!empty($member['bio'])): ?>
-    <?php if ($story['truncated']): ?>
+    <?php if ($story['truncated'] && !$isLead): ?>
       <details class="story">
         <summary>
           <p class="story-excerpt"><?= e($story['text']) ?></p>

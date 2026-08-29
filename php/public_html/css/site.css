@@ -270,6 +270,43 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 }
 .board-member .member-statement p { margin: 0 0 .6em; }
 .board-member .member-statement p:last-child { margin-bottom: 0; }
+/* The chief executive leads the page: a full-width row with the portrait
+   beside the text rather than above it. The card is otherwise the same
+   component, so the two cannot drift apart.
+
+   The portrait spans the left column across however many rows the text
+   produces; everything else is pinned to column two and auto-places down it. */
+.board-lead {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  column-gap: 36px;
+  align-items: start;
+  padding: 34px 36px 36px;
+  border-color: #dcd3c2;
+}
+.board-lead > .portrait { grid-column: 1; grid-row: 1 / span 30; align-self: start; }
+.board-lead > :not(.portrait) { grid-column: 2; }
+.board-lead .portrait-round { max-width: 240px; }
+.board-lead .name { font-size: 1.75rem; text-align: left; margin-bottom: 8px; }
+.board-lead .role {
+  justify-self: start; text-align: left; font-size: .82rem;
+  letter-spacing: .08em; text-transform: uppercase;
+  background: var(--gold-wash); border: 1px solid #e6d3a8;
+  color: var(--gold); border-radius: 999px; padding: 5px 13px;
+}
+.board-lead .member-contact { text-align: left; margin-top: 12px; }
+.board-lead .member-statement { font-size: 1.05rem; margin-top: 20px; }
+.board-lead .story-full { margin-top: 18px; }
+.board-lead .story-full p { color: var(--ink-soft); }
+
+@media (max-width: 720px) {
+  .board-lead { grid-template-columns: 1fr; padding: 26px 24px 28px; row-gap: 18px; }
+  .board-lead > .portrait { grid-column: 1; grid-row: auto; justify-self: center; }
+  .board-lead > :not(.portrait) { grid-column: 1; }
+  .board-lead .name { text-align: center; }
+  .board-lead .role { justify-self: center; }
+}
+
 
 /* A 1,993-character bio next to a 446-character one would leave one card in the
    row several times the height of its neighbour. Same disclosure the recipient

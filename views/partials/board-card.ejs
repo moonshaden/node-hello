@@ -6,8 +6,10 @@
   and the full text sits behind a disclosure -- nothing published is lost, and
   one card cannot end up four times the height of its neighbour.
 %>
+<% const isLead = Boolean(locals.lead); %>
+<%# The lead has a full-width row to itself, so its bio needs no excerpting. %>
 <% const story = excerpt(member.bio); %>
-<article class="card board-member">
+<article class="card board-member<%= isLead ? ' board-lead' : '' %>">
   <% if (member.photoUrl) { %>
     <img class="portrait portrait-round" src="<%= member.photoUrl %>" alt="<%= member.name %>" loading="lazy" width="800" height="800">
   <% } else { %>
@@ -31,7 +33,7 @@
   <% } %>
 
   <% if (member.bio) { %>
-    <% if (story.truncated) { %>
+    <% if (story.truncated && !isLead) { %>
       <details class="story">
         <summary>
           <p class="story-excerpt"><%= story.text %></p>

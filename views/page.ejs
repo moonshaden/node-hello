@@ -39,14 +39,27 @@
   const members = Array.isArray(page.members) ? page.members : [];
 %>
 <% if (members.length) { %>
+<%
+  // The chief executive leads the page in a full-width row; everyone else keeps
+  // the three-up grid. Driven by a lead flag on the record rather than by
+  // position, so reordering the roster cannot silently promote someone.
+  const leadIndex = members.findIndex(function (m) { return m.lead; });
+  const lead = leadIndex === -1 ? null : members[leadIndex];
+  const rest = members.filter(function (m, i) { return i !== leadIndex; });
+%>
 <section class="band tint" id="board">
   <div class="wrap">
     <h2 class="section-head">Board of Directors</h2>
-    <div class="grid grid-3">
-      <% members.forEach(function (member) { %>
-        <%- include('partials/board-card', { member }) %>
-      <% }) %>
-    </div>
+    <% if (lead) { %>
+      <%- include('partials/board-card', { member: lead, lead: true }) %>
+    <% } %>
+    <% if (rest.length) { %>
+      <div class="grid grid-3"<%= lead ? ' style="margin-top:28px"' : '' %>>
+        <% rest.forEach(function (member) { %>
+          <%- include('partials/board-card', { member, lead: false }) %>
+        <% }) %>
+      </div>
+    <% } %>
   </div>
 </section>
 <% } %>
