@@ -181,6 +181,34 @@ test('every recipient photo is served from this repo and exists', () => {
   }
 });
 
+// The Community Partnerships page is transcribed from /community-partnerships/
+// on the live site: one partner, its copy word for word, and the event gallery.
+test('the community page publishes the partner and its gallery', () => {
+  const root = path.join(__dirname, '..');
+  const seed = JSON.parse(fs.readFileSync(path.join(root, 'data', 'content.json'), 'utf8'));
+  const page = seed.pages.find((p) => p.slug === 'community');
+  assert.ok(page, 'no community page in the seed');
+  assert.deepEqual(page.partners.map((p) => p.name), ['Alice Cooper’s Solid Rock Teen Center']);
+  assert.equal(page.gallery.length, 4, 'the gallery changed');
+
+  const images = [...page.partners.map((p) => p.photoUrl), ...page.gallery.map((g) => g.src)];
+  for (const src of images) {
+    assert.match(src, /^\/img\/partners\//, `${src} is not served locally`);
+    for (const base of ['public', path.join('php', 'public_html')]) {
+      assert.ok(fs.existsSync(path.join(root, base, src)), `missing ${base}${src}`);
+    }
+  }
+  for (const g of page.gallery) assert.ok((g.alt || '').trim(), `${g.src} has no alt text`);
+});
+
+// The community page is off the main nav by design, so the programs page is the
+// way in. A reworded programs body must not quietly strip the link.
+test('the programs page links to the community page', () => {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  const programs = seed.pages.find((p) => p.slug === 'programs');
+  assert.match(programs.body, /\]\(\/community\)/, 'the programs page no longer links to /community');
+});
+
 // The Programs & Partnerships page is transcribed from /programs-partnerships/
 // on the live site: three programs, in the live order, copy word for word.
 const PROGRAMS = ['Foster Youth Programs', 'Impact Leadership Program', 'Youth Development Academy'];

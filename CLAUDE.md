@@ -40,8 +40,8 @@ once in `php/leo-app/views` + `php/public_html/css`, once in `views/` +
 ## Commands
 
 ```bash
-npm test                                    # 70 tests
-php php/test/run.php                        # 67 tests
+npm test                                    # 72 tests
+php php/test/run.php                        # 69 tests
 find php -name '*.php' -exec php -l {} \;   # lint
 
 ADMIN_PASSWORD='...' npm start              # Node build, :3000
@@ -262,6 +262,32 @@ matching the live nav.
   same 20 / $8.5M / 5,685 / $6.9M figures the impact band already carries; and
   the contact form, which needs a mail handler this build does not have — the
   page body links to `/contact` instead.
+
+The **Community Partnerships page is the live `/community-partnerships/`
+page**, transcribed on 2026-08-30. It is short: an intro, one partner —
+**Alice Cooper's Solid Rock Teen Center** — and a five-image set (the partner's
+logo plus four event photographs). Seeded with slug `community` and
+`inNav: false`, linked from the Programs page body rather than added as an
+eighth header item.
+
+- Partners reuse the `program-section` partial, since a partner renders exactly
+  as a program does (titled row, photo, markdown body). The page record carries
+  `partners` and `gallery` arrays; both survive an admin save for the usual
+  reason (`applyFields()` spreads the existing record first).
+- Images are rehosted under `public/img/partners/` and
+  `php/public_html/img/partners/` (2.55 MB → 0.68 MB). The logo is kept square
+  at 600px; the photographs cap at 1200px. No alt text is published live, so
+  the alt was written here from each image.
+- **The YouTube embed is a link, not an iframe.** The live page gates the video
+  (`videoid=l6u3SMJEF5A`) behind a privacy-consent placeholder; this build has
+  no consent mechanism, so auto-embedding a third-party iframe would be a
+  downgrade. The partner copy links to the video instead.
+- **Not carried across:** the four-button nav strip (Avada chrome duplicating
+  this site's nav) and the contact form, which needs a mail handler this build
+  does not have.
+- Two of the four event photographs are candid shots of identifiable people who
+  are not named anywhere. They are carried as published; worth asking the client
+  whether they want them kept.
 
 The **Board of Directors page is the live `/leadership-2/` page** ("LEADERSHIP"),
 transcribed on 2026-08-29: six members, in the live order, with each office and

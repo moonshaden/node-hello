@@ -50,6 +50,32 @@ $programs = is_array($page['programs'] ?? null) ? $page['programs'] : [];
 <?php endif; ?>
 
 <?php
+// Partners render as programs do -- a titled row with a photo and markdown --
+// so they share the one partial rather than duplicating it. Mirrored in page.ejs.
+$partners = is_array($page['partners'] ?? null) ? $page['partners'] : [];
+$gallery = is_array($page['gallery'] ?? null) ? $page['gallery'] : [];
+?>
+<?php if ($partners !== []): ?>
+<section class="band tint" id="partners">
+  <div class="wrap">
+    <div class="program-list">
+      <?php foreach ($partners as $i => $partner): ?>
+        <?php $app->partial('program-section', ['program' => $partner, 'flip' => $i % 2 === 1]); ?>
+      <?php endforeach; ?>
+    </div>
+
+    <?php if ($gallery !== []): ?>
+      <div class="gallery">
+        <?php foreach ($gallery as $shot): ?>
+          <img src="<?= e(link_url($shot['src'], $basePath)) ?>" alt="<?= e($shot['alt'] ?? '') ?>" loading="lazy">
+        <?php endforeach; ?>
+      </div>
+    <?php endif; ?>
+  </div>
+</section>
+<?php endif; ?>
+
+<?php
 // A page can carry a roster of people alongside its prose -- the board is the
 // only one today. It is stored on the page record rather than as its own
 // content type, so the admin page form still edits the copy around it and

@@ -714,7 +714,7 @@
       "inNav": true,
       "navLabel": "Programs",
       "summary": "The LEO Foundation is dedicated to connecting youth in our community to programs and services that foster growth, self-confidence, and teamwork. Through collaborative partnerships, we provide leadership and life-changing coaching and mentorship opportunities.",
-      "body": "LEO Foundation welcomes you to become a part of a growing, Christ-centered group of learners whose lives are making a perpetual effect on the world.\n\nIf one of these programs fits a student you know, [the available scholarships](/scholarships) list what is open and when, and we are glad to [talk it through](/contact).",
+      "body": "LEO Foundation welcomes you to become a part of a growing, Christ-centered group of learners whose lives are making a perpetual effect on the world.\n\nIf one of these programs fits a student you know, [the available scholarships](/scholarships) list what is open and when, and we are glad to [talk it through](/contact).\n\nWe also partner with organizations already doing this work in the Valley — see our [community partnerships](/community).",
       "programs": [
         {
           "slug": "foster-youth-programs",
@@ -736,6 +736,42 @@
           "photoUrl": "/img/programs/youth-development-academy.jpg",
           "alt": "A smiling girl holding a basketball, seated with other children in a gym",
           "body": "The LEO Foundation has a long history of connecting students from low-income families to a wide variety of growth opportunities, including educational and athletic programs.\n\nIn collaboration with the [Arizona Basketball Association](https://az.nhsbca.org/), the LEO Foundation offers fall, winter, and spring basketball league opportunities, culminating in a three-week summer camp in June. Through basketball, Arizona youth are exposed to a positive sports environment and coaching mentorship that teaches life lessons such as leadership, teamwork, and sportsmanship.\n\nStudies show that kids who play sports achieve up to 40% higher test scores and are 15% more likely to attend college. The Youth Development Academy aims to make an early positive impact, providing encouragement as kids progress through their primary and secondary education.\n\nThe LEO Foundation is a proud partner of the [Arizona Basketball Coaches Association](https://az.nhsbca.org/)."
+        }
+      ]
+    },
+    {
+      "id": "page-community",
+      "slug": "community",
+      "title": "Community Partnerships",
+      "inNav": false,
+      "navLabel": "Community",
+      "summary": "The LEO Foundation is committed to connecting youth in our community to programs and services that promote growth, self-confidence, and teamwork through collaborative partnerships that provide leadership and life-changing coaching and mentorship opportunities.",
+      "body": "LEO Foundation welcomes you to become a part of a growing, Christ-centered group of learners whose lives are making a perpetual effect on the world.\n\nOur own [programs and partnerships](/programs) describe the work we run directly.",
+      "partners": [
+        {
+          "slug": "alice-coopers-solid-rock-teen-center",
+          "name": "Alice Cooper’s Solid Rock Teen Center",
+          "photoUrl": "/img/partners/solid-rock-teen-centers.jpg",
+          "alt": "The Alice Cooper’s Solid Rock Teen Centers logo",
+          "body": "“It takes a village to raise a child” is an old proverb that means an entire community of people must provide for and interact positively with children for those children to experience and grow in a safe and healthy environment. And we could not agree more! That’s why at LEO Foundation, we work with and support other amazing organizations knowing that real impact comes from community collaboration to promote and nurture young aspiring musicians. Learn more about the wonderful things they are doing for kids in our community. [Learn more here.](https://www.alicecoopersolidrock.com/)\n\nThe live page embeds a video of the teen center: [watch it on YouTube](https://www.youtube.com/watch?v=l6u3SMJEF5A)."
+        }
+      ],
+      "gallery": [
+        {
+          "src": "/img/partners/solid-rock-1.jpg",
+          "alt": "Two guests at the Solid Rock Teen Center, the stage lit behind them"
+        },
+        {
+          "src": "/img/partners/solid-rock-2.jpg",
+          "alt": "A band performing on the Solid Rock stage to a standing audience"
+        },
+        {
+          "src": "/img/partners/solid-rock-3.jpg",
+          "alt": "Young musicians playing guitars and drums under the stage lights"
+        },
+        {
+          "src": "/img/partners/solid-rock-4.jpg",
+          "alt": "Two guests together at the back of the room during the show"
         }
       ]
     },

@@ -50,6 +50,32 @@
 <% } %>
 
 <%
+  // Partners render as programs do -- a titled row with a photo and markdown --
+  // so they share the one partial rather than duplicating it. Mirrored in page.php.
+  const partners = Array.isArray(page.partners) ? page.partners : [];
+  const gallery = Array.isArray(page.gallery) ? page.gallery : [];
+%>
+<% if (partners.length) { %>
+<section class="band tint" id="partners">
+  <div class="wrap">
+    <div class="program-list">
+      <% partners.forEach(function (partner, i) { %>
+        <%- include('partials/program-section', { program: partner, flip: i % 2 === 1 }) %>
+      <% }) %>
+    </div>
+
+    <% if (gallery.length) { %>
+      <div class="gallery">
+        <% gallery.forEach(function (shot) { %>
+          <img src="<%= shot.src %>" alt="<%= shot.alt %>" loading="lazy">
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</section>
+<% } %>
+
+<%
   // A page can carry a roster of people alongside its prose -- the board is the
   // only one today. It is stored on the page record rather than as its own
   // content type, so the admin page form still edits the copy around it and

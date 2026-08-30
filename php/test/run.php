@@ -331,6 +331,48 @@ test('every recipient photo is served from this repo and exists', function () {
     }
 });
 
+// The Community Partnerships page is transcribed from /community-partnerships/
+// on the live site: one partner, its copy word for word, and the event gallery.
+// Mirrors the same assertions in test/content.test.js.
+test('the community page publishes the partner and its gallery', function () {
+    $root = dirname(__DIR__, 2);
+    $seed = json_decode(file_get_contents($root . '/data/content.json'), true);
+    $page = null;
+    foreach ($seed['pages'] as $candidate) {
+        if (($candidate['slug'] ?? '') === 'community') {
+            $page = $candidate;
+        }
+    }
+    ok($page !== null, 'no community page in the seed');
+    is_same(array_map(fn ($p) => $p['name'], $page['partners']), ['Alice Cooper’s Solid Rock Teen Center'], 'the partners changed');
+    ok(count($page['gallery']) === 4, 'the gallery changed');
+
+    $images = array_merge(
+        array_map(fn ($p) => $p['photoUrl'], $page['partners']),
+        array_map(fn ($g) => $g['src'], $page['gallery'])
+    );
+    foreach ($images as $src) {
+        ok(str_starts_with($src, '/img/partners/'), $src . ' is not served locally');
+        foreach (['public', 'php/public_html'] as $base) {
+            ok(is_file($root . '/' . $base . $src), 'missing ' . $base . $src);
+        }
+    }
+    foreach ($page['gallery'] as $g) {
+        ok(trim($g['alt']) !== '', $g['src'] . ' has no alt text');
+    }
+});
+
+// The community page is off the main nav by design, so the programs page is the
+// way in. A reworded programs body must not quietly strip the link.
+test('the programs page links to the community page', function () {
+    $seed = json_decode(file_get_contents(dirname(__DIR__, 2) . '/data/content.json'), true);
+    foreach ($seed['pages'] as $page) {
+        if (($page['slug'] ?? '') === 'programs') {
+            ok(str_contains($page['body'], '](/community)'), 'the programs page no longer links to /community');
+        }
+    }
+});
+
 // The Programs & Partnerships page is transcribed from /programs-partnerships/
 // on the live site: three programs, in the live order, copy word for word.
 // Mirrors the same assertions in test/content.test.js.
