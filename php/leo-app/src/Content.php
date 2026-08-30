@@ -127,6 +127,31 @@ final class Content
     }
 
     /**
+     * The awarded student who fronts the homepage hero.
+     *
+     * Picked from the *published* list rather than off the store, so a
+     * recipient who is drafted or outside their publish window can never
+     * surface in the hero -- the same rule the rest of the site obeys. A hero
+     * student also needs a cutout, because the hero stands the figure free of
+     * its background; with no cutout there is nothing to stand there, and the
+     * hero falls back to the deadline card it carried before. Mirrors
+     * content.heroStudent().
+     */
+    public static function heroStudent(Store $store, array $recipients): ?array
+    {
+        $id = (string) ($store->site()['heroStudentId'] ?? '');
+        if ($id === '') {
+            return null;
+        }
+        foreach ($recipients as $person) {
+            if (($person['id'] ?? '') === $id && !empty($person['cutoutUrl'])) {
+                return $person;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Announcements visible right now.
      *
      * Besides show-from/show-until dates, an announcement can be tied to the

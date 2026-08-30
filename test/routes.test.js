@@ -346,3 +346,62 @@ test('the real lockup and favicons are served, not a placeholder', async () => {
     }
   });
 });
+
+// ---------------------------------------------------------------------------
+// The split hero.
+//
+// The client's fifth ask was to keep the scholarships awarded as the focus, so
+// half the hero is an awarded student, cut free of the background of their own
+// photograph. Three things can go wrong quietly, and each has a test: the
+// student can be a draft and appear anyway, the quote can drift away from the
+// bio it was lifted from, and the deadline -- which is what applicants actually
+// come here for -- can be lost when the card it lived in is replaced.
+// ---------------------------------------------------------------------------
+
+test('the hero stands an awarded student beside the write-up', async () => {
+  await withServer(async (base) => {
+    const home = await (await fetch(`${base}/`)).text();
+
+    assert.match(home, /class="hero hero-split"/, 'the hero splits when a student is set');
+    assert.match(home, /class="hero-student-cut"[^>]*\/img\/recipients\/keian-cutout\.png/,
+      'the cutout, not the uncut photograph');
+    assert.match(home, /class="hero-student-who"[\s\S]*?<strong>Keian<\/strong>/,
+      'the student is named');
+    assert.match(home, /thank you, thank you, THANK YOU!/, 'their own words, in the hero');
+
+    // The figure must not float clear of its panel: the source crop runs off at
+    // the shoulder, so the image carries no max-width of its own.
+    assert.equal((await fetch(`${base}/img/recipients/keian-cutout.png`)).status, 200);
+  });
+});
+
+test('the hero keeps the deadline when the deadline card gives way to a student', async () => {
+  await withServer(async (base) => {
+    const home = await (await fetch(`${base}/`)).text();
+    assert.match(home, /class="hero-deadline"/, 'the deadline stays in the hero');
+    assert.match(home, /class="hero-deadline-count"/, 'and keeps its figure');
+    assert.doesNotMatch(home, /<aside class="deadline">/, 'the card it replaces is gone');
+  });
+});
+
+test('a hero student who is not published does not reach the hero', async () => {
+  await withServer(async (base) => {
+    const home = await (await fetch(`${base}/`)).text();
+    assert.doesNotMatch(home, /hero-split/, 'a drafted student takes the hero with them');
+    assert.doesNotMatch(home, /keian-cutout\.png/, 'and their cutout with them');
+    // The deadline card comes back rather than the hero losing half of itself.
+    assert.match(home, /<aside class="deadline">/, 'the hero falls back to the card');
+  }, (content) => {
+    for (const person of content.recipients) {
+      if (person.id === 'rec-keian') person.draft = true;
+    }
+  });
+});
+
+test('an unset or unresolvable hero student leaves the hero as it was', async () => {
+  await withServer(async (base) => {
+    const home = await (await fetch(`${base}/`)).text();
+    assert.doesNotMatch(home, /hero-split/);
+    assert.match(home, /<aside class="deadline">/);
+  }, (content) => { content.site.heroStudentId = 'rec-nobody'; });
+});

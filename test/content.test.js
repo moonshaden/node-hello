@@ -507,3 +507,39 @@ test('the LEO pillars are the three words of the name', () => {
     assert.ok(pillar.body.trim().length > 80, `${pillar.word} has its write-up`);
   }
 });
+
+// A hero quote is an excerpt, never a paraphrase. Names, figures and body copy
+// on this site are transcribed from what the foundation publishes or they do
+// not ship, and a short line pulled out for the hero is no exception -- so it
+// has to be a literal run of characters out of the bio the student published.
+test('every hero quote is verbatim from the bio it was lifted from', () => {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  const withQuote = seed.recipients.filter((person) => person.heroQuote);
+  assert.ok(withQuote.length >= 1, 'at least one student fronts the hero');
+
+  for (const person of withQuote) {
+    assert.ok(
+      String(person.quote).includes(person.heroQuote),
+      `${person.name}'s hero quote is not a literal substring of their bio`,
+    );
+  }
+});
+
+// The hero stands the figure free of its background, which only works if the
+// cutout is a real transparent image next to the ordinary portrait.
+test('the hero student has a cutout in both builds', () => {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  const id = seed.site.heroStudentId;
+  assert.ok(id, 'a hero student is configured');
+
+  const person = seed.recipients.find((item) => item.id === id);
+  assert.ok(person, `site.heroStudentId points at ${id}, which is not a recipient`);
+  assert.ok(person.cutoutUrl, 'the hero student carries a cutout');
+  assert.notEqual(person.cutoutUrl, person.photoUrl, 'the cutout is not the uncut photograph');
+  assert.ok(!person.draft, 'the hero student is published');
+
+  for (const dir of ['public', 'php/public_html']) {
+    const file = path.join(__dirname, '..', dir, person.cutoutUrl.replace(/^\//, ''));
+    assert.ok(fs.existsSync(file), `${file} is missing`);
+  }
+});

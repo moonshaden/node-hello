@@ -12,6 +12,7 @@
     "donateUrl": "https://www.aplos.com/aws/give/LEOFoundation/Donation",
     "facebookUrl": "https://www.facebook.com/LEOFoundationUSA/",
     "impactTitle": "Twenty years of scholarships, one student at a time.",
+    "heroStudentId": "rec-keian",
     "impact": [
       {
         "value": "20",
@@ -638,6 +639,8 @@
       "amount": "",
       "quote": "I am Keian and a freshman at GCU. After graduating from high school, I had a great opportunity to go on a humanitarian trip to Guatemala. It was one of the best experiences of my life! My father served his LDS mission in Guatemala, and ever since I was born, he has wanted to take me there and show me all the places he lived during his two-year mission. The trip was a life-changer. I spent two weeks serving others by building houses, laying and mixing cement, visiting families and giving them clothes and food, and helping little kids at a school in the areas we served. My favorite part of this entire trip was being able to visit families experiencing poverty and giving them food and clothes, which put the biggest smiles on their faces. I wanted to thank the LEO Foundation for the scholarship. Paying for school was one of my biggest fears and one thing holding me back from going. So thank you, thank you, THANK YOU!",
       "photoUrl": "/img/recipients/keian.jpg",
+      "cutoutUrl": "/img/recipients/keian-cutout.png",
+      "heroQuote": "Paying for school was one of my biggest fears and one thing holding me back from going. So thank you, thank you, THANK YOU!",
       "featured": false,
       "draft": false,
       "publish": {

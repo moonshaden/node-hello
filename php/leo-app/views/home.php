@@ -2,9 +2,9 @@
 
 <?php $app->partial('slider'); ?>
 
-<section class="hero">
+<section class="hero<?= $heroStudent !== null ? ' hero-split' : '' ?>">
   <div class="wrap hero-grid">
-    <div>
+    <div class="hero-copy">
       <p class="eyebrow"><?= e($site['location'] ?? '') ?> · 501(c)(3) nonprofit</p>
       <h1>Every scholarship is a door someone walks through.</h1>
       <p><?= e($site['mission'] ?? '') ?></p>
@@ -14,35 +14,79 @@
         </a>
         <a class="btn btn-outline" style="color:#fff" href="<?= e($basePath) ?>/recipients">Meet our recipients</a>
       </div>
+
+      <?php // The student holds the other half of the hero, so the deadline
+            // keeps its place here as one line rather than a card. It is still
+            // what applicants come for, so it is still above the fold and still
+            // first in the reading order after the buttons. ?>
+      <?php if ($heroStudent !== null): ?>
+        <p class="hero-deadline">
+          <?php if ($enrollment['state'] === 'open' && $enrollment['daysUntilClose'] !== null): ?>
+            <span class="hero-deadline-count"><?= (int) $enrollment['daysUntilClose'] ?></span>
+            <span>days left to apply<?php if (!empty($enrollment['closesOn'])): ?> · closes <?= e(fdate($enrollment['closesOn'])) ?><?php endif; ?></span>
+          <?php elseif ($enrollment['daysUntilOpen'] !== null): ?>
+            <span class="hero-deadline-count"><?= (int) $enrollment['daysUntilOpen'] ?></span>
+            <span>days until applications open<?php if (!empty($enrollment['opensOn'])): ?> · opens <?= e(fdate($enrollment['opensOn'])) ?><?php endif; ?></span>
+          <?php else: ?>
+            <span class="hero-deadline-count">Open</span>
+            <span>applications accepted year-round</span>
+          <?php endif; ?>
+        </p>
+      <?php endif; ?>
     </div>
 
-    <!-- The deadline is what applicants come here for, so it is never more than
-         one glance away, in or out of season. -->
-    <aside class="deadline">
-      <div class="count">
-        <?php if ($enrollment['state'] === 'open' && $enrollment['daysUntilClose'] !== null): ?>
-          <?= (int) $enrollment['daysUntilClose'] ?><small>days left to apply</small>
-        <?php elseif ($enrollment['daysUntilOpen'] !== null): ?>
-          <?= (int) $enrollment['daysUntilOpen'] ?><small>days until applications open</small>
-        <?php else: ?>
-          Open<small>applications accepted year-round</small>
-        <?php endif; ?>
-      </div>
-      <dl>
-        <?php if (!empty($enrollment['opensOn'])): ?>
-          <dt>Applications open</dt>
-          <dd><?= e(fdate($enrollment['opensOn'])) ?></dd>
-        <?php endif; ?>
-        <?php if (!empty($enrollment['closesOn'])): ?>
-          <dt>Applications close</dt>
-          <dd><?= e(fdate($enrollment['closesOn'])) ?></dd>
-        <?php endif; ?>
-        <?php if (!empty($enrollmentSettings['awardedNote'])): ?>
-          <dt>Awards</dt>
-          <dd style="font-weight:400;color:#c6d5e2;font-size:.92rem"><?= e($enrollmentSettings['awardedNote']) ?></dd>
-        <?php endif; ?>
-      </dl>
-    </aside>
+    <?php if ($heroStudent !== null): ?>
+      <?php // One of the awarded students, cut free of their own photograph and
+            // stood in the hero. The client asked for the awards to be the
+            // focus, and a student who is plainly glad to be at university
+            // carries that further than a stock photograph of a campus.
+            // Everything shown is their own record: the name, the award, the
+            // school, and a line lifted verbatim out of the bio they published. ?>
+      <figure class="hero-student">
+        <div class="hero-student-stage">
+          <img class="hero-student-cut" src="<?= e(link_url($heroStudent['cutoutUrl'], $basePath)) ?>"
+               alt="<?= e($heroStudent['name'] ?? '') ?>, holding up a Grand Canyon University pin"
+               width="700" height="804">
+        </div>
+        <figcaption class="hero-student-note">
+          <?php if (!empty($heroStudent['heroQuote'])): ?>
+            <blockquote class="hero-student-quote">&ldquo;<?= e($heroStudent['heroQuote']) ?>&rdquo;</blockquote>
+          <?php endif; ?>
+          <p class="hero-student-who">
+            <strong><?= e($heroStudent['name'] ?? '') ?></strong>
+            <span><?= e($heroStudent['scholarship'] ?? '') ?><?= !empty($heroStudent['school']) ? ' · ' . e($heroStudent['school']) : '' ?></span>
+          </p>
+        </figcaption>
+      </figure>
+    <?php else: ?>
+      <!-- The deadline is what applicants come here for, so it is never more than
+           one glance away, in or out of season. -->
+      <aside class="deadline">
+        <div class="count">
+          <?php if ($enrollment['state'] === 'open' && $enrollment['daysUntilClose'] !== null): ?>
+            <?= (int) $enrollment['daysUntilClose'] ?><small>days left to apply</small>
+          <?php elseif ($enrollment['daysUntilOpen'] !== null): ?>
+            <?= (int) $enrollment['daysUntilOpen'] ?><small>days until applications open</small>
+          <?php else: ?>
+            Open<small>applications accepted year-round</small>
+          <?php endif; ?>
+        </div>
+        <dl>
+          <?php if (!empty($enrollment['opensOn'])): ?>
+            <dt>Applications open</dt>
+            <dd><?= e(fdate($enrollment['opensOn'])) ?></dd>
+          <?php endif; ?>
+          <?php if (!empty($enrollment['closesOn'])): ?>
+            <dt>Applications close</dt>
+            <dd><?= e(fdate($enrollment['closesOn'])) ?></dd>
+          <?php endif; ?>
+          <?php if (!empty($enrollmentSettings['awardedNote'])): ?>
+            <dt>Awards</dt>
+            <dd style="font-weight:400;color:#c6d5e2;font-size:.92rem"><?= e($enrollmentSettings['awardedNote']) ?></dd>
+          <?php endif; ?>
+        </dl>
+      </aside>
+    <?php endif; ?>
   </div>
 </section>
 

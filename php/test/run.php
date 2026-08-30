@@ -587,6 +587,67 @@ test('no slide links to a page this site does not serve', function () {
     }
 });
 
+// ---------------------------------------------------------------------------
+// The split hero. Half the hero is an awarded student, cut free of the
+// background of their own photograph, so the awards stay the focus the client
+// asked for. Mirrors the tests in test/routes.test.js and test/content.test.js.
+// ---------------------------------------------------------------------------
+
+// A hero quote is an excerpt, never a paraphrase. Copy on this site is
+// transcribed from what the foundation publishes or it does not ship, and a
+// line pulled out for the hero is no exception, so it has to be a literal run
+// of characters out of the bio the student published.
+test('every hero quote is verbatim from the bio it was lifted from', function () {
+    $seed = json_decode(file_get_contents(dirname(__DIR__, 2) . '/data/content.json'), true);
+    $withQuote = array_filter($seed['recipients'], fn ($r) => !empty($r['heroQuote']));
+    ok(count($withQuote) >= 1, 'no student fronts the hero');
+
+    foreach ($withQuote as $person) {
+        ok(
+            str_contains((string) $person['quote'], (string) $person['heroQuote']),
+            $person['name'] . "'s hero quote is not a literal substring of their bio"
+        );
+    }
+});
+
+// The hero stands the figure free of its background, which only works if the
+// cutout is a real transparent image alongside the ordinary portrait.
+test('the hero student has a cutout in both builds', function () {
+    $root = dirname(__DIR__, 2);
+    $seed = json_decode(file_get_contents($root . '/data/content.json'), true);
+    $id = $seed['site']['heroStudentId'] ?? '';
+    ok($id !== '', 'no hero student is configured');
+
+    $person = null;
+    foreach ($seed['recipients'] as $r) {
+        if ($r['id'] === $id) {
+            $person = $r;
+        }
+    }
+    ok($person !== null, 'site.heroStudentId points at ' . $id . ', which is not a recipient');
+    ok(!empty($person['cutoutUrl']), 'the hero student carries no cutout');
+    ok($person['cutoutUrl'] !== $person['photoUrl'], 'the cutout is the uncut photograph');
+    ok(empty($person['draft']), 'the hero student is a draft');
+
+    foreach (['public', 'php/public_html'] as $base) {
+        ok(is_file($root . '/' . $base . $person['cutoutUrl']), 'missing ' . $base . $person['cutoutUrl']);
+    }
+});
+
+// The resolver takes the *published* list, so a drafted or out-of-window
+// student cannot reach the hero, and a hero with no usable student falls back
+// to the deadline card rather than losing half of itself.
+test('the hero student is resolved from the published list only', function () {
+    $store = tempStore(['site' => ['heroStudentId' => 'rec-a']]);
+    $published = [['id' => 'rec-a', 'name' => 'A', 'cutoutUrl' => '/img/a.png']];
+
+    is_same(Content::heroStudent($store, $published)['name'], 'A', 'the configured student is not found');
+    is_same(Content::heroStudent($store, []), null, 'an unpublished student still reached the hero');
+    is_same(Content::heroStudent($store, [['id' => 'rec-b', 'cutoutUrl' => '/img/b.png']]), null, 'the wrong student was picked');
+    is_same(Content::heroStudent($store, [['id' => 'rec-a']]), null, 'a student with no cutout reached the hero');
+    is_same(Content::heroStudent(tempStore(['site' => []]), $published), null, 'the hero filled itself in unasked');
+});
+
 // LEO is an acronym and the live homepage publishes a write-up for each word.
 // The words carry the brand, so a reordered or reworded set is a real change.
 test('the LEO pillars spell out Leadership, Education, Opportunity', function () {

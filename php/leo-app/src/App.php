@@ -181,6 +181,7 @@ final class App
                 // The landing page leads on awarded students, so it gets all of
                 // them, not a sample. publicRecipients() orders featured first.
                 'awardees' => $recipients,
+                'heroStudent' => Content::heroStudent($this->store, $recipients),
                 'stats' => Content::awardStats($recipients),
             ]);
             return;

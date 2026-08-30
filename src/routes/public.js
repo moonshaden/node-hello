@@ -24,6 +24,7 @@ router.get('/', (req, res) => {
     // The landing page leads on awarded students, so it gets all of them,
     // not a sample. publicRecipients() already orders featured first.
     awardees: recipients,
+    heroStudent: content.heroStudent(store, recipients),
     stats: content.awardStats(recipients),
   });
 });
