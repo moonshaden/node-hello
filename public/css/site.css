@@ -137,6 +137,58 @@ img { max-width: 100%; display: block; }
 .nav a:hover, .nav a.is-current { border-bottom-color: var(--gold-bright); color: #fff; }
 .nav .btn { border-bottom: 0; padding: 8px 18px; }
 
+/* dropdown — About opens onto Community Partnerships. It works on hover and on
+   keyboard focus (focus-within), and the parent stays a real link so touch
+   users who tap it still land somewhere rather than nothing happening. */
+.nav-group { position: relative; display: flex; align-items: center; }
+.nav-group-top { display: inline-flex; align-items: center; gap: 6px; }
+.nav-caret {
+  width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent;
+  border-top: 5px solid currentColor; opacity: .7; transition: transform .12s ease;
+}
+.nav-group:hover .nav-caret,
+.nav-group:focus-within .nav-caret { transform: rotate(180deg); }
+
+.nav-menu {
+  position: absolute; top: 100%; left: -14px; z-index: 60;
+  display: grid; min-width: 232px; padding: 8px;
+  background: #fff; border: 1px solid var(--rule); border-radius: 12px;
+  box-shadow: 0 14px 34px rgba(16, 38, 61, .18);
+  /* Hidden without display:none so the link stays focusable for the keyboard
+     path that reveals it. */
+  opacity: 0; visibility: hidden; transform: translateY(-4px);
+  transition: opacity .12s ease, transform .12s ease, visibility .12s;
+}
+.nav-group:hover .nav-menu,
+.nav-group:focus-within .nav-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+
+/* A gap between the trigger and the panel would close the menu mid-travel. */
+.nav-menu::before { content: ''; position: absolute; top: -10px; left: 0; right: 0; height: 10px; }
+
+.nav-menu a {
+  padding: 9px 12px; border-radius: 8px; border-bottom: 0;
+  color: var(--ink); font-size: .92rem; white-space: nowrap;
+}
+.nav-menu a:hover,
+.nav-menu a:focus-visible,
+.nav-menu a.is-current { background: var(--gold-wash); color: var(--ink); border-bottom: 0; }
+
+@media (max-width: 860px) {
+  /* No hover to rely on and no room to float, so the child sits inline under
+     its parent instead of in a panel. */
+  .nav-group { display: contents; }
+  .nav-menu {
+    position: static; opacity: 1; visibility: visible; transform: none;
+    display: flex; min-width: 0; padding: 0; gap: 16px;
+    background: none; border: 0; box-shadow: none;
+  }
+  .nav-menu::before { display: none; }
+  .nav-menu a { padding: 4px 0; border-radius: 0; color: inherit; font-size: .95rem; }
+  .nav-menu a:hover,
+  .nav-menu a.is-current { background: none; border-bottom: 2px solid var(--gold-bright); }
+  .nav-caret { display: none; }
+}
+
 .btn {
   display: inline-block; padding: 11px 22px; border-radius: 999px;
   font-size: .95rem; font-weight: 600; text-decoration: none; border: 1px solid transparent;

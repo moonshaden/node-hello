@@ -743,8 +743,8 @@
       "id": "page-community",
       "slug": "community",
       "title": "Community Partnerships",
-      "inNav": false,
-      "navLabel": "Community",
+      "inNav": true,
+      "navLabel": "Community Partnerships",
       "summary": "The LEO Foundation is committed to connecting youth in our community to programs and services that promote growth, self-confidence, and teamwork through collaborative partnerships that provide leadership and life-changing coaching and mentorship opportunities.",
       "body": "LEO Foundation welcomes you to become a part of a growing, Christ-centered group of learners whose lives are making a perpetual effect on the world.\n\nOur own [programs and partnerships](/programs) describe the work we run directly.",
       "partners": [
@@ -773,7 +773,8 @@
           "src": "/img/partners/solid-rock-4.jpg",
           "alt": "Two guests together at the back of the room during the show"
         }
-      ]
+      ],
+      "navParent": "about"
     },
     {
       "id": "page-board",

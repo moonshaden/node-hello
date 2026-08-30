@@ -13,7 +13,8 @@
         <ul>
           <li><a href="/scholarships">Available scholarships</a></li>
           <li><a href="/recipients">Scholarship recipients</a></li>
-          <% navPages.forEach(function (p) { %>
+          <%# Flattened, so a page nested under a dropdown still appears here. %>
+          <% navFlat.forEach(function (p) { %>
             <li><a href="/<%= p.slug %>"><%= p.navLabel || p.title %></a></li>
           <% }) %>
         </ul>

@@ -105,8 +105,36 @@ function publicPages(store, today, { includeHidden = false } = {}) {
     .filter((item) => includeHidden || schedule.isPublished(item, today));
 }
 
+/**
+ * Header navigation, as a one-level tree.
+ *
+ * A page names its parent by slug in `navParent`, which is what puts Community
+ * Partnerships under About rather than adding an eighth top-level item. A child
+ * whose parent is not itself in the nav would otherwise disappear, so it falls
+ * back to sitting at the top level. Mirrored in Content::navPages().
+ */
 function navPages(pages) {
-  return pages.filter((page) => page.inNav);
+  const inNav = pages.filter((page) => page.inNav);
+  const slugs = new Set(inNav.map((page) => page.slug));
+  const children = new Map();
+  const top = [];
+
+  for (const page of inNav) {
+    const parent = page.navParent;
+    if (parent && parent !== page.slug && slugs.has(parent)) {
+      if (!children.has(parent)) children.set(parent, []);
+      children.get(parent).push(page);
+    } else {
+      top.push(page);
+    }
+  }
+
+  return top.map((page) => ({ ...page, children: children.get(page.slug) || [] }));
+}
+
+/** The same nav flattened, parent then its children -- for the footer column. */
+function navFlat(pages) {
+  return navPages(pages).flatMap((page) => [page, ...page.children]);
 }
 
 /** Totals for the impact band. Computed, so they can never drift from the data. */
@@ -165,6 +193,7 @@ module.exports = {
   activeAnnouncements,
   publicPages,
   navPages,
+  navFlat,
   awardStats,
   formatMoney,
   excerpt,

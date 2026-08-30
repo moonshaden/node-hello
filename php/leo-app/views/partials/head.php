@@ -44,8 +44,29 @@
     <nav class="nav">
       <a href="<?= e($basePath) ?>/scholarships" class="<?= str_starts_with($currentPath, '/scholarships') ? 'is-current' : '' ?>">Scholarships</a>
       <a href="<?= e($basePath) ?>/recipients" class="<?= $currentPath === '/recipients' ? 'is-current' : '' ?>">Recipients</a>
+      <?php // A page with children becomes a dropdown. The parent stays a real link,
+            // so the menu is usable without hover and on touch. Mirrored in head.ejs. ?>
       <?php foreach ($navPages as $navPage): ?>
-        <a href="<?= e($basePath) ?>/<?= e($navPage['slug'] ?? '') ?>" class="<?= $currentPath === '/' . ($navPage['slug'] ?? '') ? 'is-current' : '' ?>"><?= e($navPage['navLabel'] ?? $navPage['title'] ?? '') ?></a>
+        <?php if ($navPage['children'] !== []): ?>
+          <?php
+          $openHere = $currentPath === '/' . ($navPage['slug'] ?? '');
+          foreach ($navPage['children'] as $child) {
+              if ($currentPath === '/' . ($child['slug'] ?? '')) {
+                  $openHere = true;
+              }
+          }
+          ?>
+          <div class="nav-group">
+            <a href="<?= e($basePath) ?>/<?= e($navPage['slug'] ?? '') ?>" class="nav-group-top <?= $openHere ? 'is-current' : '' ?>"><?= e($navPage['navLabel'] ?? $navPage['title'] ?? '') ?><span class="nav-caret" aria-hidden="true"></span></a>
+            <div class="nav-menu">
+              <?php foreach ($navPage['children'] as $child): ?>
+                <a href="<?= e($basePath) ?>/<?= e($child['slug'] ?? '') ?>" class="<?= $currentPath === '/' . ($child['slug'] ?? '') ? 'is-current' : '' ?>"><?= e($child['navLabel'] ?? $child['title'] ?? '') ?></a>
+              <?php endforeach; ?>
+            </div>
+          </div>
+        <?php else: ?>
+          <a href="<?= e($basePath) ?>/<?= e($navPage['slug'] ?? '') ?>" class="<?= $currentPath === '/' . ($navPage['slug'] ?? '') ? 'is-current' : '' ?>"><?= e($navPage['navLabel'] ?? $navPage['title'] ?? '') ?></a>
+        <?php endif; ?>
       <?php endforeach; ?>
       <?php if (!empty($site['donateUrl'])): ?>
         <a class="btn btn-gold btn-sm" href="<?= e(link_url($site['donateUrl'], $basePath)) ?>">Donate</a>

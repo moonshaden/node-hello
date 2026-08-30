@@ -331,6 +331,49 @@ test('every recipient photo is served from this repo and exists', function () {
     }
 });
 
+// Community Partnerships sits under About as a dropdown rather than as an
+// eighth top-level item. Mirrors the same assertions in test/content.test.js.
+test('navPages nests a child under its parent and leaves the rest flat', function () {
+    $pages = [
+        ['slug' => 'about', 'title' => 'About', 'inNav' => true],
+        ['slug' => 'community', 'title' => 'Community', 'inNav' => true, 'navParent' => 'about'],
+        ['slug' => 'faq', 'title' => 'FAQs', 'inNav' => true],
+        ['slug' => 'hidden', 'title' => 'Hidden', 'inNav' => false],
+    ];
+    $nav = Content::navPages($pages);
+    is_same(array_map(fn ($p) => $p['slug'], $nav), ['about', 'faq'], 'top level changed');
+    is_same(array_map(fn ($c) => $c['slug'], $nav[0]['children']), ['community'], 'about lost its child');
+    is_same($nav[1]['children'], [], 'faq gained a child');
+    is_same(array_map(fn ($p) => $p['slug'], Content::navFlat($pages)), ['about', 'community', 'faq'], 'the footer list changed');
+});
+
+// A child pointing at a parent that is not in the nav would otherwise vanish
+// from the header entirely, which is worse than showing it at the top level.
+test('a child with no visible parent falls back to the top level', function () {
+    $orphan = Content::navPages([
+        ['slug' => 'community', 'title' => 'Community', 'inNav' => true, 'navParent' => 'about'],
+    ]);
+    is_same(array_map(fn ($p) => $p['slug'], $orphan), ['community'], 'the orphan disappeared');
+
+    $self = Content::navPages([
+        ['slug' => 'about', 'title' => 'About', 'inNav' => true, 'navParent' => 'about'],
+    ]);
+    is_same(array_map(fn ($p) => $p['slug'], $self), ['about'], 'a self-parented page disappeared');
+});
+
+test('the seeded nav puts community partnerships under about', function () {
+    $seed = json_decode(file_get_contents(dirname(__DIR__, 2) . '/data/content.json'), true);
+    $nav = Content::navPages($seed['pages']);
+    $slugs = array_map(fn ($p) => $p['slug'], $nav);
+    ok(in_array('about', $slugs, true), 'about is not in the nav');
+    ok(!in_array('community', $slugs, true), 'community is still a top-level item');
+    foreach ($nav as $p) {
+        if ($p['slug'] === 'about') {
+            is_same(array_map(fn ($c) => $c['slug'], $p['children']), ['community'], 'about lost its child');
+        }
+    }
+});
+
 // The Community Partnerships page is transcribed from /community-partnerships/
 // on the live site: one partner, its copy word for word, and the event gallery.
 // Mirrors the same assertions in test/content.test.js.

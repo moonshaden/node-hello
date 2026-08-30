@@ -13,7 +13,8 @@
         <ul>
           <li><a href="<?= e($basePath) ?>/scholarships">Available scholarships</a></li>
           <li><a href="<?= e($basePath) ?>/recipients">Scholarship recipients</a></li>
-          <?php foreach ($navPages as $navPage): ?>
+          <?php // Flattened, so a page nested under a dropdown still appears here. ?>
+          <?php foreach ($navFlat as $navPage): ?>
             <li><a href="<?= e($basePath) ?>/<?= e($navPage['slug'] ?? '') ?>"><?= e($navPage['navLabel'] ?? $navPage['title'] ?? '') ?></a></li>
           <?php endforeach; ?>
         </ul>

@@ -181,6 +181,47 @@ test('every recipient photo is served from this repo and exists', () => {
   }
 });
 
+// Community Partnerships sits under About as a dropdown rather than as an
+// eighth top-level item. The nesting is driven by navParent on the record.
+test('navPages nests a child under its parent and leaves the rest flat', () => {
+  const pages = [
+    { slug: 'about', title: 'About', inNav: true },
+    { slug: 'community', title: 'Community', inNav: true, navParent: 'about' },
+    { slug: 'faq', title: 'FAQs', inNav: true },
+    { slug: 'hidden', title: 'Hidden', inNav: false },
+  ];
+  const nav = content.navPages(pages);
+  assert.deepEqual(nav.map((p) => p.slug), ['about', 'faq']);
+  assert.deepEqual(nav[0].children.map((c) => c.slug), ['community']);
+  assert.deepEqual(nav[1].children, []);
+  // The footer needs every page, parent then child.
+  assert.deepEqual(content.navFlat(pages).map((p) => p.slug), ['about', 'community', 'faq']);
+});
+
+// A child pointing at a parent that is not in the nav would otherwise vanish
+// from the header entirely, which is worse than showing it at the top level.
+test('a child with no visible parent falls back to the top level', () => {
+  const orphan = content.navPages([
+    { slug: 'community', title: 'Community', inNav: true, navParent: 'about' },
+  ]);
+  assert.deepEqual(orphan.map((p) => p.slug), ['community']);
+
+  // ...and a page naming itself as its parent must not disappear either.
+  const self = content.navPages([
+    { slug: 'about', title: 'About', inNav: true, navParent: 'about' },
+  ]);
+  assert.deepEqual(self.map((p) => p.slug), ['about']);
+});
+
+test('the seeded nav puts community partnerships under about', () => {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  const nav = content.navPages(seed.pages);
+  const about = nav.find((p) => p.slug === 'about');
+  assert.ok(about, 'about is not in the nav');
+  assert.deepEqual(about.children.map((c) => c.slug), ['community']);
+  assert.ok(!nav.some((p) => p.slug === 'community'), 'community is still a top-level item');
+});
+
 // The Community Partnerships page is transcribed from /community-partnerships/
 // on the live site: one partner, its copy word for word, and the event gallery.
 test('the community page publishes the partner and its gallery', () => {

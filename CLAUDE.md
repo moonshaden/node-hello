@@ -40,8 +40,8 @@ once in `php/leo-app/views` + `php/public_html/css`, once in `views/` +
 ## Commands
 
 ```bash
-npm test                                    # 72 tests
-php php/test/run.php                        # 69 tests
+npm test                                    # 76 tests
+php php/test/run.php                        # 72 tests
 find php -name '*.php' -exec php -l {} \;   # lint
 
 ADMIN_PASSWORD='...' npm start              # Node build, :3000
@@ -274,6 +274,18 @@ eighth header item.
   as a program does (titled row, photo, markdown body). The page record carries
   `partners` and `gallery` arrays; both survive an admin save for the usual
   reason (`applyFields()` spreads the existing record first).
+- It sits in the header **as a dropdown under About**, not as a top-level item.
+  A page names its parent by slug in `navParent`, and `navPages()` /
+  `Content::navPages()` turn the flat list into a one-level tree; the footer uses
+  `navFlat()` so a nested page still appears there. A child whose parent is not
+  itself in the nav falls back to the top level rather than disappearing, and a
+  page naming itself as its parent is ignored — both are tested. `navParent` is
+  a field in the page form, so the nesting is editable in `/admin`.
+- The dropdown opens on hover **and on `:focus-within`**, so it is reachable by
+  keyboard; the parent stays a real link so a touch tap still goes somewhere.
+  The panel is hidden with `visibility`, not `display:none`, or the link inside
+  could not take focus. Below 860px there is no hover and no room to float, so
+  the child renders inline after its parent instead.
 - Images are rehosted under `public/img/partners/` and
   `php/public_html/img/partners/` (2.55 MB → 0.68 MB). The logo is kept square
   at 600px; the photographs cap at 1200px. No alt text is published live, so

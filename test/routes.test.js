@@ -222,6 +222,37 @@ test('the board grid spacing renders as a real attribute', async () => {
   });
 });
 
+// navParent is what nests Community Partnerships under About. It is a real form
+// field now, so it must survive a save -- and the partner and gallery arrays,
+// which have no field, must survive alongside it.
+test('editing the community page in admin keeps its nesting and its partners', async () => {
+  await withServer(async (base) => {
+    const cookie = await signIn(base);
+    await fetch(`${base}/admin/pages/page-community`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded', cookie, origin: base },
+      body: new URLSearchParams({
+        title: 'Community Partnerships',
+        slug: 'community',
+        navLabel: 'Community Partnerships',
+        summary: 'Rewritten in the admin area.',
+        body: 'Rewritten too.',
+        inNav: 'on',
+        navParent: 'about',
+      }).toString(),
+      redirect: 'manual',
+    });
+
+    const home = await (await fetch(`${base}/`)).text();
+    assert.match(home, /nav-menu/, 'the dropdown is gone from the header');
+
+    const page = await (await fetch(`${base}/community`)).text();
+    assert.match(page, /Rewritten in the admin area\./);
+    assert.ok(page.includes('Solid Rock Teen Center'), 'the partner was dropped by an admin save');
+    assert.match(page, /img\/partners\/solid-rock-1\.jpg/, 'the gallery was dropped by an admin save');
+  });
+});
+
 test('cross-site posts are refused', async () => {
   await withServer(async (base) => {
     const cookie = await signIn(base);

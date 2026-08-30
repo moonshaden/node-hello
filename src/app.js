@@ -45,9 +45,9 @@ function createApp({ store = new Store() } = {}) {
     res.locals.enrollment = enrollment;
     res.locals.enrollmentLabel = schedule.describeWindow(enrollment);
     res.locals.enrollmentSettings = store.enrollment;
-    res.locals.navPages = content.navPages(
-      content.publicPages(store, req.today, { includeHidden: req.preview })
-    );
+    const visiblePages = content.publicPages(store, req.today, { includeHidden: req.preview });
+    res.locals.navPages = content.navPages(visiblePages);
+    res.locals.navFlat = content.navFlat(visiblePages);
     res.locals.announcements = content.activeAnnouncements(store, req.today, enrollment.state);
     res.locals.scholarshipNames = store.list('scholarships').map((item) => item.name);
     res.locals.currentPath = req.path;

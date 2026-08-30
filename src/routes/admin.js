@@ -87,6 +87,12 @@ const RESOURCES = {
       { key: 'summary', type: 'textarea', label: 'Summary' },
       { key: 'body', type: 'markdown', label: 'Body', rows: 18 },
       { key: 'inNav', type: 'checkbox', label: 'Show in the main navigation' },
+      {
+        key: 'navParent',
+        type: 'text',
+        label: 'Nest under (URL slug)',
+        help: 'Leave blank for a top-level item. Give another page’s slug to make this a dropdown item under it.',
+      },
       ...PUBLISH_FIELDS,
     ],
   },

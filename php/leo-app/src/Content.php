@@ -163,9 +163,50 @@ final class Content
         return $items;
     }
 
+    /**
+     * Header navigation, as a one-level tree.
+     *
+     * A page names its parent by slug in `navParent`, which is what puts
+     * Community Partnerships under About rather than adding an eighth top-level
+     * item. A child whose parent is not itself in the nav would otherwise
+     * disappear, so it falls back to sitting at the top level. Mirrored in
+     * navPages() in src/content.js.
+     */
     public static function navPages(array $pages): array
     {
-        return array_values(array_filter($pages, static fn (array $p) => !empty($p['inNav'])));
+        $inNav = array_values(array_filter($pages, static fn (array $p) => !empty($p['inNav'])));
+        $slugs = array_column($inNav, 'slug');
+        $children = [];
+        $top = [];
+
+        foreach ($inNav as $page) {
+            $parent = $page['navParent'] ?? '';
+            if ($parent !== '' && $parent !== ($page['slug'] ?? '') && in_array($parent, $slugs, true)) {
+                $children[$parent][] = $page;
+            } else {
+                $top[] = $page;
+            }
+        }
+
+        return array_map(static function (array $page) use ($children): array {
+            $page['children'] = $children[$page['slug'] ?? ''] ?? [];
+            return $page;
+        }, $top);
+    }
+
+    /** The same nav flattened, parent then its children — for the footer column. */
+    public static function navFlat(array $pages): array
+    {
+        $flat = [];
+        foreach (self::navPages($pages) as $page) {
+            $children = $page['children'];
+            unset($page['children']);
+            $flat[] = $page;
+            foreach ($children as $child) {
+                $flat[] = $child;
+            }
+        }
+        return $flat;
     }
 
     /** Totals for the impact band — computed, so they cannot drift from the data. */

@@ -149,6 +149,7 @@ final class App
             'enrollmentLabel' => Schedule::describeWindow($enrollment),
             'enrollmentSettings' => $this->store->enrollment(),
             'navPages' => Content::navPages(Content::publicPages($this->store, $today, $preview)),
+            'navFlat' => Content::navFlat(Content::publicPages($this->store, $today, $preview)),
             'announcements' => Content::activeAnnouncements($this->store, $today, $enrollment['state']),
             'scholarshipNames' => array_map(
                 static fn (array $s) => (string) ($s['name'] ?? ''),

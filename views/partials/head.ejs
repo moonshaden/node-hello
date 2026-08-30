@@ -44,8 +44,25 @@
     <nav class="nav">
       <a href="/scholarships" class="<%= currentPath.startsWith('/scholarships') ? 'is-current' : '' %>">Scholarships</a>
       <a href="/recipients" class="<%= currentPath === '/recipients' ? 'is-current' : '' %>">Recipients</a>
+      <%# A page with children becomes a dropdown. The parent stays a real link,
+          so the menu is usable without hover and on touch. Mirrored in head.php. %>
       <% navPages.forEach(function (p) { %>
-        <a href="/<%= p.slug %>" class="<%= currentPath === '/' + p.slug ? 'is-current' : '' %>"><%= p.navLabel || p.title %></a>
+        <% if (p.children.length) { %>
+          <%
+            const openHere = currentPath === '/' + p.slug
+              || p.children.some(function (c) { return currentPath === '/' + c.slug; });
+          %>
+          <div class="nav-group">
+            <a href="/<%= p.slug %>" class="nav-group-top <%= openHere ? 'is-current' : '' %>"><%= p.navLabel || p.title %><span class="nav-caret" aria-hidden="true"></span></a>
+            <div class="nav-menu">
+              <% p.children.forEach(function (c) { %>
+                <a href="/<%= c.slug %>" class="<%= currentPath === '/' + c.slug ? 'is-current' : '' %>"><%= c.navLabel || c.title %></a>
+              <% }) %>
+            </div>
+          </div>
+        <% } else { %>
+          <a href="/<%= p.slug %>" class="<%= currentPath === '/' + p.slug ? 'is-current' : '' %>"><%= p.navLabel || p.title %></a>
+        <% } %>
       <% }) %>
       <% if (site.donateUrl) { %><a class="btn btn-gold btn-sm" href="<%= site.donateUrl %>">Donate</a><% } %>
     </nav>
