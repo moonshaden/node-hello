@@ -6,6 +6,37 @@ something bit us.
 
 Branch for all work: `claude/leo-foundation-site-redesign-knr6vv`. PR #3 (draft).
 
+## How to work on this — the standing rule
+
+**Never guess. Verify. And never report something as working because it is the
+answer someone wants.**
+
+This is the client's own site, and a wrong name, a dead link or a broken page
+reaches real students and real donors. So:
+
+- **Exercise the thing, do not just load it.** "No errors" is not "it works". A
+  preview was handed over as verified when its hero slider was completely dead:
+  the page loaded, every image resolved, nothing threw — and the site's own
+  `site.js` had simply not been included. A dead slider raises no error. The
+  client spotted it, which is the wrong way to find out. Click the control, take
+  the screenshot, assert the state changed.
+- **Prove a fix fails without itself.** Before claiming a regression test covers
+  something, revert the fix and watch the test go red, then restore it. That was
+  done for the EJS escaping bug; do it every time.
+- **Read the primary source.** Do not infer that a secret is set because a job
+  was skipped, or that a page is current because the branch looks right. The
+  preflight log said the FTP secrets were empty; the skipped job alone would
+  have supported the opposite guess.
+- **Never invent content.** Names, offices, figures and body copy are
+  transcribed from the live site or they do not ship. If the live site does not
+  publish it, say so and leave it out rather than composing something plausible
+  — see *Content accuracy* and the About-page governance sentence in *Where this
+  left off*.
+- **Say what is actually true**, including when it is unwelcome: that a deploy
+  cannot run, that a link is stale, that a check went red because of something
+  you did. Report the failure with the evidence, not a reassuring summary.
+
+
 ## Where this left off — 2026-08-30, head `d9cf6f2`
 
 Several sessions work this branch at once. Pull before starting, and expect the
