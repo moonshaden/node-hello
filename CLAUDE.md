@@ -6,6 +6,52 @@ something bit us.
 
 Branch for all work: `claude/leo-foundation-site-redesign-knr6vv`. PR #3 (draft).
 
+## Where this left off — 2026-08-30, head `d9cf6f2`
+
+Several sessions work this branch at once. Pull before starting, and expect the
+head to have moved mid-task.
+
+**Landed and verified** (76 node / 72 PHP tests, PHP lint clean, cross-build
+render diff zero on all ten public pages):
+
+- `/board` — six directors from the live `/leadership-2/`, Madeline leading.
+- `/programs` — three programs from `/programs-partnerships/`; the homepage hero
+  slide points at it, which closed half of *Open work* 7.
+- `/community` — Alice Cooper's Solid Rock Teen Center plus a four-photo gallery,
+  nested under About in the header.
+- Footer lockup `leo-lockup-footer.png`: white rules and white FOUNDATION, gold
+  LEO and strapline.
+
+**Waiting on the client or the site owner — do not decide these unilaterally:**
+
+1. The three FTP secrets. Deploying is blocked without them; see *Deploying*.
+2. Whether to run `seed_content`. A code deploy alone does **not** publish the
+   new pages, and that run overwrites the server's content store.
+3. The About page says the board "set the scholarship criteria, steward the
+   funds, and select each year's recipients". That is **not transcribed**, and
+   the live governance charter lists mission focus, CEO oversight and support,
+   community advocacy, committee work, financial reporting, and legal and
+   ethical integrity — not criteria-setting or recipient selection. Reword from
+   the charter, or ask the client. Same failure mode as `7f81b6e`.
+4. Two `/community` calls: the YouTube video is a link rather than an iframe,
+   and two of the four event photographs are candid shots of unnamed people.
+5. PR #3's title and body describe only the FAQ and Giving work.
+6. Whether the whole footer lockup should be white, not just the rules and
+   FOUNDATION.
+
+**Browsable preview** (private until shared from its own share menu):
+<https://claude.ai/code/artifact/b52ed21b-3e3d-4d72-83cc-b71302700dda>. It is a
+static snapshot, so **it goes stale the moment anything visual changes** —
+republish to that same URL rather than minting a new one. To rebuild: run the
+PHP dev server, capture each route's `<body>` plus `site.css`, `site.js` and
+every `/img` asset, and resolve **every** `url()` form — absolute, relative and
+quoted alike. Two things were missed the first time and both were invisible to a
+"does it load" check: omitting `site.js` left the hero slider dead, and an
+absolute-path-only `url()` rewrite dropped two `url('../img/...')` watermarks. So
+verify in a browser that every route has zero broken images **and that the
+slider actually advances** before republishing.
+
+
 ## What the client asked for
 
 In their words, from the opening request:
@@ -89,6 +135,22 @@ window spec instead of the resolved one. Use `array_merge`.
 
 **PHP partials do not inherit caller scope.** `App::render()` tracks
 `$this->current`; `App::partial()` merges it.
+
+**Green suites do not prove the two builds agree.** Both suites read the same
+seed and the same source, so a divergence that only appears in rendered output
+sails past them. A real one did: an EJS `<%=` interpolation building a `style`
+attribute emitted `style=&#34;…&#34;`, a broken attribute, while PHP's `<?=`
+emitted valid markup — so the rule applied on the deployed build and not on the
+dev twin, with every test green. The check that catches this class is a
+**cross-build render diff**: serve both builds, fetch each public path from each,
+and diff. Normalise first or it drowns in false positives — strip `<!-- -->`
+comments, and fold `&#39;` and `&#039;` together, since EJS and
+`htmlspecialchars` encode an apostrophe differently and both render identically.
+Worth running on any commit touching a view, a stylesheet or a content store.
+
+**Interpolating an HTML attribute needs the raw form, not the escaping one.**
+That is what bit above: `<%= %>` escapes the quotes it is supposed to emit. Use
+`<%- %>` when the interpolation *builds* an attribute, and say why in a comment.
 
 **Tests must not read the clock in UTC.** Use
 `schedule.todayIn('America/Phoenix')`, never `new Date().toISOString()` — for
@@ -412,10 +474,28 @@ is an empty string on all three. Do not compose one.
 
 ## Deploying
 
-**Deploying works. It has been done, verified against the live account, and can
-be repeated from a session here.** The repo of record is the private
-`moonshaden/leo-foundation-site`; `moonshaden/node-hello` is the old public copy
-and should not be developed against.
+**As of 2026-08-30, deploying from `moonshaden/node-hello` is not possible: all
+three FTP secrets are empty.** A dry run dispatched that day
+(run `33290362975`) printed `FTP_SERVER:` / `FTP_USERNAME:` / `FTP_PASSWORD:`
+blank and `FTP secrets are not set, so there is nothing to deploy to`, and the
+deploy job then hit its own "Refuse a hand-triggered deploy with no credentials"
+guard. Nothing was written; `lftp` was never installed.
+
+Read the older claim below with that in mind. The repo of record is the private
+`moonshaden/leo-foundation-site`, and `moonshaden/node-hello` is the old public
+copy — the earlier "deploying works, verified against the live account" note was
+almost certainly written about the private repo, whose secrets this one does not
+share. All the recent work is on `node-hello` regardless, so **from here a deploy
+needs someone to add the secrets to this repo first.** Only a person can: they
+cannot be written from a session.
+
+A dispatched deploy also leaves a **red `deploy` check on the PR**, because a
+hand-triggered run fails rather than skipping. It is not a code regression and
+it clears on the next push. Do not chase it, and do not comment about it on the
+PR.
+
+The rest of this section was written when a deploy was expected to work, and its
+mechanics are still accurate:
 
 `.github/workflows/deploy.yml` uploads the PHP build over FTPS from a GitHub
 runner. It runs there rather than from an agent session because **the sandbox
