@@ -58,20 +58,20 @@ img { max-width: 100%; display: block; }
 /* The lion carries the identity in the masthead; the name is type, so it
    stays crisp at any size and needs no second raster. */
 .wordmark { gap: 14px; text-decoration: none; }
-.wordmark-lion { height: 42px; width: auto; display: block; flex: none; }
+.wordmark-lion { height: 56px; width: auto; display: block; flex: none; }
 .wordmark-type { display: flex; flex-direction: column; justify-content: center; }
 .wordmark-name {
-  font-family: var(--serif); font-size: 1.28rem; line-height: 1.05;
+  font-family: var(--serif); font-size: 1.62rem; line-height: 1.05;
   color: #fff; letter-spacing: .02em;
 }
 .wordmark-strap {
-  font-size: .62rem; letter-spacing: .17em; text-transform: uppercase;
+  font-size: .68rem; letter-spacing: .17em; text-transform: uppercase;
   color: var(--gold-bright); margin-top: 5px;
 }
-.foot-mark { height: 38px; width: auto; margin-bottom: 16px; }
+.foot-mark { height: 62px; width: auto; margin-bottom: 18px; }
 
 @media (max-width: 780px) {
-  .wordmark-lion { height: 34px; }
+  .wordmark-lion { height: 42px; }
   .wordmark-strap { display: none; }
 }
 
@@ -126,7 +126,7 @@ img { max-width: 100%; display: block; }
 .masthead a { color: #fff; text-decoration: none; }
 .masthead-inner {
   display: flex; align-items: center; gap: 32px;
-  padding-top: 18px; padding-bottom: 18px; flex-wrap: wrap;
+  padding-top: 22px; padding-bottom: 22px; flex-wrap: wrap;
 }
 .wordmark { display: flex; align-items: center; gap: 12px; }
 .nav { margin-left: auto; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }

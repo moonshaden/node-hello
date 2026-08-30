@@ -4,7 +4,7 @@
   <div class="wrap">
     <div class="foot-grid">
       <div>
-        <img class="foot-mark" src="<?= e(link_url('/img/brand/leo-lockup-white-trim.png', $basePath)) ?>"
+        <img class="foot-mark" src="<?= e(link_url('/img/brand/leo-lockup-gold-trim.png', $basePath)) ?>"
              alt="<?= e($site['name'] ?? '') ?>" width="679" height="146" loading="lazy">
         <p class="small"><?= e($site['mission'] ?? '') ?></p>
       </div>
