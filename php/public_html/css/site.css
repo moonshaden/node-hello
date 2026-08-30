@@ -759,3 +759,153 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   .hero { padding: 48px 0 56px; }
   .nav { gap: 16px; width: 100%; }
 }
+
+/* ============================================================
+   Depth
+   ============================================================
+   A 3D layer over the existing design rather than a replacement for it: the
+   navy, the gold, the Georgia headings and the 1120px wrap are untouched. What
+   changes is that surfaces now sit at real depths, cards turn toward the
+   pointer, and sections arrive from behind the screen instead of appearing.
+
+   Three rules hold this together and are worth keeping:
+
+   1. Nothing here hides content. Every reveal starts from the *visible* state;
+      JS adds `.is-deep` to opt an element in, so a page with no JS, a crawler,
+      or a failed script shows the finished page rather than a blank one.
+      /admin loads this stylesheet and no script at all, which is exactly the
+      case that would break if the hidden state lived in CSS.
+   2. Transforms and opacity only. Both are composited, so none of this costs a
+      layout pass on a school laptop.
+   3. Tilt is for fine pointers with hover. A finger has no hover state, and a
+      card that tilts under a thumb just looks broken.
+   ------------------------------------------------------------ */
+
+:root {
+  /* Elevation as ambient + direct light rather than one flat blur, so a raised
+     surface reads as lit from above instead of merely outlined. */
+  --lift-1: 0 1px 2px rgba(16, 38, 61, .05), 0 3px 8px rgba(16, 38, 61, .05);
+  --lift-2: 0 2px 5px rgba(16, 38, 61, .07), 0 10px 26px rgba(16, 38, 61, .09);
+  --lift-3: 0 6px 12px rgba(16, 38, 61, .09), 0 24px 56px rgba(16, 38, 61, .16);
+  --depth-ease: cubic-bezier(.2, .7, .3, 1);
+  --tilt-speed: .32s;
+}
+
+/* ---------- perspective containers ----------
+   Perspective must live on the parent, not the card: siblings sharing one
+   vanishing point read as a single scene, whereas per-card perspective makes
+   every card its own little world and the row falls apart. */
+.grid,
+.impact-grid,
+.pillars,
+.program-list,
+.gallery,
+.hero-grid,
+.slider { perspective: 1400px; perspective-origin: 50% 40%; }
+
+/* ---------- scroll reveal ----------
+   `.is-deep` is applied by JS. Anything it wraps is already visible without it. */
+.is-deep {
+  opacity: 0;
+  transform: translate3d(0, 22px, -70px) rotateX(3.5deg);
+  transition:
+    opacity .7s var(--depth-ease) var(--deep-delay, 0ms),
+    transform .8s var(--depth-ease) var(--deep-delay, 0ms);
+  will-change: transform, opacity;
+}
+.is-deep.is-risen {
+  opacity: 1;
+  transform: none;
+  will-change: auto;
+}
+
+/* ---------- cards turn toward the pointer ----------
+   The card rotates; its contents sit forward of it on Z, so they swing slightly
+   wider than the card face and the whole thing reads as a solid object rather
+   than a printed rectangle. */
+.card, .pillar, .sidebar-card {
+  transform-style: preserve-3d;
+  transition: box-shadow var(--tilt-speed) var(--depth-ease),
+              transform var(--tilt-speed) var(--depth-ease);
+}
+.card { box-shadow: var(--lift-1); }
+.sidebar-card { box-shadow: var(--lift-2); }
+
+@media (hover: hover) and (pointer: fine) {
+  .card.is-tilting, .pillar.is-tilting, .sidebar-card.is-tilting {
+    transform:
+      rotateX(var(--tilt-x, 0deg))
+      rotateY(var(--tilt-y, 0deg))
+      translate3d(0, -3px, 14px);
+    box-shadow: var(--lift-3);
+    /* while the pointer drives it, following must be immediate or it lags */
+    transition: box-shadow var(--tilt-speed) var(--depth-ease);
+  }
+  .is-tilting .portrait,
+  .is-tilting .program-photo,
+  .is-tilting .name,
+  .is-tilting .pillar-initial { transform: translateZ(26px); }
+  .is-tilting .role,
+  .is-tilting .award,
+  .is-tilting .amount { transform: translateZ(16px); }
+  .card > *, .pillar > * { transition: transform var(--tilt-speed) var(--depth-ease); }
+
+  /* a specular edge that tracks the pointer -- the cue that sells a tilted
+     surface as a surface. Sits above the card, under its content. */
+  .is-tilting::after {
+    content: '';
+    position: absolute; inset: 0; border-radius: inherit;
+    background: radial-gradient(
+      36% 46% at var(--glare-x, 50%) var(--glare-y, 0%),
+      rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 70%);
+    pointer-events: none;
+    transform: translateZ(1px);
+  }
+  .card, .pillar, .sidebar-card { position: relative; }
+}
+
+/* ---------- parallax ----------
+   Driven by a scroll-linked custom property, so the browser composites it and
+   nothing here reads layout. */
+.page-head { overflow: hidden; }
+.page-head::before { transform: translate3d(0, var(--drift, 0px), 0) scale(1.04); }
+.slide-img { transform: translate3d(0, var(--drift, 0px), 0) scale(1.06); }
+.hero { position: relative; }
+
+/* ---------- the slider gains a third dimension ----------
+   The outgoing slide falls back into the screen instead of cross-fading, which
+   is what makes it read as a stack rather than a dissolve. */
+.slide {
+  transform: translate3d(0, 0, -140px) scale(.985);
+  transition: opacity .62s var(--depth-ease), transform .62s var(--depth-ease);
+}
+.slide.is-current { transform: none; }
+
+/* ---------- the About dropdown opens as a panel, not a fade ---------- */
+.nav-menu {
+  transform-origin: top center;
+  transform: perspective(900px) rotateX(-10deg) translateY(-6px);
+}
+.nav-group:hover .nav-menu,
+.nav-group:focus-within .nav-menu { transform: perspective(900px) rotateX(0) translateY(0); }
+
+/* ---------- buttons pick up the same light ---------- */
+.btn { transition: transform .18s var(--depth-ease), box-shadow .18s var(--depth-ease); }
+.btn-gold, .btn-ink { box-shadow: var(--lift-1); }
+.btn-gold:hover, .btn-ink:hover { transform: translateY(-2px); box-shadow: var(--lift-2); }
+.btn-gold:active, .btn-ink:active { transform: translateY(0); box-shadow: var(--lift-1); }
+
+/* ---------- respect a stated preference for stillness ----------
+   Not a softened version: off. Everything lands in its finished state. */
+@media (prefers-reduced-motion: reduce) {
+  .is-deep,
+  .is-deep.is-risen { opacity: 1; transform: none; transition: none; }
+  .is-tilting { transform: none; }
+  .is-tilting::after { display: none; }
+  .slide { transform: none; }
+  .page-head::before, .slide-img { transform: none; }
+  .nav-menu,
+  .nav-group:hover .nav-menu,
+  .nav-group:focus-within .nav-menu { transform: none; }
+  .btn-gold:hover, .btn-ink:hover { transform: none; }
+}
