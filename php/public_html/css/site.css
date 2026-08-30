@@ -909,3 +909,106 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   .nav-group:focus-within .nav-menu { transform: none; }
   .btn-gold:hover, .btn-ink:hover { transform: none; }
 }
+
+/* ============================================================
+   Cinematic staging
+   ============================================================
+   The page stops being a document and becomes a corridor. Sections are panels
+   suspended at different depths; scrolling moves a camera through them, so each
+   one approaches from far off, arrives at the plane of the screen, and recedes
+   behind you as you pass.
+
+   Every rule here is scoped under `body.is-staged`, which the script adds. With
+   no JavaScript, a reader mode, a crawler, or prefers-reduced-motion, none of
+   it applies and the page is exactly the document it was before. That is the
+   whole safety model: the dramatic version is the enhancement, never the
+   baseline.
+   ------------------------------------------------------------ */
+
+.is-staged main {
+  perspective: 1500px;
+  perspective-origin: 50% 45%;
+  /* Panels rotate and scale; without this their corners can push a horizontal
+     scrollbar onto the page. clip rather than hidden so position:sticky inside
+     still works. */
+  overflow-x: clip;
+}
+
+/* ---------- a panel's journey ----------
+   --p  signed progress: -1 approaching from below, 0 at the screen, +1 gone past
+   --pa its magnitude, so depth is symmetrical coming and going
+   Both are written by the script, one rAF for the whole page. */
+.is-staged main > section {
+  transform:
+    translate3d(0, 0, calc(var(--pa, 0) * -520px))
+    rotateX(calc(var(--p, 0) * -4.5deg))
+    scale(calc(1 - var(--pa, 0) * .08));
+  opacity: calc(1 - var(--pa, 0) * .72);
+  transform-origin: 50% 50%;
+  will-change: transform, opacity;
+}
+
+/* ---------- the hero is the first scene, and it fills the screen ---------- */
+.is-staged .slider { height: 78svh; min-height: 460px; }
+.is-staged .slider .slide-img { height: 100%; object-fit: cover; }
+
+.is-staged .hero {
+  min-height: 92svh;
+  display: grid;
+  align-items: center;
+  position: relative;
+}
+/* The deadline card is what applicants come for, so it travels forward rather
+   than back -- it arrives ahead of the headline instead of behind it. */
+.is-staged .hero .deadline {
+  transform: translate3d(0, 0, calc(80px - var(--pa, 0) * 120px));
+}
+.is-staged .hero h1 { transform: translate3d(0, 0, 40px); }
+
+/* ---------- travelling backdrop ----------
+   A slow field behind every panel. Without something moving back there the
+   camera has nothing to move against and the depth reads as a slideshow. */
+.is-staged main::before {
+  content: '';
+  position: fixed; inset: -10% -10% -10% -10%;
+  z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(60% 50% at 20% calc(18% + var(--travel, 0px)), rgba(184, 134, 43, .10), transparent 70%),
+    radial-gradient(50% 45% at 82% calc(72% - var(--travel, 0px)), rgba(16, 38, 61, .12), transparent 68%);
+}
+
+/* ---------- impact numbers assemble in depth ----------
+   Each figure sits on its own plane, so the row has thickness rather than being
+   four numbers on a wall. */
+.is-staged .impact-grid > * {
+  transform: translate3d(0, 0, calc(var(--tier, 0) * 34px));
+}
+.is-staged .impact-grid .value { font-variant-numeric: tabular-nums; }
+
+/* ---------- page heads become title scenes ---------- */
+.is-staged .page-head {
+  min-height: 62svh;
+  display: grid;
+  align-content: center;
+}
+.is-staged .page-head h1 { transform: translate3d(0, 0, 56px); }
+.is-staged .page-head .lede { transform: translate3d(0, 0, 24px); }
+
+/* ---------- the pillars fan ---------- */
+.is-staged .pillars > .pillar:first-child { transform: rotateY(3.5deg) translateZ(-18px); }
+.is-staged .pillars > .pillar:last-child { transform: rotateY(-3.5deg) translateZ(-18px); }
+.is-staged .pillars > .pillar.is-tilting { transform: none; }
+
+@media (max-width: 860px) {
+  /* On a phone the panels are already the width of the screen; travelling them
+     in Z just makes text small and shaky. Keep the depth, drop the journey. */
+  .is-staged main > section {
+    transform: translate3d(0, 0, calc(var(--pa, 0) * -180px));
+    opacity: calc(1 - var(--pa, 0) * .4);
+  }
+  .is-staged .hero { min-height: 0; }
+  .is-staged .page-head { min-height: 0; }
+  .is-staged .slider { height: 62svh; }
+  .is-staged .pillars > .pillar:first-child,
+  .is-staged .pillars > .pillar:last-child { transform: none; }
+}

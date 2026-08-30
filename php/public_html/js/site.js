@@ -257,3 +257,126 @@
     drift();
   }
 })();
+
+/* Cinematic staging.
+ *
+ * Turns the page into a corridor of panels and moves a camera through it. One
+ * rAF drives every section, the travelling backdrop and the impact counters.
+ *
+ * The safety model is the class on <body>: every rule in the stylesheet that
+ * stages anything is scoped under `.is-staged`, and only this file adds it. No
+ * JS, a reader mode, a crawler, or prefers-reduced-motion and the page is the
+ * plain document it has always been. The dramatic version is the enhancement,
+ * never the baseline.
+ */
+(function () {
+  'use strict';
+
+  var still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (still.matches) return;
+
+  var scenes = document.querySelectorAll('main > section');
+  if (!scenes.length) return;
+
+  document.body.classList.add('is-staged');
+
+  /* Give the impact figures their own planes, alternating so the row reads as
+     staggered depth rather than a slope. */
+  var figures = document.querySelectorAll('.impact-grid > *');
+  Array.prototype.forEach.call(figures, function (fig, i) {
+    fig.style.setProperty('--tier', (i % 2 ? -1 : 1) * (1 - Math.abs(i - (figures.length - 1) / 2) / figures.length));
+  });
+
+  var queued = false;
+
+  function frame() {
+    queued = false;
+    var viewport = window.innerHeight;
+    var mid = viewport / 2;
+
+    Array.prototype.forEach.call(scenes, function (scene) {
+      var box = scene.getBoundingClientRect();
+      // How far this panel's centre is from the centre of the screen, as a
+      // fraction of a screen. Clamped, because a very tall panel would
+      // otherwise fade itself out while you are still reading it.
+      var offset = (box.top + box.height / 2 - mid) / viewport;
+      var p = Math.max(-1, Math.min(1, offset));
+
+      // A tall panel is a page of content, not a slide: hold it near the
+      // screen plane while it is the thing being read.
+      if (box.height > viewport * 1.1) {
+        var covered = box.top < mid && box.bottom > mid;
+        if (covered) p *= 0.18;
+      }
+
+      scene.style.setProperty('--p', p.toFixed(4));
+      scene.style.setProperty('--pa', Math.abs(p).toFixed(4));
+    });
+
+    document.body.style.setProperty('--travel', (window.scrollY * 0.06).toFixed(1) + 'px');
+  }
+
+  function queue() {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(frame);
+  }
+
+  addEventListener('scroll', queue, { passive: true });
+  addEventListener('resize', queue, { passive: true });
+  frame();
+
+  /* ---- impact figures count up as their scene arrives ----
+   *
+   * The published figures are transcribed from the live site, so the number on
+   * screen when this finishes must be the seeded string character for
+   * character. The original text is captured first and written back at the end
+   * rather than reconstructed from the parsed parts -- a formatting guess here
+   * would quietly misreport what the foundation has raised.
+   */
+  if ('IntersectionObserver' in window) {
+    var values = document.querySelectorAll('.impact-grid .value');
+    var counter = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        counter.unobserve(entry.target);
+        countUp(entry.target);
+      });
+    }, { threshold: 0.4 });
+    Array.prototype.forEach.call(values, function (el) { counter.observe(el); });
+  }
+
+  function countUp(el) {
+    var exact = el.textContent;
+    var match = exact.match(/^(\D*?)([\d,.]+)(\D*)$/);
+    if (!match) return;                       // not a number; leave it alone
+
+    var target = parseFloat(match[2].replace(/,/g, ''));
+    if (!isFinite(target) || target <= 0) return;
+
+    var decimals = (match[2].split('.')[1] || '').length;
+    var grouped = match[2].indexOf(',') !== -1;
+    var start = performance.now();
+    var RUN = 1100;
+
+    el.style.setProperty('min-width', el.getBoundingClientRect().width + 'px');
+
+    function tick(now) {
+      var t = Math.min(1, (now - start) / RUN);
+      // ease-out: fast off the mark, settling into the real figure
+      var eased = 1 - Math.pow(1 - t, 3);
+      if (t < 1) {
+        var n = target * eased;
+        var shown = decimals ? n.toFixed(decimals) : String(Math.round(n));
+        if (grouped) shown = Number(shown).toLocaleString('en-US');
+        el.textContent = match[1] + shown + match[3];
+        requestAnimationFrame(tick);
+      } else {
+        // the published string, restored verbatim
+        el.textContent = exact;
+        el.style.removeProperty('min-width');
+      }
+    }
+    requestAnimationFrame(tick);
+  }
+})();
