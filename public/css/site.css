@@ -111,8 +111,11 @@ img { max-width: 100%; display: block; }
   content: '';
   position: absolute; right: 2%; top: 50%; transform: translateY(-50%);
   width: min(240px, 22vw); aspect-ratio: 368 / 433;
-  background: url('../img/brand/leo-lion-white.png') no-repeat center / contain;
-  opacity: .07; pointer-events: none;
+  /* Gold rather than white here: the footer lockup is gold, and the two read
+     as one sign-off. Gold carries less luminance against navy than white, so
+     it needs a touch more opacity to sit at the same subtlety. */
+  background: url('../img/brand/leo-lion-gold.png') no-repeat center / contain;
+  opacity: .13; pointer-events: none;
 }
 .foot > .wrap { position: relative; z-index: 1; }
 
