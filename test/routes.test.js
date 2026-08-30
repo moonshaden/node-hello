@@ -358,11 +358,15 @@ test('the real lockup and favicons are served, not a placeholder', async () => {
 // come here for -- can be lost when the card it lived in is replaced.
 // ---------------------------------------------------------------------------
 
-test('the hero stands an awarded student beside the write-up', async () => {
+test('the hero centres on an awarded student, with no headline above them', async () => {
   await withServer(async (base) => {
     const home = await (await fetch(`${base}/`)).text();
 
-    assert.match(home, /class="hero hero-split"/, 'the hero splits when a student is set');
+    assert.match(home, /class="hero hero-centred"/, 'the hero centres on the student');
+    // The visible headline is gone, but the page must still have a heading.
+    assert.match(home, /<h1 class="visually-hidden">Every scholarship is a door someone walks through\.<\/h1>/,
+      'the h1 is hidden, not deleted');
+    assert.doesNotMatch(home, /<h1>Every scholarship/, 'no visible hero headline');
     assert.match(home, /class="hero-student-cut"[^>]*\/img\/recipients\/keian-cutout\.png/,
       'the cutout, not the uncut photograph');
     assert.match(home, /class="hero-student-who"[\s\S]*?<strong>Keian<\/strong>/,
@@ -387,7 +391,8 @@ test('the hero keeps the deadline when the deadline card gives way to a student'
 test('a hero student who is not published does not reach the hero', async () => {
   await withServer(async (base) => {
     const home = await (await fetch(`${base}/`)).text();
-    assert.doesNotMatch(home, /hero-split/, 'a drafted student takes the hero with them');
+    assert.doesNotMatch(home, /hero-centred/, 'a drafted student takes the hero with them');
+    assert.match(home, /<h1>Every scholarship/, 'the visible headline comes back with the fallback');
     assert.doesNotMatch(home, /keian-cutout\.png/, 'and their cutout with them');
     // The deadline card comes back rather than the hero losing half of itself.
     assert.match(home, /<aside class="deadline">/, 'the hero falls back to the card');
@@ -401,7 +406,7 @@ test('a hero student who is not published does not reach the hero', async () => 
 test('an unset or unresolvable hero student leaves the hero as it was', async () => {
   await withServer(async (base) => {
     const home = await (await fetch(`${base}/`)).text();
-    assert.doesNotMatch(home, /hero-split/);
+    assert.doesNotMatch(home, /hero-centred/);
     assert.match(home, /<aside class="deadline">/);
   }, (content) => { content.site.heroStudentId = 'rec-nobody'; });
 });

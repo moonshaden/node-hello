@@ -1134,10 +1134,39 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
    turns them into cropping, which is what the eye expects.
    ================================================================ */
 
-.hero-split .hero-grid {
-  grid-template-columns: minmax(0, 1fr) minmax(300px, .88fr);
-  gap: 44px;
-  align-items: center;
+/* ---------- the centred stage ----------
+   No headline above it: the student is the headline. Everything else in the
+   hero is arranged under them, so the eye lands on a face before it lands on
+   any copy. */
+.hero-centred .hero-stage {
+  max-width: 780px;
+  margin: 0 auto;
+  text-align: center;
+  /* The figure sits in a 3D scene like the other panels do. Perspective has to
+     live on the parent or each child becomes its own little world. */
+  perspective: 1400px;
+  perspective-origin: 50% 40%;
+}
+/* The whole stack has to stay close to one screen, so the padding comes in
+   and the figure stops short of the column width. */
+.hero-centred { padding: 56px 0 64px; }
+.hero-centred .eyebrow { margin-bottom: 18px; }
+.hero-centred .hero-student { width: min(380px, 100%); margin: 0 auto; }
+/* The card is centred in the column, but its own text is ranged left --
+   centred prose is hard to read, and a centred quote is worse. */
+.hero-centred .hero-student-note { text-align: left; }
+.hero-centred .hero-mission {
+  color: #c6d5e2;
+  font-size: 1.02rem;
+  max-width: 52ch;
+  margin: 26px auto 0;
+}
+.hero-centred .actions { justify-content: center; }
+.hero-centred .hero-deadline {
+  justify-content: center;
+  max-width: 46ch;
+  margin: 20px auto 0;
+  padding-top: 18px;
 }
 
 /* ---------- the deadline, reduced to a line ----------
@@ -1223,7 +1252,7 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   position: relative;
   z-index: 2;
   margin: -58px 14px 0;
-  padding: 16px 18px;
+  padding: 14px 16px;
   border-radius: 14px;
   border: 1px solid #2c4f70;
   background: rgba(9, 22, 36, .88);
@@ -1235,8 +1264,8 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   padding: 0;
   border: 0;
   font-family: var(--serif);
-  font-size: 1rem;
-  line-height: 1.45;
+  font-size: .95rem;
+  line-height: 1.42;
   color: #fff;
 }
 .hero-student-who {
@@ -1255,11 +1284,10 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 }
 
 @media (max-width: 900px) {
-  /* One column: the write-up first, the student under it. The panel stops
-     short of full width so the figure does not tower over the copy. */
-  .hero-split .hero-grid { grid-template-columns: 1fr; }
-  .hero-student { max-width: 420px; }
-  .hero-deadline { margin-top: 22px; }
+  /* Nothing to reflow -- the stage is already one centred column. The figure
+     just stops growing, so it does not fill a phone screen on its own. */
+  .hero-centred .hero-student { width: min(320px, 100%); }
+  .hero-centred .hero-mission { font-size: 1rem; }
 }
 
 /* The student takes over the plane the deadline card used to travel on, so the

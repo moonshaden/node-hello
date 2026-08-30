@@ -2,46 +2,23 @@
 
 <?php $app->partial('slider'); ?>
 
-<section class="hero<?= $heroStudent !== null ? ' hero-split' : '' ?>">
-  <div class="wrap hero-grid">
-    <div class="hero-copy">
+<section class="hero<?= $heroStudent !== null ? ' hero-centred' : '' ?>">
+  <?php if ($heroStudent !== null): ?>
+    <div class="wrap hero-stage">
+      <?php // The visible headline is gone -- the student is the headline now.
+            // The h1 stays in the document, hidden, because a page with no
+            // heading is a page screen readers and search engines cannot
+            // outline. Same words as before; only the display changes. ?>
+      <h1 class="visually-hidden">Every scholarship is a door someone walks through.</h1>
       <p class="eyebrow"><?= e($site['location'] ?? '') ?> · 501(c)(3) nonprofit</p>
-      <h1>Every scholarship is a door someone walks through.</h1>
-      <p><?= e($site['mission'] ?? '') ?></p>
-      <div class="actions">
-        <a class="btn btn-gold" href="<?= e($basePath) ?>/scholarships">
-          <?= $enrollment['state'] === 'open' ? 'Apply for a scholarship' : 'See available scholarships' ?>
-        </a>
-        <a class="btn btn-outline" style="color:#fff" href="<?= e($basePath) ?>/recipients">Meet our recipients</a>
-      </div>
 
-      <?php // The student holds the other half of the hero, so the deadline
-            // keeps its place here as one line rather than a card. It is still
-            // what applicants come for, so it is still above the fold and still
-            // first in the reading order after the buttons. ?>
-      <?php if ($heroStudent !== null): ?>
-        <p class="hero-deadline">
-          <?php if ($enrollment['state'] === 'open' && $enrollment['daysUntilClose'] !== null): ?>
-            <span class="hero-deadline-count"><?= (int) $enrollment['daysUntilClose'] ?></span>
-            <span>days left to apply<?php if (!empty($enrollment['closesOn'])): ?> · closes <?= e(fdate($enrollment['closesOn'])) ?><?php endif; ?></span>
-          <?php elseif ($enrollment['daysUntilOpen'] !== null): ?>
-            <span class="hero-deadline-count"><?= (int) $enrollment['daysUntilOpen'] ?></span>
-            <span>days until applications open<?php if (!empty($enrollment['opensOn'])): ?> · opens <?= e(fdate($enrollment['opensOn'])) ?><?php endif; ?></span>
-          <?php else: ?>
-            <span class="hero-deadline-count">Open</span>
-            <span>applications accepted year-round</span>
-          <?php endif; ?>
-        </p>
-      <?php endif; ?>
-    </div>
-
-    <?php if ($heroStudent !== null): ?>
       <?php // One of the awarded students, cut free of their own photograph and
-            // stood in the hero. The client asked for the awards to be the
-            // focus, and a student who is plainly glad to be at university
-            // carries that further than a stock photograph of a campus.
-            // Everything shown is their own record: the name, the award, the
-            // school, and a line lifted verbatim out of the bio they published. ?>
+            // stood at the centre of the page. The client asked for the awards
+            // to be the focus, and this is the strongest reading of that: the
+            // first thing on the site is a student who is plainly glad to be at
+            // university. Everything shown is their own record -- the name, the
+            // award, the school, and a line lifted verbatim out of the bio they
+            // published. ?>
       <figure class="hero-student">
         <div class="hero-student-stage">
           <img class="hero-student-cut" src="<?= e(link_url($heroStudent['cutoutUrl'], $basePath)) ?>"
@@ -58,7 +35,46 @@
           </p>
         </figcaption>
       </figure>
-    <?php else: ?>
+
+      <p class="hero-mission"><?= e($site['mission'] ?? '') ?></p>
+
+      <div class="actions">
+        <a class="btn btn-gold" href="<?= e($basePath) ?>/scholarships">
+          <?= $enrollment['state'] === 'open' ? 'Apply for a scholarship' : 'See available scholarships' ?>
+        </a>
+        <a class="btn btn-outline" style="color:#fff" href="<?= e($basePath) ?>/recipients">Meet our recipients</a>
+      </div>
+
+      <?php // The deadline is still what applicants come here for, so it stays
+            // in the hero. The ribbon above the page carries it on every route,
+            // so this is the fuller statement of it rather than the only one. ?>
+      <p class="hero-deadline">
+        <?php if ($enrollment['state'] === 'open' && $enrollment['daysUntilClose'] !== null): ?>
+          <span class="hero-deadline-count"><?= (int) $enrollment['daysUntilClose'] ?></span>
+          <span>days left to apply<?php if (!empty($enrollment['closesOn'])): ?> · closes <?= e(fdate($enrollment['closesOn'])) ?><?php endif; ?></span>
+        <?php elseif ($enrollment['daysUntilOpen'] !== null): ?>
+          <span class="hero-deadline-count"><?= (int) $enrollment['daysUntilOpen'] ?></span>
+          <span>days until applications open<?php if (!empty($enrollment['opensOn'])): ?> · opens <?= e(fdate($enrollment['opensOn'])) ?><?php endif; ?></span>
+        <?php else: ?>
+          <span class="hero-deadline-count">Open</span>
+          <span>applications accepted year-round</span>
+        <?php endif; ?>
+      </p>
+    </div>
+  <?php else: ?>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow"><?= e($site['location'] ?? '') ?> · 501(c)(3) nonprofit</p>
+        <h1>Every scholarship is a door someone walks through.</h1>
+        <p><?= e($site['mission'] ?? '') ?></p>
+        <div class="actions">
+          <a class="btn btn-gold" href="<?= e($basePath) ?>/scholarships">
+            <?= $enrollment['state'] === 'open' ? 'Apply for a scholarship' : 'See available scholarships' ?>
+          </a>
+          <a class="btn btn-outline" style="color:#fff" href="<?= e($basePath) ?>/recipients">Meet our recipients</a>
+        </div>
+      </div>
+
       <!-- The deadline is what applicants come here for, so it is never more than
            one glance away, in or out of season. -->
       <aside class="deadline">
@@ -86,8 +102,8 @@
           <?php endif; ?>
         </dl>
       </aside>
-    <?php endif; ?>
-  </div>
+    </div>
+  <?php endif; ?>
 </section>
 
 <?php if (!empty($site['impact'])): ?>
