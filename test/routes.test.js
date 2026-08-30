@@ -310,18 +310,37 @@ test('the impact heading and supporting lines survive a settings save', async ()
   });
 });
 
-// A hidden slide must not leave a link in the tab order, and the slider must
-// not appear at all when nothing is seeded.
-test('the homepage renders the slider and the LEO pillars', async () => {
+// The carousel that used to sit above the hero is gone, and the awarded student
+// is the first thing on the page. The slides themselves are untouched in the
+// store -- this pins that the homepage stops *rendering* them, so putting the
+// carousel back is one include and not a re-transcription.
+test('the homepage leads with the student, not a carousel', async () => {
   await withServer(async (base) => {
     const body = await (await fetch(`${base}/`)).text();
-    assert.match(body, /data-slider/);
-    assert.equal((body.match(/data-slide\b/g) || []).length, 3);
+
+    assert.doesNotMatch(body, /data-slider/, 'no carousel on the homepage');
+    assert.equal((body.match(/data-slide\b/g) || []).length, 0, 'and no slides');
+    assert.doesNotMatch(body, /slider-arrow|slider-dots/, 'and none of its controls');
+
+    // The hero is now the first thing inside main.
+    assert.match(body, /<main>\s*<section class="hero hero-centred"/,
+      'the hero opens the page');
+
     assert.equal((body.match(/class="pillar"/g) || []).length, 3);
-    assert.match(body, /fetchpriority="high"/, 'first slide is eager');
-    assert.match(body, /loading="lazy"/, 'later slides are not');
-    assert.match(body, /js\/site\.js/, 'the slider script is loaded');
+    // site.js still ships -- the depth, staging and awardee modules all need it.
+    assert.match(body, /js\/site\.js/, 'the site script is still loaded');
   });
+});
+
+// The slides are kept, not deleted: they stay in the store and stay editable in
+// /admin, so this was a rendering decision rather than a loss of content.
+test('the slides survive in the store even though nothing renders them', async () => {
+  await withServer(async (base) => {
+    const body = await (await fetch(`${base}/`)).text();
+    assert.doesNotMatch(body, /data-slider/);
+  });
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  assert.equal(seed.slides.length, 3, 'all three slides are still seeded');
 });
 
 // The header carried a CSS placeholder mark for months. Now that real artwork

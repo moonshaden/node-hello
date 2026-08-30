@@ -543,3 +543,22 @@ test('the hero student has a cutout in both builds', () => {
     assert.ok(fs.existsSync(file), `${file} is missing`);
   }
 });
+
+// The two builds ship their own copy of the client script, the same way they
+// ship their own copy of the seed. Nothing pinned them together, so a fix
+// applied to one and forgotten in the other would run on the dev twin and not
+// on the deployed site -- with both suites green, because neither reads it.
+// Same failure mode as the seed drift, and the same remedy.
+test('both builds ship the same client script and stylesheet', () => {
+  const root = path.join(__dirname, '..');
+  for (const [a, b] of [
+    ['public/js/site.js', 'php/public_html/js/site.js'],
+    ['public/css/site.css', 'php/public_html/css/site.css'],
+  ]) {
+    assert.equal(
+      fs.readFileSync(path.join(root, a), 'utf8'),
+      fs.readFileSync(path.join(root, b), 'utf8'),
+      `${a} and ${b} have drifted`,
+    );
+  }
+});

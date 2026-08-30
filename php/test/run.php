@@ -648,6 +648,24 @@ test('the hero student is resolved from the published list only', function () {
     is_same(Content::heroStudent(tempStore(['site' => []]), $published), null, 'the hero filled itself in unasked');
 });
 
+// The two builds ship their own copy of the client script and the stylesheet,
+// the same way they ship their own copy of the seed. Nothing pinned them
+// together, so a fix applied to one and forgotten in the other would run on the
+// dev twin and not on the deployed site -- with both suites green, because
+// neither reads them. Same failure mode as the seed drift, same remedy.
+test('both builds ship the same client script and stylesheet', function () {
+    $root = dirname(__DIR__, 2);
+    foreach ([
+        ['public/js/site.js', 'php/public_html/js/site.js'],
+        ['public/css/site.css', 'php/public_html/css/site.css'],
+    ] as [$a, $b]) {
+        ok(
+            file_get_contents($root . '/' . $a) === file_get_contents($root . '/' . $b),
+            $a . ' and ' . $b . ' have drifted'
+        );
+    }
+});
+
 // LEO is an acronym and the live homepage publishes a write-up for each word.
 // The words carry the brand, so a reordered or reworded set is a real change.
 test('the LEO pillars spell out Leadership, Education, Opportunity', function () {

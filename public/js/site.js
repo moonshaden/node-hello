@@ -294,13 +294,20 @@
     var viewport = window.innerHeight;
     var mid = viewport / 2;
 
-    Array.prototype.forEach.call(scenes, function (scene) {
+    Array.prototype.forEach.call(scenes, function (scene, i) {
       var box = scene.getBoundingClientRect();
       // How far this panel's centre is from the centre of the screen, as a
       // fraction of a screen. Clamped, because a very tall panel would
       // otherwise fade itself out while you are still reading it.
       var offset = (box.top + box.height / 2 - mid) / viewport;
       var p = Math.max(-1, Math.min(1, offset));
+
+      // Nothing approaches the top of a document. A positive p means "still on
+      // its way in", which the first panel never is -- it is already there when
+      // the page loads. Left unclamped it opens at 0.26, which renders the lead
+      // panel at 81% opacity and pushed 136px back: the first thing a visitor
+      // sees, faded. It still recedes upward (negative p) on the way out.
+      if (i === 0) p = Math.min(p, 0);
 
       // A tall panel is a page of content, not a slide: hold it near the
       // screen plane while it is the thing being read.

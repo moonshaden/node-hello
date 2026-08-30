@@ -1,7 +1,11 @@
 <?php $app->partial('head'); ?>
 
-<?php $app->partial('slider'); ?>
-
+<?php // The homepage led with a three-slide carousel above the hero. It no
+      // longer does -- the awarded student is the first thing on the site, and
+      // a carousel above them was the one element competing for that. The
+      // slides, their images and their /admin section are all still in place,
+      // so this is a change of what the page renders, not a deletion of
+      // anything the client can edit. ?>
 <section class="hero<?= $heroStudent !== null ? ' hero-centred' : '' ?>">
   <?php if ($heroStudent !== null): ?>
     <div class="wrap hero-stage">

@@ -1149,24 +1149,26 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 }
 /* The whole stack has to stay close to one screen, so the padding comes in
    and the figure stops short of the column width. */
-.hero-centred { padding: 56px 0 64px; }
+/* With the carousel gone the hero is the top of the page, so it should not
+   need scrolling to take in. */
+.hero-centred { padding: 40px 0 48px; }
 .hero-centred .eyebrow { margin-bottom: 18px; }
-.hero-centred .hero-student { width: min(380px, 100%); margin: 0 auto; }
+.hero-centred .hero-student { width: min(350px, 100%); margin: 0 auto; }
 /* The card is centred in the column, but its own text is ranged left --
    centred prose is hard to read, and a centred quote is worse. */
 .hero-centred .hero-student-note { text-align: left; }
 .hero-centred .hero-mission {
   color: #c6d5e2;
-  font-size: 1.02rem;
+  font-size: 1rem;
   max-width: 52ch;
-  margin: 26px auto 0;
+  margin: 20px auto 0;
 }
 .hero-centred .actions { justify-content: center; }
 .hero-centred .hero-deadline {
   justify-content: center;
   max-width: 46ch;
-  margin: 20px auto 0;
-  padding-top: 18px;
+  margin: 16px auto 0;
+  padding-top: 14px;
 }
 
 /* ---------- the deadline, reduced to a line ----------
@@ -1252,7 +1254,7 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   position: relative;
   z-index: 2;
   margin: -58px 14px 0;
-  padding: 14px 16px;
+  padding: 12px 15px;
   border-radius: 14px;
   border: 1px solid #2c4f70;
   background: rgba(9, 22, 36, .88);
@@ -1264,8 +1266,8 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   padding: 0;
   border: 0;
   font-family: var(--serif);
-  font-size: .95rem;
-  line-height: 1.42;
+  font-size: .92rem;
+  line-height: 1.4;
   color: #fff;
 }
 .hero-student-who {
