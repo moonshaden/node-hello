@@ -331,6 +331,53 @@ test('every recipient photo is served from this repo and exists', function () {
     }
 });
 
+// The Programs & Partnerships page is transcribed from /programs-partnerships/
+// on the live site: three programs, in the live order, copy word for word.
+// Mirrors the same assertions in test/content.test.js.
+test('the programs page publishes all three programs in the live order', function () {
+    $seed = json_decode(file_get_contents(dirname(__DIR__, 2) . '/data/content.json'), true);
+    $page = null;
+    foreach ($seed['pages'] as $candidate) {
+        if (($candidate['slug'] ?? '') === 'programs') {
+            $page = $candidate;
+        }
+    }
+    ok($page !== null, 'no programs page in the seed');
+    $names = array_map(fn ($p) => $p['name'], $page['programs']);
+    is_same($names, ['Foster Youth Programs', 'Impact Leadership Program', 'Youth Development Academy'], 'the programs changed');
+});
+
+// Same failure mode as the recipient, board and slide images.
+test('every program photo is served from this repo and exists', function () {
+    $root = dirname(__DIR__, 2);
+    $seed = json_decode(file_get_contents($root . '/data/content.json'), true);
+    $programs = [];
+    foreach ($seed['pages'] as $page) {
+        if (($page['slug'] ?? '') === 'programs') {
+            $programs = $page['programs'];
+        }
+    }
+    ok(count($programs) === 3, 'a program went missing');
+
+    foreach ($programs as $p) {
+        ok(str_starts_with($p['photoUrl'], '/img/programs/'), $p['name'] . ' is not served locally');
+        ok(trim($p['alt']) !== '', $p['name'] . ' has no alt text');
+        foreach (['public', 'php/public_html'] as $base) {
+            ok(is_file($root . '/' . $base . $p['photoUrl']), 'missing ' . $base . $p['photoUrl']);
+        }
+    }
+});
+
+// The hero slide for this destination pointed nowhere until the page existed.
+test('the programs hero slide points at the page that now exists', function () {
+    $seed = json_decode(file_get_contents(dirname(__DIR__, 2) . '/data/content.json'), true);
+    foreach ($seed['slides'] as $s) {
+        if (stripos($s['heading'], 'PROGRAMS') !== false) {
+            is_same($s['ctaUrl'], '/programs', 'the slide still points nowhere');
+        }
+    }
+});
+
 // The board is real named people transcribed from /leadership-2/ on the live
 // site. A wrong name, a wrong office, or a reordered roster is worse than no
 // page at all, so the seed is pinned here rather than left to drift. Mirrors

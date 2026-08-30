@@ -1,0 +1,15 @@
+<%#
+  One program on the Programs & Partnerships page.
+
+  Mirrors partials/program-section.php. Same image-beside-text row the board
+  lead uses, alternating side so three of them do not read as one column of
+  repeats. The copy is markdown so the two partner links stay editable in
+  /admin rather than being baked into the template.
+%>
+<article class="card program<%= flip ? ' program-flip' : '' %>">
+  <% if (program.photoUrl) { %>
+    <img class="program-photo" src="<%= program.photoUrl %>" alt="<%= program.alt || program.name %>" loading="lazy" width="800" height="800">
+  <% } %>
+  <h3 class="program-name" id="<%= program.slug %>"><%= program.name %></h3>
+  <div class="program-body"><%- markdown.render(program.body) %></div>
+</article>

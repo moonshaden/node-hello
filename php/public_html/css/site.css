@@ -478,6 +478,47 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .board-member .story-full p { margin: 0 0 .8em; color: var(--ink-soft); font-size: .95rem; }
 .board-member .story-full p:last-child { margin-bottom: 0; }
 
+/* programs — an image-beside-text row per program, alternating side so three
+   of them do not read as one column of repeats. Same grid idea as .board-lead. */
+.program-list { display: grid; gap: 28px; }
+.program {
+  display: grid;
+  grid-template-columns: 300px minmax(0, 1fr);
+  column-gap: 36px;
+  align-items: start;
+  padding: 30px 34px 32px;
+  border-color: #dcd3c2;
+}
+.program > .program-photo { grid-column: 1; grid-row: 1 / span 30; align-self: start; }
+.program > :not(.program-photo) { grid-column: 2; }
+.program-photo {
+  /* height:auto is load-bearing: the width/height attributes reserve space
+     before the photo loads, and without it they apply as a real height and
+     beat aspect-ratio. */
+  width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover;
+  border-radius: 12px; background: var(--gold-wash);
+}
+.program-name {
+  font-family: var(--serif); font-size: 1.6rem; margin: 0 0 14px;
+  scroll-margin-top: 24px;
+}
+.program-body p { color: var(--ink-soft); margin: 0 0 .9em; }
+.program-body p:last-child { margin-bottom: 0; }
+
+/* Mirrored so the photo sits on the right for every other program. */
+.program-flip { grid-template-columns: minmax(0, 1fr) 300px; }
+.program-flip > .program-photo { grid-column: 2; }
+.program-flip > :not(.program-photo) { grid-column: 1; }
+
+@media (max-width: 720px) {
+  .program,
+  .program-flip { grid-template-columns: 1fr; padding: 24px 22px 26px; row-gap: 18px; }
+  .program > .program-photo,
+  .program-flip > .program-photo { grid-column: 1; grid-row: auto; }
+  .program > :not(.program-photo),
+  .program-flip > :not(.program-photo) { grid-column: 1; }
+}
+
 .year-head {
   display: flex; align-items: center; gap: 18px; margin: 48px 0 24px;
   font-family: var(--serif); font-size: 1.6rem;

@@ -181,6 +181,44 @@ test('every recipient photo is served from this repo and exists', () => {
   }
 });
 
+// The Programs & Partnerships page is transcribed from /programs-partnerships/
+// on the live site: three programs, in the live order, copy word for word.
+const PROGRAMS = ['Foster Youth Programs', 'Impact Leadership Program', 'Youth Development Academy'];
+
+function seedPage(slug) {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  return seed.pages.find((p) => p.slug === slug);
+}
+
+test('the programs page publishes all three programs in the live order', () => {
+  const page = seedPage('programs');
+  assert.ok(page, 'no programs page in the seed');
+  assert.deepEqual(page.programs.map((p) => p.name), PROGRAMS);
+});
+
+// Same failure mode as the recipient and board portraits: a wp-content URL
+// would 404 the moment the new site took over the domain.
+test('every program photo is served from this repo and exists', () => {
+  const root = path.join(__dirname, '..');
+  const programs = seedPage('programs').programs;
+  for (const p of programs) {
+    assert.match(p.photoUrl, /^\/img\/programs\//, `${p.name} is not served locally`);
+    assert.ok((p.alt || '').trim(), `${p.name} has no alt text`);
+    for (const base of ['public', path.join('php', 'public_html')]) {
+      assert.ok(fs.existsSync(path.join(root, base, p.photoUrl)), `missing ${base}${p.photoUrl}`);
+    }
+  }
+});
+
+// The hero slide for this destination pointed nowhere until the page existed.
+// A slide must never point at a path this site does not serve.
+test('the programs hero slide points at the page that now exists', () => {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  const slide = seed.slides.find((s) => /programs/i.test(s.heading || ''));
+  assert.ok(slide, 'no programs slide');
+  assert.equal(slide.ctaUrl, '/programs', 'the slide still points nowhere');
+});
+
 // The board is real named people transcribed from /leadership-2/ on the live
 // site. A wrong name, a wrong office, or a reordered roster is worse than no
 // page at all, so the seed is pinned here rather than left to drift.
@@ -378,7 +416,7 @@ test('every slide has an image and a heading, and links only where a page exists
   assert.ok(slides.length > 0, 'slides are seeded');
 
   const routes = new Set(['/faq', '/about', '/donate', '/contact', '/board',
-                          '/scholarships', '/recipients']);
+                          '/programs', '/scholarships', '/recipients']);
   for (const slide of slides) {
     assert.match(slide.image, /^\/img\/slides\/.+\.jpg$/, 'app-absolute image');
     assert.ok(slide.heading.trim(), 'heading');

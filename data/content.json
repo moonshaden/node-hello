@@ -69,7 +69,7 @@
       "subheading": "",
       "body": "",
       "ctaLabel": "",
-      "ctaUrl": "",
+      "ctaUrl": "/programs",
       "order": 1
     },
     {
@@ -706,6 +706,38 @@
       "summary": "Who we are and why we invest in students.",
       "body": "LEO Foundation — Leadership, Education and Opportunity — is an independent nonprofit 501(c)(3) organization. Our mission is to invest in future generations by supporting student leadership and educational opportunities through scholarships, mentoring, and athletic programs.\n\nFor nearly twenty years, the foundation — formerly the GCU Scholarship Foundation — has connected more than 3,000 young people to over $5 million in scholarships and to educational and athletic opportunities that promote higher-learning academic achievement.\n\n## Who we serve\n\nOur primary exempt purpose is to provide scholarships to traditional, full-time undergraduate students enrolled at universities and colleges in Arizona.\n\n## Who governs the foundation\n\nThe foundation is directed by a volunteer board whose members set the scholarship criteria, steward the funds, and select each year's recipients. Meet the people behind that work on our [Board of Directors](/board) page.\n\n## How we are funded\n\nThe foundation is funded by individual donors, families who establish memorial scholarships, and community partners. Gifts are tax deductible to the extent allowed by law.",
       "navLabel": "About"
+    },
+    {
+      "id": "page-programs",
+      "slug": "programs",
+      "title": "Programs & Partnerships",
+      "inNav": true,
+      "navLabel": "Programs",
+      "summary": "The LEO Foundation is dedicated to connecting youth in our community to programs and services that foster growth, self-confidence, and teamwork. Through collaborative partnerships, we provide leadership and life-changing coaching and mentorship opportunities.",
+      "body": "LEO Foundation welcomes you to become a part of a growing, Christ-centered group of learners whose lives are making a perpetual effect on the world.\n\nIf one of these programs fits a student you know, [the available scholarships](/scholarships) list what is open and when, and we are glad to [talk it through](/contact).",
+      "programs": [
+        {
+          "slug": "foster-youth-programs",
+          "name": "Foster Youth Programs",
+          "photoUrl": "/img/programs/foster-youth-programs.jpg",
+          "alt": "Five teenagers standing together outdoors, arms around each other",
+          "body": "The LEO Foundation’s Foster Youth Scholarship Program is dedicated to providing educational opportunities for youth in the foster care system. Currently, over 11,000 children are in foster care in Arizona, with 30 new children entering the system daily. Statistics show that 800 young men and women age out of the system each year, often finding themselves in survival mode and struggling to meet basic needs like food and housing instead of planning for their future.\n\nOur program is designed to help these youth overcome these challenges by offering scholarships to cover tuition, fees, books, equipment, meal plans, and room and board. These scholarships are specifically for qualified Arizona foster care students who are interested in pursuing higher education.\n\nApplicants still in the system, as well as those who have aged out but have filed the appropriate documentation with the state, are eligible to apply.\n\nThe LEO Foundation is a proud partner of the Arizona Friends of Foster Children Foundation."
+        },
+        {
+          "slug": "impact-leadership-program",
+          "name": "Impact Leadership Program",
+          "photoUrl": "/img/programs/impact-leadership-program.jpg",
+          "alt": "A torn paper strip reading LEADERSHIP resting on a white jigsaw puzzle",
+          "body": "The Impact Leadership Program aims to cultivate a generation of leaders dedicated to making the world a better place by teaching students the critical elements of leadership.\n\nAt the LEO Foundation, we believe that leadership support directly influences future careers and success. This program empowers future leaders by helping students develop essential skills such as analyzing their strengths and weaknesses, setting goals, and having the confidence, motivation, and ability to achieve them. The Impact Leadership Program challenges graduates to become individuals whose skills, integrity, and purpose distinguish them in the workplace and beyond. By connecting today’s leaders with the leaders of tomorrow, we invest in a future that builds strong communities, transforms individuals, and develops the next generations of philanthropists and servant leaders.\n\nThe Impact Leadership Program includes a mentorship track to foster advocacy, collaboration, learning, and sharing. This track enhances leadership development opportunities for student role models and mentors. The program begins at the freshman level and continues through graduation, supporting students as they transition into their young professional careers. First-year students engage with senior-level students, while seniors are connected to alumni. The mentor/mentee experience helps shape students into strong servant leaders and the next generation of ambassadors and volunteers.\n\nGet involved by making a financial donation or becoming a mentor."
+        },
+        {
+          "slug": "youth-development-academy",
+          "name": "Youth Development Academy",
+          "photoUrl": "/img/programs/youth-development-academy.jpg",
+          "alt": "A smiling girl holding a basketball, seated with other children in a gym",
+          "body": "The LEO Foundation has a long history of connecting students from low-income families to a wide variety of growth opportunities, including educational and athletic programs.\n\nIn collaboration with the [Arizona Basketball Association](https://az.nhsbca.org/), the LEO Foundation offers fall, winter, and spring basketball league opportunities, culminating in a three-week summer camp in June. Through basketball, Arizona youth are exposed to a positive sports environment and coaching mentorship that teaches life lessons such as leadership, teamwork, and sportsmanship.\n\nStudies show that kids who play sports achieve up to 40% higher test scores and are 15% more likely to attend college. The Youth Development Academy aims to make an early positive impact, providing encouragement as kids progress through their primary and secondary education.\n\nThe LEO Foundation is a proud partner of the [Arizona Basketball Coaches Association](https://az.nhsbca.org/)."
+        }
+      ]
     },
     {
       "id": "page-board",

@@ -10,7 +10,7 @@ deployment:
     - export DEPLOYPATH=/home/leofoundationusa
     - /bin/mkdir -p $DEPLOYPATH/leo-app/src $DEPLOYPATH/leo-app/views/admin
     - /bin/mkdir -p $DEPLOYPATH/public_html/css $DEPLOYPATH/public_html/js
-    - /bin/mkdir -p $DEPLOYPATH/public_html/img/recipients $DEPLOYPATH/public_html/img/board
+    - /bin/mkdir -p $DEPLOYPATH/public_html/img/recipients $DEPLOYPATH/public_html/img/board $DEPLOYPATH/public_html/img/programs
     - /bin/mkdir -p $DEPLOYPATH/public_html/img/slides
 
     - /bin/cp -R php/leo-app/src/. $DEPLOYPATH/leo-app/src/

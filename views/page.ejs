@@ -32,6 +32,24 @@
 </section>
 
 <%
+  // A page can carry a list of programs alongside its prose, the same way it can
+  // carry a roster. Stored on the page record, so the admin page form still
+  // edits the copy around it and leaves the list untouched. Mirrored in page.php.
+  const programs = Array.isArray(page.programs) ? page.programs : [];
+%>
+<% if (programs.length) { %>
+<section class="band tint" id="programs">
+  <div class="wrap">
+    <div class="program-list">
+      <% programs.forEach(function (program, i) { %>
+        <%- include('partials/program-section', { program, flip: i % 2 === 1 }) %>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<%
   // A page can carry a roster of people alongside its prose -- the board is the
   // only one today. It is stored on the page record rather than as its own
   // content type, so the admin page form still edits the copy around it and

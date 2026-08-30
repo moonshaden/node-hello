@@ -40,8 +40,8 @@ once in `php/leo-app/views` + `php/public_html/css`, once in `views/` +
 ## Commands
 
 ```bash
-npm test                                    # 63 tests
-php php/test/run.php                        # 64 tests
+npm test                                    # 70 tests
+php php/test/run.php                        # 67 tests
 find php -name '*.php' -exec php -l {} \;   # lint
 
 ADMIN_PASSWORD='...' npm start              # Node build, :3000
@@ -240,6 +240,29 @@ omit them rather than showing a guess. If the client wants "Class of 2025" or a
 per-student amount, that data has to come from them. Four bios name no specific
 award, so those recipients point at the general LEO Foundation Scholarship.
 
+The **Programs & Partnerships page is the live `/programs-partnerships/` page**,
+transcribed on 2026-08-30: three programs, in the live order, copy word for
+word — Foster Youth Programs, Impact Leadership Program, Youth Development
+Academy. It is seeded as a page with slug `programs` (short slugs are the
+convention here: the FAQ is `/faq`, not `/scholarship-faqs`) and `inNav: true`,
+matching the live nav.
+
+- The programs live in a `programs` array **on the page record**, the same shape
+  the board roster uses, and survive an admin save for the same reason
+  (`applyFields()` spreads the existing record first). Each carries markdown
+  `body`, so the two Arizona Basketball Coaches Association links stay editable
+  in `/admin` rather than being baked into the template.
+- Photos are rehosted under `public/img/programs/` and
+  `php/public_html/img/programs/` as `/img/programs/<slug>.jpg`, capped at 800px
+  and re-encoded as JPEG (6.5 MB → 0.28 MB). The live media library publishes no
+  alt text, so the alt was written here from the photograph.
+- **Not carried across:** the four-button nav strip (APPLICATION DATES /
+  SCHOLARSHIP FAQ's / SCHOLARSHIP RECIPIENTS / AVAILABLE SCHOLARSHIPS) is Avada
+  chrome duplicating this site's own header; the impact counters, which are the
+  same 20 / $8.5M / 5,685 / $6.9M figures the impact band already carries; and
+  the contact form, which needs a mail handler this build does not have — the
+  page body links to `/contact` instead.
+
 The **Board of Directors page is the live `/leadership-2/` page** ("LEADERSHIP"),
 transcribed on 2026-08-29: six members, in the live order, with each office and
 bio word for word. It is seeded as a page with slug `board` and `inNav: false` —
@@ -339,11 +362,11 @@ is an empty string on all three. Do not compose one.
    donors to `aplos.com/aws/give/LEOFoundation/{Donation,donate-now,fieldorstudy,donate}`.
    Those are transcribed as published, but a dead giving link is the one bug that
    costs money, so have the client click each before cutover.
-7. **Two homepage slides link nowhere.** `/programs-partnerships/` and
-   `/mission-moments-newsletter/` are published live and are where two of the
-   three hero slides point, but neither page is transcribed, so their `ctaUrl`
-   is empty. Seed those two pages the way the FAQ and Giving pages were seeded,
-   then fill the slides' `ctaUrl` in.
+7. **One homepage slide still links nowhere.** `/programs-partnerships/` is
+   done — transcribed, seeded as `/programs`, and the slide's `ctaUrl` now
+   points at it. `/mission-moments-newsletter/` is still untranscribed, so that
+   slide's `ctaUrl` stays empty. Seed it the way the others were seeded, then
+   fill the slide in.
 8. Old-URL redirect map verification before cutover. The scholarship slugs now
    match the WordPress ones, so most of the map should be one-to-one.
 9. ~~No CI~~ — **done.** `.github/workflows/deploy.yml` runs both suites and the

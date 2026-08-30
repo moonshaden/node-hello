@@ -32,6 +32,24 @@ $index = count($article['headings']) >= $indexFrom ? $article['headings'] : [];
 </section>
 
 <?php
+// A page can carry a list of programs alongside its prose, the same way it can
+// carry a roster. Stored on the page record, so the admin page form still edits
+// the copy around it and leaves the list untouched. Mirrored in page.ejs.
+$programs = is_array($page['programs'] ?? null) ? $page['programs'] : [];
+?>
+<?php if ($programs !== []): ?>
+<section class="band tint" id="programs">
+  <div class="wrap">
+    <div class="program-list">
+      <?php foreach ($programs as $i => $program): ?>
+        <?php $app->partial('program-section', ['program' => $program, 'flip' => $i % 2 === 1]); ?>
+      <?php endforeach; ?>
+    </div>
+  </div>
+</section>
+<?php endif; ?>
+
+<?php
 // A page can carry a roster of people alongside its prose -- the board is the
 // only one today. It is stored on the page record rather than as its own
 // content type, so the admin page form still edits the copy around it and
