@@ -32,10 +32,15 @@
 <header class="masthead">
   <div class="wrap masthead-inner">
     <a class="wordmark" href="<?= e($basePath) ?>/" aria-label="<?= e($site['name'] ?? '') ?> home">
-      <!-- The lion is the mark; the name is set in type rather than shipped as a
-           raster, so it stays sharp at any size and can be restyled in CSS. -->
-      <img class="wordmark-lion" src="<?= e(link_url('/img/brand/leo-lion-gold-solid.png', $basePath)) ?>"
-           alt="" aria-hidden="true" width="368" height="433">
+      <?php // The client's own crest, cropped above its LEADERSHIP/EDUCATION/
+            // OPPORTUNITY strip -- at masthead size that strip is about three
+            // pixels tall and reads as a smudge, while the strapline beside it
+            // stays legible as type. The crest is drawn for a light ground, so it
+            // sits on a light plaque rather than being recoloured: inverting it
+            // would put a white lion on a white face and lose the artwork. The
+            // name stays set in type so it keeps its own sharpness. ?>
+      <img class="wordmark-crest" src="<?= e(link_url('/img/brand/leo-crest-header.png', $basePath)) ?>"
+           alt="" aria-hidden="true" width="440" height="396">
       <span class="wordmark-type">
         <span class="wordmark-name"><?= e($site['name'] ?? '') ?></span>
         <span class="wordmark-strap">Leadership &middot; Education &middot; Opportunity</span>

@@ -348,7 +348,8 @@ test('the slides survive in the store even though nothing renders them', async (
 test('the real lockup and favicons are served, not a placeholder', async () => {
   await withServer(async (base) => {
     const home = await (await fetch(`${base}/`)).text();
-    assert.match(home, /class="wordmark-lion"[^>]*leo-lion-gold-solid\.png/, 'the lion is the masthead mark');
+    // The client's own crest, not the line-art lion the repo derived earlier.
+    assert.match(home, /class="wordmark-crest"[^>]*leo-crest-header\.png/, 'the crest is the masthead mark');
     assert.match(home, /class="wordmark-name"/, 'the name is set in type, not shipped as a raster');
     // Footer lockup: white rules and a white FOUNDATION against the navy, with
     // LEO and the strapline left gold.
@@ -357,7 +358,8 @@ test('the real lockup and favicons are served, not a placeholder', async () => {
     assert.match(home, /favicon-32\.png/, 'png favicon');
     assert.doesNotMatch(home, /<span class="mark">LEO<\/span>/, 'placeholder is gone');
 
-    for (const asset of ['/img/brand/leo-lion-gold-solid.png',
+    for (const asset of ['/img/brand/leo-crest-header.png',
+                         '/img/brand/leo-crest.png',
                          '/img/brand/leo-lockup-footer.png',
                          '/img/brand/leo-lion-white.png',
                          '/img/brand/favicon-180.png']) {

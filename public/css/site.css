@@ -58,7 +58,20 @@ img { max-width: 100%; display: block; }
 /* The lion carries the identity in the masthead; the name is type, so it
    stays crisp at any size and needs no second raster. */
 .wordmark { gap: 14px; text-decoration: none; }
-.wordmark-lion { height: 56px; width: auto; display: block; flex: none; }
+/* The crest is the client's artwork, drawn navy-on-white. The masthead is navy,
+   so it sits on a light plaque rather than being recoloured -- a white-on-navy
+   inversion would put a white lion against its own white face. */
+.wordmark-crest {
+  /* Sized so the masthead stays one row. The crest is wider than the line-art
+     lion it replaced, and at 58px it pushed the wordmark past the width the nav
+     needs, wrapping the header onto a second row and taking it from 100px to
+     176px tall. */
+  height: 46px; width: auto; display: block; flex: none;
+  background: #fff;
+  border-radius: 9px;
+  padding: 4px 6px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, .22);
+}
 .wordmark-type { display: flex; flex-direction: column; justify-content: center; }
 .wordmark-name {
   font-family: var(--serif); font-size: 1.62rem; line-height: 1.05;
@@ -71,7 +84,7 @@ img { max-width: 100%; display: block; }
 .foot-mark { height: 62px; width: auto; margin-bottom: 18px; }
 
 @media (max-width: 780px) {
-  .wordmark-lion { height: 42px; }
+  .wordmark-crest { height: 44px; padding: 4px 6px; }
   .wordmark-strap { display: none; }
 }
 
