@@ -27,7 +27,7 @@
         <div class="hero-student-stage">
           <img class="hero-student-cut" src="<?= e(link_url($heroStudent['cutoutUrl'], $basePath)) ?>"
                alt="<?= e($heroStudent['name'] ?? '') ?>, holding up a Grand Canyon University pin"
-               width="700" height="804">
+               width="640" height="832">
         </div>
         <figcaption class="hero-student-note">
           <?php if (!empty($heroStudent['heroQuote'])): ?>
