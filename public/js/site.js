@@ -380,3 +380,93 @@
     requestAnimationFrame(tick);
   }
 })();
+
+/* The awarded students.
+ *
+ * Turns the flat list of every awarded student into a stage that steps through
+ * them one at a time. Arrows, arrow keys, and swipe.
+ *
+ * The list is readable before this runs and would stay readable if it never
+ * did: the script *adds* `.is-live`, and only then does the stylesheet stack
+ * them. Nothing is hidden by CSS alone, because a visitor without JavaScript
+ * has to be able to read all fifteen.
+ */
+(function () {
+  'use strict';
+
+  var deck = document.querySelector('[data-awardees]');
+  if (!deck) return;
+
+  var people = Array.prototype.slice.call(deck.querySelectorAll('[data-awardee]'));
+  if (people.length < 2) return;              // one student needs no controls
+
+  var counter = document.querySelector('[data-awardee-count]');
+  var steps = document.querySelectorAll('[data-awardee-step]');
+  var index = 0;
+
+  // Stacking them absolutely collapses the deck's height, so measure the
+  // tallest while they are still in flow and hold the stage to it. Without this
+  // the page jumps every time someone steps to a longer story.
+  function measure() {
+    var was = deck.classList.contains('is-live');
+    if (was) deck.classList.remove('is-live');
+    var tallest = 0;
+    people.forEach(function (person) {
+      tallest = Math.max(tallest, person.getBoundingClientRect().height);
+    });
+    if (was) deck.classList.add('is-live');
+    if (tallest) deck.style.setProperty('--stage-height', Math.ceil(tallest) + 'px');
+  }
+
+  function show(next) {
+    index = (next + people.length) % people.length;
+    people.forEach(function (person, i) {
+      if (i === index) person.removeAttribute('aria-hidden');
+      else person.setAttribute('aria-hidden', 'true');
+    });
+    if (counter) counter.textContent = (index + 1) + ' of ' + people.length;
+  }
+
+  measure();
+  deck.classList.add('is-live');
+  show(0);
+
+  Array.prototype.forEach.call(steps, function (button) {
+    button.addEventListener('click', function () {
+      show(index + Number(button.getAttribute('data-awardee-step')));
+    });
+  });
+
+  // Arrow keys, but only while the stage has focus -- stealing them from the
+  // whole page would break ordinary scrolling.
+  deck.parentNode.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') { show(index - 1); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { show(index + 1); e.preventDefault(); }
+  });
+
+  // Swipe. Horizontal intent only, so a vertical scroll that starts on a
+  // portrait still scrolls the page.
+  var startX = null, startY = null;
+  deck.addEventListener('pointerdown', function (e) {
+    if (e.pointerType === 'mouse') return;
+    startX = e.clientX; startY = e.clientY;
+  });
+  deck.addEventListener('pointerup', function (e) {
+    if (startX === null) return;
+    var dx = e.clientX - startX, dy = e.clientY - startY;
+    startX = startY = null;
+    if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) show(index + (dx < 0 ? 1 : -1));
+  });
+
+  var settle;
+  addEventListener('resize', function () {
+    clearTimeout(settle);
+    settle = setTimeout(measure, 180);
+  }, { passive: true });
+
+  // Portraits load lazily, and a story's height changes once its image has a
+  // box. Re-measure when they land or the stage can end up too short.
+  Array.prototype.forEach.call(deck.querySelectorAll('img'), function (img) {
+    if (!img.complete) img.addEventListener('load', measure, { once: true });
+  });
+})();

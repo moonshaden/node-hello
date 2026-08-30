@@ -1012,3 +1012,113 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   .is-staged .pillars > .pillar:first-child,
   .is-staged .pillars > .pillar:last-child { transform: none; }
 }
+
+/* ============================================================
+   The awarded students
+   ============================================================
+   The client's fifth ask was to highlight scholarships awarded and keep that as
+   the focus, and it was the weakest thing on the site: three small cards with
+   each story folded behind a disclosure. Here every awarded student gets the
+   width of the page -- a large portrait on its own plane and their story in
+   full, one at a time, stepped through like a exhibition.
+
+   The default state below is a flat, readable list of all of them. The deck
+   only becomes a stage under `.is-live`, which only the script adds, so a
+   visitor with no JavaScript reads every student rather than one.
+   ------------------------------------------------------------ */
+
+.awardee-deck { display: grid; gap: 40px; }
+
+.awardee {
+  display: grid;
+  grid-template-columns: minmax(0, 320px) minmax(0, 1fr);
+  gap: 40px;
+  align-items: center;
+}
+.awardee-frame { position: relative; }
+.awardee-portrait {
+  width: 100%; height: auto; aspect-ratio: 4 / 5; object-fit: cover;
+  border-radius: 16px; background: var(--gold-wash);
+  box-shadow: var(--lift-2);
+}
+.awardee-portrait.portrait-fallback {
+  display: grid; place-items: center;
+  font-family: var(--serif); font-size: 4rem; color: var(--gold);
+  border: 1px solid var(--rule);
+}
+.awardee-award {
+  margin: 0 0 6px; color: var(--gold); font-weight: 600;
+  font-size: .82rem; letter-spacing: .1em; text-transform: uppercase;
+}
+.awardee-name { font-family: var(--serif); font-size: 2.4rem; line-height: 1.1; margin: 0 0 8px; }
+.awardee-meta { margin: 0 0 20px; color: var(--ink-faint); font-size: .95rem; }
+.awardee-story {
+  margin: 0; padding-left: 22px; border-left: 3px solid var(--gold-bright);
+  font-family: var(--serif); font-size: 1.12rem; line-height: 1.65; color: var(--ink-soft);
+  /* measured in ch on the element whose font it should measure -- a serif and a
+     sans do not agree on what 60ch is */
+  max-width: 60ch;
+}
+
+/* The stage stacks its students absolutely, and a long story can overflow the
+   measured height. Without a stacking context of its own that overflow lands on
+   top of these buttons and swallows the clicks -- which is exactly what it did. */
+.awardee-controls { display: none; position: relative; z-index: 2; }
+
+/* ---------- live: the deck becomes a stage ---------- */
+.is-live.awardee-deck {
+  display: block;
+  position: relative;
+  perspective: 1500px;
+  /* Height is set by the script from the tallest student, so stepping between
+     them never jolts the page. */
+  min-height: var(--stage-height, 520px);
+}
+.is-live .awardee {
+  position: absolute; inset: 0;
+  align-content: center;
+  transition: opacity .55s var(--depth-ease), transform .55s var(--depth-ease), filter .55s var(--depth-ease);
+  transform-style: preserve-3d;
+}
+/* Behind: still there, pushed back and out of the way. Not display:none, so the
+   browser keeps the images decoded and stepping stays instant. */
+.is-live .awardee[aria-hidden="true"] {
+  opacity: 0;
+  transform: translate3d(0, 0, -320px) rotateY(9deg) scale(.94);
+  pointer-events: none;
+}
+.is-live .awardee:not([aria-hidden="true"]) {
+  opacity: 1; transform: none; pointer-events: auto;
+}
+.is-live .awardee-portrait { transform: translateZ(50px); box-shadow: var(--lift-3); }
+.is-live .awardee-name { transform: translateZ(30px); }
+.is-live .awardee-award { transform: translateZ(38px); }
+
+.is-live ~ .awardee-controls {
+  display: flex; align-items: center; justify-content: center; gap: 20px;
+  margin-top: 34px;
+}
+.awardee-step {
+  width: 46px; height: 46px; border-radius: 50%;
+  border: 1px solid var(--rule); background: #fff; color: var(--ink);
+  font-size: 1.5rem; line-height: 1; cursor: pointer;
+  box-shadow: var(--lift-1);
+  transition: transform .18s var(--depth-ease), box-shadow .18s var(--depth-ease);
+}
+.awardee-step:hover { transform: translateY(-2px); box-shadow: var(--lift-2); }
+.awardee-step:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.awardee-count {
+  margin: 0; font-size: .85rem; letter-spacing: .1em; text-transform: uppercase;
+  color: var(--ink-faint); font-variant-numeric: tabular-nums; min-width: 7ch; text-align: center;
+}
+
+@media (max-width: 860px) {
+  .awardee { grid-template-columns: 1fr; gap: 24px; }
+  .awardee-frame { max-width: 260px; }
+  .awardee-name { font-size: 1.9rem; }
+  .is-live .awardee[aria-hidden="true"] { transform: translate3d(0, 0, -160px) scale(.96); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-live .awardee { transition: none; }
+}

@@ -90,7 +90,7 @@
 
 <!-- Recipients lead the page, ahead of the application funnel: the awards
      already made are the strongest case for both students and donors. -->
-<section class="band">
+<section class="band awardee-scene" id="awardees">
   <div class="wrap">
     <div class="band-head">
       <div>
@@ -101,12 +101,8 @@
       <a class="btn btn-sm btn-outline" href="<?= e($basePath) ?>/recipients">All recipients</a>
     </div>
 
-    <?php if ($featuredRecipients !== []): ?>
-      <div class="grid grid-3">
-        <?php foreach ($featuredRecipients as $recipient): ?>
-          <?php $app->partial('recipient-card', ['recipient' => $recipient]); ?>
-        <?php endforeach; ?>
-      </div>
+    <?php if ($awardees !== []): ?>
+      <?php $app->partial('awardee-stage', ['awardees' => $awardees]); ?>
     <?php else: ?>
       <div class="empty">
         <p><strong>No recipients published yet.</strong></p>

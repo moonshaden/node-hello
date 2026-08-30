@@ -21,6 +21,9 @@ router.get('/', (req, res) => {
     scholarships,
     openScholarships: content.openScholarships(scholarships),
     featuredRecipients: content.featuredRecipients(recipients, 3),
+    // The landing page leads on awarded students, so it gets all of them,
+    // not a sample. publicRecipients() already orders featured first.
+    awardees: recipients,
     stats: content.awardStats(recipients),
   });
 });

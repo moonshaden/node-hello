@@ -90,7 +90,7 @@
 
 <!-- Recipients lead the page, ahead of the application funnel: the awards
      already made are the strongest case for both students and donors. -->
-<section class="band">
+<section class="band awardee-scene" id="awardees">
   <div class="wrap">
     <div class="band-head">
       <div>
@@ -101,12 +101,8 @@
       <a class="btn btn-sm btn-outline" href="/recipients">All recipients</a>
     </div>
 
-    <% if (featuredRecipients.length) { %>
-      <div class="grid grid-3">
-        <% featuredRecipients.forEach(function (recipient) { %>
-          <%- include('partials/recipient-card', { recipient }) %>
-        <% }) %>
-      </div>
+    <% if (awardees.length) { %>
+      <%- include('partials/awardee-stage', { awardees }) %>
     <% } else { %>
       <div class="empty">
         <p><strong>No recipients published yet.</strong></p>

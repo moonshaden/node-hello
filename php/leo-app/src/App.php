@@ -178,6 +178,9 @@ final class App
                 'scholarships' => $scholarships,
                 'openScholarships' => Content::openScholarships($scholarships),
                 'featuredRecipients' => Content::featuredRecipients($recipients, 3),
+                // The landing page leads on awarded students, so it gets all of
+                // them, not a sample. publicRecipients() orders featured first.
+                'awardees' => $recipients,
                 'stats' => Content::awardStats($recipients),
             ]);
             return;
