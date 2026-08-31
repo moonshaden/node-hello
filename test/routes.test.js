@@ -349,7 +349,9 @@ test('the real lockup and favicons are served, not a placeholder', async () => {
   await withServer(async (base) => {
     const home = await (await fetch(`${base}/`)).text();
     // The client's own crest, not the line-art lion the repo derived earlier.
-    assert.match(home, /class="wordmark-crest"[^>]*leo-crest-header\.png/, 'the crest is the masthead mark');
+    // The white-and-gold crest, which is drawn for the navy masthead and needs
+    // no plaque behind it -- not the navy-on-white artwork that did.
+    assert.match(home, /class="wordmark-crest"[^>]*leo-crest-white-header\.png/, 'the crest is the masthead mark');
     assert.match(home, /class="wordmark-name"/, 'the name is set in type, not shipped as a raster');
     // Footer lockup: white rules and a white FOUNDATION against the navy, with
     // LEO and the strapline left gold.
@@ -358,7 +360,9 @@ test('the real lockup and favicons are served, not a placeholder', async () => {
     assert.match(home, /favicon-32\.png/, 'png favicon');
     assert.doesNotMatch(home, /<span class="mark">LEO<\/span>/, 'placeholder is gone');
 
-    for (const asset of ['/img/brand/leo-crest-header.png',
+    for (const asset of ['/img/brand/leo-crest-white-header.png',
+                         '/img/brand/leo-crest-white.png',
+                         '/img/brand/leo-crest-header.png',
                          '/img/brand/leo-crest.png',
                          '/img/brand/leo-lockup-footer.png',
                          '/img/brand/leo-lion-white.png',

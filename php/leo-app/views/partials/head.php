@@ -39,8 +39,8 @@
             // sits on a light plaque rather than being recoloured: inverting it
             // would put a white lion on a white face and lose the artwork. The
             // name stays set in type so it keeps its own sharpness. ?>
-      <img class="wordmark-crest" src="<?= e(link_url('/img/brand/leo-crest-header.png', $basePath)) ?>"
-           alt="" aria-hidden="true" width="440" height="396">
+      <img class="wordmark-crest" src="<?= e(link_url('/img/brand/leo-crest-white-header.png', $basePath)) ?>"
+           alt="" aria-hidden="true" width="440" height="402">
       <span class="wordmark-type">
         <span class="wordmark-name"><?= e($site['name'] ?? '') ?></span>
         <span class="wordmark-strap">Leadership &middot; Education &middot; Opportunity</span>

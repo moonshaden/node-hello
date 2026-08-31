@@ -62,15 +62,13 @@ img { max-width: 100%; display: block; }
    so it sits on a light plaque rather than being recoloured -- a white-on-navy
    inversion would put a white lion against its own white face. */
 .wordmark-crest {
-  /* Sized so the masthead stays one row. The crest is wider than the line-art
-     lion it replaced, and at 58px it pushed the wordmark past the width the nav
-     needs, wrapping the header onto a second row and taking it from 100px to
-     176px tall. */
-  height: 46px; width: auto; display: block; flex: none;
-  background: #fff;
-  border-radius: 9px;
-  padding: 4px 6px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, .22);
+  /* The white-and-gold crest is drawn for a dark ground, so it sits straight on
+     the navy -- no plaque. The earlier navy-on-white artwork needed one, because
+     inverting it would have put a white lion against its own white face.
+
+     Sized so the masthead stays one row: at 58px the wordmark pushes past the
+     width the nav needs and the header wraps, going from 100px to 176px tall. */
+  height: 50px; width: auto; display: block; flex: none;
 }
 .wordmark-type { display: flex; flex-direction: column; justify-content: center; }
 .wordmark-name {
@@ -84,7 +82,7 @@ img { max-width: 100%; display: block; }
 .foot-mark { height: 62px; width: auto; margin-bottom: 18px; }
 
 @media (max-width: 780px) {
-  .wordmark-crest { height: 44px; padding: 4px 6px; }
+  .wordmark-crest { height: 42px; }
   .wordmark-strap { display: none; }
 }
 
