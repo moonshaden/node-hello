@@ -5,7 +5,12 @@
     <div class="foot-grid">
       <div>
         <img class="foot-mark" src="/img/brand/leo-mark-lion.png"
-             alt="<%= site.name %>" width="520" height="380" loading="lazy">
+             alt="" aria-hidden="true" width="520" height="380" loading="lazy">
+        <%# The wordmark below is the accessible name of the pair, so the mark
+            above it is decorative -- otherwise both announce the same thing. %>
+        <img class="foot-lockup" src="/img/brand/leo-lockup-footer.png"
+             alt="<%= site.name %> — <%= site.tagline %>"
+             width="679" height="146" loading="lazy">
         <p class="small"><%= site.mission %></p>
       </div>
       <div>

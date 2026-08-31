@@ -666,6 +666,41 @@ test('both builds ship the same client script and stylesheet', function () {
     }
 });
 
+// The client asked for the horizontal wordmark back in the footer, under the
+// lion mark. It is a view change, so it had to be made twice, and a footer that
+// silently lost it in one build only is exactly the drift the byte-identity
+// test above exists to catch -- except that test covers the CSS and the script,
+// not the templates. This covers the templates and the asset behind them.
+test('both footers carry the wordmark under the lion mark', function () {
+    $root = dirname(__DIR__, 2);
+    foreach ([
+        'views/partials/foot.ejs',
+        'php/leo-app/views/partials/foot.php',
+    ] as $view) {
+        $src = file_get_contents($root . '/' . $view);
+        ok(str_contains($src, 'leo-lockup-footer.png'), $view . ' lost the footer wordmark');
+        ok(str_contains($src, 'foot-lockup'), $view . ' lost the foot-lockup class');
+        // The wordmark names the organisation, so the mark above it is
+        // decorative -- otherwise a screen reader announces the org twice.
+        // Matched with a bounded .* rather than [^>]*: the PHP template's src
+        // is a short-echo tag, and the closing angle bracket of that tag would
+        // end a [^>]* run early. (Do not write that tag literally in a comment
+        // here -- its closing sequence would drop the parser out of PHP mode.)
+        ok(
+            preg_match('/class="foot-mark".{0,240}?aria-hidden="true"/s', $src) === 1,
+            $view . ': the footer mark must be decorative beside the wordmark'
+        );
+    }
+    // And the artwork itself has to be in both public trees, or one build
+    // renders a broken image.
+    foreach (['public/img/brand', 'php/public_html/img/brand'] as $dir) {
+        ok(
+            is_file($root . '/' . $dir . '/leo-lockup-footer.png'),
+            $dir . '/leo-lockup-footer.png is missing'
+        );
+    }
+});
+
 // The About page and the impact band were quoting different numbers -- About
 // said 3,000 students and $5 million, the band said 5,685 and $6.9M -- and a
 // visitor scrolling one page saw both. The client settled it on the band's

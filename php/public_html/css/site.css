@@ -83,7 +83,25 @@ img { max-width: 100%; display: block; }
 /* The lion alone, so it carries less width than the wordmark lockup it replaced
    and needs more height to hold its corner of the footer. The foundation's name
    and EIN are set in type in the legal line below, so nothing is lost. */
-.foot-mark { height: 84px; width: auto; margin-bottom: 18px; }
+.foot-mark {
+  height: 84px; width: auto; margin-bottom: 14px;
+  /* The mark's own PNG carries 13% transparent padding down its left
+     edge, so without this the lion's ink sits 15px right of the
+     wordmark's rule below it and the pair reads as two loose elements
+     rather than one sign-off. Optical alignment, measured from the
+     artwork's alpha channel rather than eyeballed. */
+  margin-left: -15px;
+}
+
+/* The wordmark sits under the mark and reads as the second line of one
+   sign-off, so the gap above it is tighter than the gap below. Capped in px
+   rather than set to 100%, because the footer column is a 1fr track that grows
+   on wide screens and the lockup would otherwise outrun the mark it belongs
+   to. `height: auto` is load-bearing: the width/height attributes that reserve
+   its space would otherwise be applied as a real height. */
+.foot-lockup {
+  display: block; width: min(260px, 100%); height: auto; margin-bottom: 18px;
+}
 
 @media (max-width: 780px) {
   .wordmark-lion { height: 44px; }

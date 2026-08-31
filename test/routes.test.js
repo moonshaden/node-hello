@@ -355,6 +355,15 @@ test('the real lockup and favicons are served, not a placeholder', async () => {
     // The footer carries the same lion. The foundation's name and EIN are set
     // in type in the legal line below it, so a lion-only mark loses nothing.
     assert.match(home, /foot-mark[^>]*leo-mark-lion\.png/, 'the footer carries the lion mark');
+    // The client asked for the horizontal wordmark back underneath it. The two
+    // are one sign-off, so the mark is decorative and the wordmark carries the
+    // accessible name -- otherwise a screen reader announces the org twice.
+    assert.match(home, /foot-lockup[^>]*leo-lockup-footer\.png/, 'the footer lost the wordmark');
+    assert.match(home, /class="foot-mark"[^>]*aria-hidden="true"/,
+      'the footer mark must be decorative now that the wordmark names the org');
+    const lockupAlt = home.match(/class="foot-lockup"[\s\S]*?alt="([^"]*)"/);
+    assert.ok(lockupAlt, 'the footer wordmark has no alt text');
+    assert.match(lockupAlt[1], /LEO Foundation/, 'the wordmark alt must name the organisation');
     assert.match(home, /apple-touch-icon/, 'apple touch icon');
     assert.match(home, /favicon-32\.png/, 'png favicon');
     assert.doesNotMatch(home, /<span class="mark">LEO<\/span>/, 'placeholder is gone');
