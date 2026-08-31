@@ -1,0 +1,49 @@
+<%#
+  Homepage slider. Mirrors partials/slider.php.
+
+  The live site publishes a heading and a photograph per slide and nothing
+  else -- no body, no subheading, no button -- so the whole panel is the link
+  where there is somewhere to send you, and plain where there is not.
+
+  Only the first image loads eagerly. The rest are lazy, so the largest
+  contentful paint is not waiting on three photographs the visitor cannot see.
+%>
+<% if (slides && slides.length) { %>
+<section class="slider" data-slider aria-roledescription="carousel" aria-label="Foundation highlights">
+  <div class="slider-track">
+    <% slides.forEach(function (slide, i) { %>
+      <% const url = (slide.ctaUrl || '').trim(); %>
+      <% const tag = url ? 'a' : 'div'; %>
+      <<%= tag %> class="slide<%= i === 0 ? ' is-current' : '' %>" data-slide
+        aria-hidden="<%= i === 0 ? 'false' : 'true' %>"
+        aria-roledescription="slide" aria-label="<%= i + 1 %> of <%= slides.length %>"
+        <%- url ? 'href="' + url + '"' : '' %>>
+        <img class="slide-img" src="<%= slide.image %>"
+             alt="<%= slide.alt || '' %>"
+             loading="<%= i === 0 ? 'eager' : 'lazy' %>"
+             <%- i === 0 ? 'fetchpriority="high"' : '' %>>
+        <div class="slide-body">
+          <div class="wrap">
+            <h2 class="slide-heading"><%= slide.heading %></h2>
+            <% if (slide.subheading) { %><p class="slide-sub"><%= slide.subheading %></p><% } %>
+            <% if (slide.body) { %><p class="slide-text"><%= slide.body %></p><% } %>
+            <% if (url) { %><span class="slide-cta"><%= slide.ctaLabel || 'Read more' %></span><% } %>
+          </div>
+        </div>
+      </<%= tag %>>
+    <% }) %>
+  </div>
+
+  <% if (slides.length > 1) { %>
+    <button class="slider-arrow slider-prev" type="button" data-step="-1" aria-label="Previous slide">&#8249;</button>
+    <button class="slider-arrow slider-next" type="button" data-step="1" aria-label="Next slide">&#8250;</button>
+    <div class="slider-dots">
+      <% slides.forEach(function (slide, i) { %>
+        <button type="button" data-goto="<%= i %>" aria-current="<%= i === 0 ? 'true' : 'false' %>"
+          aria-label="<%= slide.heading || ('Slide ' + (i + 1)) %>"></button>
+      <% }) %>
+    </div>
+    <p class="visually-hidden" data-slider-status aria-live="polite"></p>
+  <% } %>
+</section>
+<% } %>

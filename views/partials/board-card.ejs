@@ -1,0 +1,52 @@
+<%#
+  One board member.
+
+  Mirrors partials/board-card.php. The published bios run from 446 to 1,993
+  characters, so they go through the same excerpt() the recipient stories use
+  and the full text sits behind a disclosure -- nothing published is lost, and
+  one card cannot end up four times the height of its neighbour.
+%>
+<% const isLead = Boolean(locals.lead); %>
+<%# The lead has a full-width row to itself, so its bio needs no excerpting. %>
+<% const story = excerpt(member.bio); %>
+<article class="card board-member<%= isLead ? ' board-lead' : '' %>">
+  <% if (member.photoUrl) { %>
+    <img class="portrait portrait-round" src="<%= member.photoUrl %>" alt="<%= member.name %>" loading="lazy" width="800" height="800">
+  <% } else { %>
+    <div class="portrait portrait-round portrait-fallback"><%= (member.name || '?').trim().charAt(0).toUpperCase() %></div>
+  <% } %>
+
+  <h3 class="name"><%= member.name %></h3>
+  <p class="role"><%= member.role %></p>
+
+  <% if (member.email || member.phone) { %>
+    <ul class="member-contact">
+      <% if (member.email) { %><li><a class="wrapany" href="mailto:<%= member.email %>"><%= member.email %></a></li><% } %>
+      <% if (member.phone) { %><li><a href="tel:<%= member.phone.replace(/[^0-9+]/g, '') %>"><%= member.phone %></a></li><% } %>
+    </ul>
+  <% } %>
+
+  <% if (member.statement) { %>
+    <blockquote class="member-statement">
+      <% member.statement.split(/\n{2,}/).forEach(function (para) { %><p><%= para %></p><% }) %>
+    </blockquote>
+  <% } %>
+
+  <% if (member.bio) { %>
+    <% if (story.truncated && !isLead) { %>
+      <details class="story">
+        <summary>
+          <p class="story-excerpt"><%= story.text %></p>
+          <span class="story-toggle"><span class="when-shut">Read the full bio</span><span class="when-open">Show less</span></span>
+        </summary>
+        <div class="story-full">
+          <% member.bio.split(/\n{2,}/).forEach(function (para) { %><p><%= para %></p><% }) %>
+        </div>
+      </details>
+    <% } else { %>
+      <div class="story-full">
+        <% member.bio.split(/\n{2,}/).forEach(function (para) { %><p><%= para %></p><% }) %>
+      </div>
+    <% } %>
+  <% } %>
+</article>

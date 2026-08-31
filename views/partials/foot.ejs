@@ -1,0 +1,43 @@
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <img class="foot-mark" src="/img/brand/leo-lockup-footer.png"
+             alt="<%= site.name %>" width="679" height="146" loading="lazy">
+        <p class="small"><%= site.mission %></p>
+      </div>
+      <div>
+        <h4>Scholarships</h4>
+        <ul>
+          <li><a href="/scholarships">Available scholarships</a></li>
+          <li><a href="/recipients">Scholarship recipients</a></li>
+          <%# Flattened, so a page nested under a dropdown still appears here. %>
+          <% navFlat.forEach(function (p) { %>
+            <li><a href="/<%= p.slug %>"><%= p.navLabel || p.title %></a></li>
+          <% }) %>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <% if (site.email) { %><li><a href="mailto:<%= site.email %>"><%= site.email %></a></li><% } %>
+          <% if (site.phone) { %><li><a href="tel:<%= site.phone.replace(/[^0-9+]/g, '') %>"><%= site.phone %></a></li><% } %>
+          <% if (site.location) { %><li><%= site.location %></li><% } %>
+          <% if (site.facebookUrl) { %><li><a href="<%= site.facebookUrl %>">Facebook</a></li><% } %>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-legal">
+      <%= site.legalName || site.name %> is a 501(c)(3) nonprofit organization<% if (site.ein) { %>, EIN <%= site.ein %><% } %>.
+      Contributions are tax deductible to the extent allowed by law.
+      <a href="/admin" style="float:right">Staff sign in</a>
+    </div>
+  </div>
+</footer>
+
+<script src="/js/site.js" defer></script>
+
+</body>
+</html>

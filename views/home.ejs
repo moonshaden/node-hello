@@ -1,0 +1,202 @@
+<%- include('partials/head') %>
+
+<%# The homepage led with a three-slide carousel above the hero. It no longer
+    does -- the awarded student is the first thing on the site, and a carousel
+    above them was the one element competing for that. The slides, their images
+    and their /admin section are all still in place, so this is a change of
+    what the page renders, not a deletion of anything the client can edit. %>
+<section class="hero<%= heroStudent ? ' hero-centred' : '' %>">
+  <% if (heroStudent) { %>
+    <div class="wrap hero-stage">
+      <%# The visible headline is gone -- the student is the headline now. The
+          h1 stays in the document, hidden, because a page with no heading is a
+          page screen readers and search engines cannot outline. Same words as
+          before; only the display changes. %>
+      <h1 class="visually-hidden">Every scholarship is a door someone walks through.</h1>
+      <p class="eyebrow"><%= site.location %> · 501(c)(3) nonprofit</p>
+
+      <%# One of the awarded students, cut free of their own photograph and stood
+          at the centre of the page. The client asked for the awards to be the
+          focus, and this is the strongest reading of that: the first thing on
+          the site is a student who is plainly glad to be at university.
+          Everything shown is their own record -- the name, the award, the
+          school, and a line lifted verbatim out of the bio they published. %>
+      <figure class="hero-student">
+        <div class="hero-student-stage">
+          <img class="hero-student-cut" src="<%= heroStudent.cutoutUrl %>"
+               alt="<%= heroStudent.name %>, holding up a Grand Canyon University pin"
+               width="640" height="832">
+        </div>
+        <figcaption class="hero-student-note">
+          <% if (heroStudent.heroQuote) { %>
+            <blockquote class="hero-student-quote">&ldquo;<%= heroStudent.heroQuote %>&rdquo;</blockquote>
+          <% } %>
+          <p class="hero-student-who">
+            <strong><%= heroStudent.name %></strong>
+            <span><%= heroStudent.scholarship %><%= heroStudent.school ? ' · ' + heroStudent.school : '' %></span>
+          </p>
+        </figcaption>
+      </figure>
+
+      <p class="hero-mission"><%= site.mission %></p>
+
+      <div class="actions">
+        <a class="btn btn-gold" href="/scholarships">
+          <%= enrollment.state === 'open' ? 'Apply for a scholarship' : 'See available scholarships' %>
+        </a>
+        <a class="btn btn-outline" style="color:#fff" href="/recipients">Meet our recipients</a>
+      </div>
+
+      <%# The deadline is still what applicants come here for, so it stays in
+          the hero. The ribbon above the page carries it on every route, so this
+          is the fuller statement of it rather than the only one. %>
+      <p class="hero-deadline">
+        <% if (enrollment.state === 'open' && enrollment.daysUntilClose !== null) { %>
+          <span class="hero-deadline-count"><%= enrollment.daysUntilClose %></span>
+          <span>days left to apply<% if (enrollment.closesOn) { %> · closes <%= schedule.formatDate(enrollment.closesOn) %><% } %></span>
+        <% } else if (enrollment.daysUntilOpen !== null) { %>
+          <span class="hero-deadline-count"><%= enrollment.daysUntilOpen %></span>
+          <span>days until applications open<% if (enrollment.opensOn) { %> · opens <%= schedule.formatDate(enrollment.opensOn) %><% } %></span>
+        <% } else { %>
+          <span class="hero-deadline-count">Open</span>
+          <span>applications accepted year-round</span>
+        <% } %>
+      </p>
+    </div>
+  <% } else { %>
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow"><%= site.location %> · 501(c)(3) nonprofit</p>
+        <h1>Every scholarship is a door someone walks through.</h1>
+        <p><%= site.mission %></p>
+        <div class="actions">
+          <a class="btn btn-gold" href="/scholarships">
+            <%= enrollment.state === 'open' ? 'Apply for a scholarship' : 'See available scholarships' %>
+          </a>
+          <a class="btn btn-outline" style="color:#fff" href="/recipients">Meet our recipients</a>
+        </div>
+      </div>
+
+      <!-- The deadline is the thing applicants come here for, so it is never
+           more than one glance away, in or out of season. -->
+      <aside class="deadline">
+        <div class="count">
+          <% if (enrollment.state === 'open' && enrollment.daysUntilClose !== null) { %>
+            <%= enrollment.daysUntilClose %><small>days left to apply</small>
+          <% } else if (enrollment.daysUntilOpen !== null) { %>
+            <%= enrollment.daysUntilOpen %><small>days until applications open</small>
+          <% } else { %>
+            Open<small>applications accepted year-round</small>
+          <% } %>
+        </div>
+        <dl>
+          <% if (enrollment.opensOn) { %>
+            <dt>Applications open</dt>
+            <dd><%= schedule.formatDate(enrollment.opensOn) %></dd>
+          <% } %>
+          <% if (enrollment.closesOn) { %>
+            <dt>Applications close</dt>
+            <dd><%= schedule.formatDate(enrollment.closesOn) %></dd>
+          <% } %>
+          <% if (enrollmentSettings.awardedNote) { %>
+            <dt>Awards</dt>
+            <dd style="font-weight:400;color:#c6d5e2;font-size:.92rem"><%= enrollmentSettings.awardedNote %></dd>
+          <% } %>
+        </dl>
+      </aside>
+    </div>
+  <% } %>
+</section>
+
+<% if (site.impact && site.impact.length) { %>
+<section class="impact">
+  <div class="wrap">
+    <div class="impact-head">
+      <p class="eyebrow">Our impact</p>
+      <h2><%= site.impactTitle || 'What the scholarships have added up to.' %></h2>
+    </div>
+    <div class="impact-grid">
+      <% site.impact.forEach(function (item) { %>
+        <div>
+          <div class="value"><%= item.value %></div>
+          <div class="label"><%= item.label %></div>
+          <% if (item.detail) { %>
+            <p class="detail"><%= item.detail %></p>
+          <% } %>
+        </div>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<%- include('partials/pillars') %>
+
+<% if (announcements.length) { %>
+<section class="band" style="padding-bottom:0">
+  <div class="wrap stack">
+    <% announcements.forEach(function (note) { %>
+      <div class="notice">
+        <div>
+          <h3><%= note.title %></h3>
+          <p><%= note.body %></p>
+        </div>
+        <% if (note.ctaUrl && note.ctaLabel) { %>
+          <a class="btn btn-sm btn-ink" href="<%= note.ctaUrl %>"><%= note.ctaLabel %></a>
+        <% } %>
+      </div>
+    <% }) %>
+  </div>
+</section>
+<% } %>
+
+<!-- Recipients lead the page, ahead of the application funnel: the awards
+     already made are the strongest case for both students and donors. -->
+<section class="band awardee-scene" id="awardees">
+  <div class="wrap">
+    <div class="band-head">
+      <div>
+        <p class="eyebrow">Scholarships awarded</p>
+        <h2>The students behind the numbers</h2>
+        <p>Every award on this page went to a student in Arizona who applied, qualified, and got to keep going.</p>
+      </div>
+      <a class="btn btn-sm btn-outline" href="/recipients">All recipients</a>
+    </div>
+
+    <% if (awardees.length) { %>
+      <%- include('partials/awardee-stage', { awardees }) %>
+    <% } else { %>
+      <div class="empty">
+        <p><strong>No recipients published yet.</strong></p>
+        <p class="small">Add this year's awarded students in the admin area and they will appear here first.</p>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<section class="band tint">
+  <div class="wrap">
+    <div class="band-head">
+      <div>
+        <p class="eyebrow"><%= enrollment.state === 'open' ? 'Now accepting applications' : 'Plan ahead' %></p>
+        <h2><%= openScholarships.length ? 'Scholarships open right now' : 'Scholarships offered each year' %></h2>
+        <p>
+          <% if (enrollment.state === 'open') { %>
+            The enrollment period closes <%= schedule.formatDate(enrollment.closesOn) %>. Review the criteria and apply to the award that best fits you.
+          <% } else { %>
+            Applications reopen <%= schedule.formatDate(enrollment.opensOn) %>. Review the criteria now so you are ready.
+          <% } %>
+        </p>
+      </div>
+      <a class="btn btn-sm btn-outline" href="/scholarships">All scholarships</a>
+    </div>
+
+    <div class="grid grid-3">
+      <% (openScholarships.length ? openScholarships : scholarships).slice(0, 3).forEach(function (scholarship) { %>
+        <%- include('partials/scholarship-card', { scholarship }) %>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<%- include('partials/foot') %>

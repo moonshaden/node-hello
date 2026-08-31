@@ -1,0 +1,142 @@
+<%- include('partials/head', { description: page.summary }) %>
+
+<div class="page-head">
+  <div class="wrap">
+    <h1><%= page.title %></h1>
+    <% if (page.summary) { %><p class="lede"><%= page.summary %></p><% } %>
+  </div>
+</div>
+
+<%
+  // Past this many questions a single prose column reads as a wall, so the page
+  // gets a jump-to index and every heading an anchor. Mirrored in page.php.
+  const INDEX_FROM = 6;
+  const article = markdown.renderSections(page.body);
+  const index = article.headings.length >= INDEX_FROM ? article.headings : [];
+%>
+<section class="band">
+  <div class="wrap split">
+    <div class="prose">
+      <% if (index.length) { %>
+      <nav class="page-index" aria-label="On this page">
+        <p class="eyebrow">On this page</p>
+        <ol>
+          <% index.forEach(function (heading) { %><li><a href="#<%= heading.id %>"><%- heading.html %></a></li><% }) %>
+        </ol>
+      </nav>
+      <% } %>
+      <%- article.html %>
+    </div>
+    <%- include('partials/page-aside') %>
+  </div>
+</section>
+
+<%
+  // A page can carry a list of programs alongside its prose, the same way it can
+  // carry a roster. Stored on the page record, so the admin page form still
+  // edits the copy around it and leaves the list untouched. Mirrored in page.php.
+  const programs = Array.isArray(page.programs) ? page.programs : [];
+%>
+<% if (programs.length) { %>
+<section class="band tint" id="programs">
+  <div class="wrap">
+    <div class="program-list">
+      <% programs.forEach(function (program, i) { %>
+        <%- include('partials/program-section', { program, flip: i % 2 === 1 }) %>
+      <% }) %>
+    </div>
+  </div>
+</section>
+<% } %>
+
+<%
+  // Partners render as programs do -- a titled row with a photo and markdown --
+  // so they share the one partial rather than duplicating it. Mirrored in page.php.
+  const partners = Array.isArray(page.partners) ? page.partners : [];
+  const gallery = Array.isArray(page.gallery) ? page.gallery : [];
+%>
+<% if (partners.length) { %>
+<section class="band tint" id="partners">
+  <div class="wrap">
+    <div class="program-list">
+      <% partners.forEach(function (partner, i) { %>
+        <%- include('partials/program-section', { program: partner, flip: i % 2 === 1 }) %>
+      <% }) %>
+    </div>
+
+    <% if (gallery.length) { %>
+      <div class="gallery">
+        <% gallery.forEach(function (shot) { %>
+          <img src="<%= shot.src %>" alt="<%= shot.alt %>" loading="lazy">
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</section>
+<% } %>
+
+<%
+  // A page can carry a roster of people alongside its prose -- the board is the
+  // only one today. It is stored on the page record rather than as its own
+  // content type, so the admin page form still edits the copy around it and
+  // leaves the roster untouched. Mirrored in page.php.
+  const members = Array.isArray(page.members) ? page.members : [];
+%>
+<% if (members.length) { %>
+<%
+  // The chief executive leads the page in a full-width row; everyone else keeps
+  // the three-up grid. Driven by a lead flag on the record rather than by
+  // position, so reordering the roster cannot silently promote someone.
+  const leadIndex = members.findIndex(function (m) { return m.lead; });
+  const lead = leadIndex === -1 ? null : members[leadIndex];
+  const rest = members.filter(function (m, i) { return i !== leadIndex; });
+%>
+<section class="band tint" id="board">
+  <div class="wrap">
+    <h2 class="section-head">Board of Directors</h2>
+    <% if (lead) { %>
+      <%- include('partials/board-card', { member: lead, lead: true }) %>
+    <% } %>
+    <% if (rest.length) { %>
+      <%# Unescaped on purpose: this interpolation builds an attribute, and the
+          escaping form turns its quotes into entities, which yields a broken
+          attribute and silently drops the rule in this build only. %>
+      <div class="grid grid-3"<%- lead ? ' style="margin-top:28px"' : '' %>>
+        <% rest.forEach(function (member) { %>
+          <%- include('partials/board-card', { member, lead: false }) %>
+        <% }) %>
+      </div>
+    <% } %>
+  </div>
+</section>
+<% } %>
+
+<%
+  // Rendered from the site settings rather than the page body, so the address
+  // block cannot drift from the footer and the admin only edits it once.
+  const details = page.slug === 'contact'
+    ? [['Email', site.email], ['Phone', site.phone], ['Location', site.location]]
+        .filter(([, value]) => (value || '').trim())
+    : [];
+%>
+<% if (details.length) { %>
+<section class="band" style="padding-top:0">
+  <div class="wrap">
+    <dl class="contact-grid">
+      <% details.forEach(function ([label, value]) { %>
+        <div>
+          <dt><%= label %></dt>
+          <dd>
+            <% if (label === 'Email') { %><a href="mailto:<%= value %>"><%= value %></a>
+            <% } else if (label === 'Phone') { %><a href="tel:<%= value.replace(/[^0-9+]/g, '') %>"><%= value %></a>
+            <% } else { %><%= value %><% } %>
+          </dd>
+        </div>
+      <% }) %>
+    </dl>
+  </div>
+</section>
+<% } %>
+
+<%- include('partials/page-cta') %>
+<%- include('partials/foot') %>

@@ -1,0 +1,70 @@
+<%- include('partials/head', { description: scholarship.summary }) %>
+
+<div class="page-head">
+  <div class="wrap">
+    <p class="eyebrow"><a href="/scholarships">Available scholarships</a></p>
+    <h1><%= scholarship.name %></h1>
+    <p class="lede"><%= scholarship.summary %></p>
+  </div>
+</div>
+
+<section class="band">
+  <div class="wrap split">
+    <div>
+      <% if (scholarship.criteria) { %>
+        <div class="criteria">
+          <h3>Who can apply</h3>
+          <div class="prose"><%- markdown.render(scholarship.criteria) %></div>
+        </div>
+      <% } %>
+
+      <% if (scholarship.essayPrompts && scholarship.essayPrompts.length) { %>
+        <h2 style="margin-top:2em">Essay prompts</h2>
+        <ol class="prose">
+          <% scholarship.essayPrompts.forEach(function (prompt) { %><li><%= prompt %></li><% }) %>
+        </ol>
+      <% } %>
+
+      <% if (scholarship.details) { %>
+        <div class="prose" style="margin-top:2em"><%- markdown.render(scholarship.details) %></div>
+      <% } %>
+
+      <% if (recipients.length) { %>
+        <h2 style="margin-top:2.4em">Past recipients of this award</h2>
+        <div class="grid grid-2">
+          <% recipients.slice(0, 4).forEach(function (recipient) { %>
+            <%- include('partials/recipient-card', { recipient }) %>
+          <% }) %>
+        </div>
+      <% } %>
+    </div>
+
+    <aside class="sidebar-card">
+      <span class="pill pill-<%= scholarship.window.state %>"><%= scholarship.isOpen ? 'Accepting applications' : 'Not accepting applications' %></span>
+      <dl style="margin-top:20px">
+        <% if (scholarship.amount) { %><dt>Award</dt><dd><%= scholarship.amount %></dd><% } %>
+        <% if (scholarship.window.opensOn) { %><dt>Opens</dt><dd><%= schedule.formatDate(scholarship.window.opensOn) %></dd><% } %>
+        <% if (scholarship.window.closesOn) { %><dt>Closes</dt><dd><%= schedule.formatDate(scholarship.window.closesOn) %></dd><% } %>
+      </dl>
+
+      <% if (scholarship.isOpen) { %>
+        <% if (scholarship.applyUrl) { %>
+          <a class="btn btn-gold" style="width:100%;text-align:center" href="<%= scholarship.applyUrl %>">Start your application</a>
+        <% } else { %>
+          <p class="small muted">Application link coming soon. Email <a href="mailto:<%= site.email %>"><%= site.email %></a> to be notified.</p>
+        <% } %>
+      <% } else { %>
+        <p class="small muted" style="margin-bottom:0">
+          <%= scholarship.statusLabel %>.
+          <% if (scholarship.window.daysUntilOpen) { %>That is <%= scholarship.window.daysUntilOpen %> days from today.<% } %>
+        </p>
+      <% } %>
+
+      <% if (enrollmentSettings.awardedNote) { %>
+        <p class="small muted" style="margin-top:16px;margin-bottom:0"><%= enrollmentSettings.awardedNote %></p>
+      <% } %>
+    </aside>
+  </div>
+</section>
+
+<%- include('partials/foot') %>

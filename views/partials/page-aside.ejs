@@ -1,0 +1,32 @@
+<%#
+  Standing sidebar for the content pages.
+
+  Every value comes from the enrollment window and the site settings, so it
+  cannot fall out of date with the ribbon or the footer, and it needs no
+  per-page editing. The contact page has its own detail row and would only
+  repeat itself, so it opts out.
+%>
+<% if (!(locals.page && page.slug === 'contact')) { %>
+<aside class="sidebar-card">
+  <p class="eyebrow" style="margin-bottom:.6rem">At a glance</p>
+  <dl>
+    <% if (enrollment.opensOn) { %>
+      <dt>Applications open</dt>
+      <dd><%= schedule.formatDate(enrollment.opensOn) %></dd>
+    <% } %>
+    <% if (enrollment.closesOn) { %>
+      <dt>Applications close</dt>
+      <dd><%= schedule.formatDate(enrollment.closesOn) %></dd>
+    <% } %>
+    <% if (enrollmentSettings.awardedNote) { %>
+      <dt>Awards</dt>
+      <dd class="soft"><%= enrollmentSettings.awardedNote %></dd>
+    <% } %>
+    <% if (site.email) { %>
+      <dt>Questions</dt>
+      <dd class="wrapany"><a href="mailto:<%= site.email %>"><%= site.email %></a></dd>
+    <% } %>
+  </dl>
+  <a class="btn btn-sm btn-outline" href="/scholarships" style="margin-top:4px">See all scholarships</a>
+</aside>
+<% } %>

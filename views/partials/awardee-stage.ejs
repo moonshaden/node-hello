@@ -1,0 +1,51 @@
+<%#
+  The awarded students, given the landing page's centre.
+
+  The client's fifth ask was to highlight scholarships awarded and keep that as
+  the focus. Three small cards with the story folded behind a disclosure was the
+  weakest reading of that, so this gives each student the width of the page: a
+  large portrait on its own plane, the award they won, and their story in full.
+
+  Mirrors partials/awardee-stage.php.
+
+  Without JavaScript this is a plain, readable list of every awarded student --
+  the deck only becomes a stage when the script adds `.is-live`. Nothing here is
+  hidden by the stylesheet, because a visitor with no JS must still be able to
+  read every one of them.
+%>
+<div class="awardee-deck" data-awardees>
+  <% awardees.forEach(function (person, i) { %>
+    <%# Raw, not escaped: this interpolation *builds* an attribute, and the escaping
+        form turns its quotes into entities -- which yields a broken aria-hidden and
+        leaves every student rendered on top of the others in this build only. %>
+    <article class="awardee" data-awardee data-index="<%= i %>"<%- i === 0 ? '' : ' aria-hidden="true"' %>>
+      <div class="awardee-frame">
+        <% if (person.photoUrl) { %>
+          <img class="awardee-portrait" src="<%= person.photoUrl %>" alt="<%= person.name %>"
+               width="800" height="1000" loading="<%= i < 2 ? 'eager' : 'lazy' %>">
+        <% } else { %>
+          <div class="awardee-portrait portrait-fallback"><%= (person.name || '?').trim().charAt(0).toUpperCase() %></div>
+        <% } %>
+      </div>
+
+      <div class="awardee-body">
+        <p class="awardee-award"><%= person.scholarship %></p>
+        <h3 class="awardee-name"><%= person.name %></h3>
+        <% const facts = [person.major, person.school].filter(Boolean).join(' · '); %>
+        <% if (facts) { %><p class="awardee-meta"><%= facts %></p><% } %>
+        <% if (person.quote) { %>
+          <%# In full. The stage has room, so nothing is excerpted away here. %>
+          <blockquote class="awardee-story"><%= person.quote %></blockquote>
+        <% } %>
+      </div>
+    </article>
+  <% }) %>
+</div>
+
+<%# Controls do nothing without the script, so the stylesheet only shows them
+    once it is live. They are content-free, so hiding them costs no one. %>
+<div class="awardee-controls">
+  <button class="awardee-step" type="button" data-awardee-step="-1" aria-label="Previous awarded student">&#8249;</button>
+  <p class="awardee-count" data-awardee-count aria-live="polite">1 of <%= awardees.length %></p>
+  <button class="awardee-step" type="button" data-awardee-step="1" aria-label="Next awarded student">&#8250;</button>
+</div>

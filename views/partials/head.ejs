@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title><%= title %><%= title === site.name ? '' : ' — ' + site.name %></title>
+<meta name="description" content="<%= typeof description !== 'undefined' && description ? description : site.mission || site.tagline %>">
+<link rel="stylesheet" href="/css/site.css">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/img/brand/favicon-32.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/img/brand/favicon-512.png">
+<link rel="apple-touch-icon" href="/img/brand/favicon-180.png">
+<meta name="theme-color" content="#10263d">
+</head>
+<body>
+
+<% if (preview) { %>
+<div class="previewbar">
+  <div class="wrap">
+    <strong>Preview</strong>
+    <span>Showing the site as it looks on <%= schedule.formatDate(today) %>, drafts included.</span>
+    <form method="get" style="display:flex;gap:8px;align-items:center;margin-left:auto">
+      <label for="asOf">View date</label>
+      <input type="date" id="asOf" name="asOf" value="<%= today %>">
+      <button type="submit">Go</button>
+    </form>
+    <a href="<%= currentPath %>">Exit preview</a>
+  </div>
+</div>
+<% } %>
+
+<header class="masthead">
+  <div class="wrap masthead-inner">
+    <a class="wordmark" href="/" aria-label="<%= site.name %> home">
+      <%# The client's own crest, cropped above its LEADERSHIP/EDUCATION/OPPORTUNITY
+          strip -- at masthead size that strip is about three pixels tall and
+          reads as a smudge, while the strapline beside it stays legible as type.
+          The crest is drawn for a light ground, so it sits on a light plaque
+          rather than being recoloured: inverting it would put a white lion on a
+          white face and lose the artwork. The name stays set in type so it keeps
+          its own sharpness and can be restyled in CSS. %>
+      <img class="wordmark-crest" src="/img/brand/leo-crest-header.png"
+           alt="" aria-hidden="true" width="440" height="396">
+      <span class="wordmark-type">
+        <span class="wordmark-name"><%= site.name %></span>
+        <span class="wordmark-strap">Leadership &middot; Education &middot; Opportunity</span>
+      </span>
+    </a>
+    <nav class="nav">
+      <a href="/scholarships" class="<%= currentPath.startsWith('/scholarships') ? 'is-current' : '' %>">Scholarships</a>
+      <a href="/recipients" class="<%= currentPath === '/recipients' ? 'is-current' : '' %>">Recipients</a>
+      <%# A page with children becomes a dropdown. The parent stays a real link,
+          so the menu is usable without hover and on touch. Mirrored in head.php. %>
+      <% navPages.forEach(function (p) { %>
+        <% if (p.children.length) { %>
+          <%
+            const openHere = currentPath === '/' + p.slug
+              || p.children.some(function (c) { return currentPath === '/' + c.slug; });
+          %>
+          <div class="nav-group">
+            <a href="/<%= p.slug %>" class="nav-group-top <%= openHere ? 'is-current' : '' %>"><%= p.navLabel || p.title %><span class="nav-caret" aria-hidden="true"></span></a>
+            <div class="nav-menu">
+              <% p.children.forEach(function (c) { %>
+                <a href="/<%= c.slug %>" class="<%= currentPath === '/' + c.slug ? 'is-current' : '' %>"><%= c.navLabel || c.title %></a>
+              <% }) %>
+            </div>
+          </div>
+        <% } else { %>
+          <a href="/<%= p.slug %>" class="<%= currentPath === '/' + p.slug ? 'is-current' : '' %>"><%= p.navLabel || p.title %></a>
+        <% } %>
+      <% }) %>
+      <% if (site.donateUrl) { %><a class="btn btn-gold btn-sm" href="<%= site.donateUrl %>">Donate</a><% } %>
+    </nav>
+  </div>
+</header>
+
+<div class="ribbon">
+  <div class="wrap ribbon-inner">
+    <span class="pill pill-<%= enrollment.state %>">
+      <%= enrollment.state === 'open' ? 'Applications open' : 'Applications closed' %>
+    </span>
+    <span><strong><%= enrollmentLabel %>.</strong>
+      <% if (enrollment.state === 'open' && enrollment.daysUntilClose !== null) { %>
+        <span class="muted"><%= enrollment.daysUntilClose %> days left to apply.</span>
+      <% } else if (enrollment.state !== 'open' && enrollment.daysUntilOpen !== null) { %>
+        <span class="muted">Opens in <%= enrollment.daysUntilOpen %> days.</span>
+      <% } %>
+    </span>
+    <a class="btn btn-ink btn-sm" href="/scholarships">
+      <%= enrollment.state === 'open' ? 'Apply now' : 'Browse scholarships' %>
+    </a>
+  </div>
+</div>
+
+<main>

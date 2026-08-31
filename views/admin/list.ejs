@@ -1,0 +1,55 @@
+<%- include('../partials/admin-head') %>
+
+<div class="admin-head">
+  <div>
+    <h1><%= config.plural %></h1>
+    <p class="muted" style="margin:0"><%= items.length %> <%= items.length === 1 ? 'record' : 'records' %>. Order here is the order shown on the site.</p>
+  </div>
+  <a class="btn btn-ink btn-sm" href="/admin/<%= name %>/new">Add <%= config.label.toLowerCase() %></a>
+</div>
+
+<div class="panel" style="padding:0;overflow:hidden">
+  <table class="rows">
+    <tr>
+      <th><%= config.label %></th>
+      <th>Visibility</th>
+      <% if (name === 'scholarships') { %><th>Applications</th><% } %>
+      <th></th>
+    </tr>
+    <% items.forEach(function (item) { %>
+      <tr>
+        <td>
+          <div class="rowtitle"><a href="/admin/<%= name %>/<%= item.id %>"><%= item[config.titleKey] || 'Untitled' %></a></div>
+          <div class="rowsub">
+            <% if (item.slug) { %>/<%= item.slug %><% } %>
+            <% if (item.year) { %>Class of <%= item.year %><% } %>
+            <% if (item.scholarship) { %> · <%= item.scholarship %><% } %>
+            <% if (item.showWhen) { %>Shown while applications are <%= item.showWhen %><% } %>
+          </div>
+        </td>
+        <td>
+          <span class="tag <%= item.published ? 'tag-live' : 'tag-hidden' %>"><%= item.published ? 'Live' : (item.draft ? 'Draft' : 'Hidden') %></span>
+        </td>
+        <% if (name === 'scholarships') { %>
+          <td class="rowsub"><%= item.resolved.statusLabel %></td>
+        <% } %>
+        <td class="actions">
+          <form method="post" action="/admin/<%= name %>/<%= item.id %>/move">
+            <input type="hidden" name="direction" value="up">
+            <button class="btn btn-sm btn-outline" type="submit" title="Move up">↑</button>
+          </form>
+          <form method="post" action="/admin/<%= name %>/<%= item.id %>/move">
+            <input type="hidden" name="direction" value="down">
+            <button class="btn btn-sm btn-outline" type="submit" title="Move down">↓</button>
+          </form>
+          <a class="btn btn-sm btn-ink" href="/admin/<%= name %>/<%= item.id %>">Edit</a>
+        </td>
+      </tr>
+    <% }) %>
+    <% if (!items.length) { %>
+      <tr><td colspan="4" class="muted" style="padding:32px;text-align:center">Nothing here yet.</td></tr>
+    <% } %>
+  </table>
+</div>
+
+<%- include('../partials/admin-foot') %>

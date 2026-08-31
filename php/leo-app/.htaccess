@@ -1,0 +1,4 @@
+# leo-app belongs above the web root, where this file is never consulted.
+# If it has been extracted inside public_html by mistake, this keeps the
+# templates and content from being served.
+Require all denied

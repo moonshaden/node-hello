@@ -1,0 +1,190 @@
+name: Test and deploy
+
+# Deploys the PHP build to the cPanel account over FTPS.
+#
+# Why a workflow and not a direct upload: the agent sandbox reaches port 443
+# only, against a host allowlist. Ports 21, 990 and 2083 are refused there, so
+# nothing can be pushed to the server from it regardless of credentials. GitHub
+# runners have no such restriction.
+#
+# Credentials live in repository secrets and are never in this file.
+#
+# Deploying is OPT-IN. A push never uploads unless the repository variable
+# DEPLOY_ON_PUSH is exactly 'true'. Until the remote layout is confirmed, an
+# automatic deploy would write to the wrong directory, and this writes to a
+# live site.
+
+on:
+  push:
+    branches:
+      - main
+      - master
+      - 'claude/**'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'List what would transfer, upload nothing'
+        type: boolean
+        default: true
+      probe_path:
+        description: 'Optional: list this remote path and stop (diagnostics only, never uploads)'
+        type: string
+        default: ''
+      seed_content:
+        description: 'Upload ONLY leo-app/data/content.json, overwriting the server copy, then stop'
+        type: boolean
+        default: false
+
+# Never pull_request: on a public repo that would expose secrets to forks.
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci || npm install
+
+      - name: Node suite
+        run: npm test
+
+      - name: PHP lint
+        run: find php -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: PHP suite
+        run: php php/test/run.php
+
+  # An unconfigured repository is not a failure - it is a repository nobody has
+  # pointed at a server yet, and it must not leave a red X on every PR. Asking
+  # for a deploy by hand and having no credentials *is* a failure, so that case
+  # still stops loudly, in the deploy job below.
+  preflight:
+    runs-on: ubuntu-latest
+    outputs:
+      configured: ${{ steps.check.outputs.configured }}
+    steps:
+      - id: check
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          if [ -n "${FTP_SERVER:-}" ] && [ -n "${FTP_USERNAME:-}" ] && [ -n "${FTP_PASSWORD:-}" ]; then
+            echo 'configured=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'configured=false' >> "$GITHUB_OUTPUT"
+            echo "::notice::FTP secrets are not set, so there is nothing to deploy to. Skipping."
+          fi
+
+  deploy:
+    needs: [test, preflight]
+    # Manual runs always allowed (they default to a dry run). Pushes upload only
+    # when DEPLOY_ON_PUSH is explicitly turned on.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (needs.preflight.outputs.configured == 'true' && vars.DEPLOY_ON_PUSH == 'true')
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Refuse a hand-triggered deploy with no credentials
+        if: needs.preflight.outputs.configured != 'true'
+        run: |
+          echo "::error::A deploy was requested by hand, but FTP_SERVER, FTP_USERNAME and FTP_PASSWORD are not all set."
+          exit 1
+
+      - name: Install lftp
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq lftp
+
+      # The two trees land in different places, so they get separate settings
+      # rather than one shared prefix. On this account the FTP login is rooted
+      # at the document root, so public files go to '.' and leo-app sits beside
+      # them (public_html/index.php explicitly tolerates that layout).
+      - name: Deploy over FTPS
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          APP_DIR: ${{ vars.FTP_APP_DIR || './leo-app/' }}
+          PUBLIC_DIR: ${{ vars.FTP_PUBLIC_DIR || './' }}
+          VERIFY_CERT: ${{ vars.FTP_VERIFY_CERT || 'true' }}
+          PROBE_PATH: ${{ inputs.probe_path }}
+          SEED_CONTENT: ${{ github.event_name == 'workflow_dispatch' && inputs.seed_content || 'false' }}
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+        run: |
+          set -euo pipefail
+
+          COMMON="
+            set cmd:fail-exit true;
+            set ftp:ssl-force true;
+            set ftp:ssl-protect-data true;
+            set ssl:verify-certificate $VERIFY_CERT;
+            set net:max-retries 3;
+            set net:timeout 20;
+            open -u '$FTP_USERNAME','$FTP_PASSWORD' '$FTP_SERVER';
+          "
+
+          # Diagnostics: list a path and stop. Never transfers, whatever else is set.
+          if [ -n "${PROBE_PATH:-}" ]; then
+            echo "::notice::Probe only - listing '$PROBE_PATH', no transfer."
+            lftp -c "$COMMON echo '--- $PROBE_PATH ---'; cls -l '$PROBE_PATH' || true;"
+            exit 0
+          fi
+
+          # Seeding the content store is a deliberate, separate act. The file is
+          # excluded from every ordinary deploy because /admin owns it on the
+          # server; this overwrites that copy, so it is opt-in per run, does
+          # nothing else, and stops.
+          if [ "$SEED_CONTENT" = "true" ]; then
+            echo "::warning::Seeding leo-app/data/content.json - this OVERWRITES the copy on the server."
+            lftp -c "$COMMON
+              cd '$APP_DIR';
+              mkdir -pf data;   # -f: data/ already exists, and fail-exit is on
+              put -O data php/leo-app/data/content.json;
+              cls -l data/content.json;
+            "
+            echo "::notice::content.json seeded. No other file was touched."
+            exit 0
+          fi
+
+          DRY=""
+          if [ "$DRY_RUN" = "true" ]; then
+            DRY="--dry-run"
+            echo "::notice::Dry run - listing only, nothing will be uploaded."
+          else
+            echo "::warning::LIVE DEPLOY - writing to $FTP_SERVER"
+          fi
+
+          # No --delete anywhere: this writes to a live site, and a mistaken
+          # exclude must never be able to remove content from the server.
+          lftp -c "
+            $COMMON
+            echo '--- leo-app -> $APP_DIR (excluding data/ and config.php) ---';
+            mirror -R --only-newer --verbose=1 $DRY \
+              --exclude-glob data/ \
+              --exclude-glob config.php \
+              php/leo-app/ '$APP_DIR';
+
+            echo '--- public_html -> $PUBLIC_DIR ---';
+            mirror -R --only-newer --verbose=1 $DRY \
+              php/public_html/ '$PUBLIC_DIR';
+          "
+
+      - name: What was not deployed
+        if: success()
+        run: |
+          echo "::notice::leo-app/data/content.json and config.php are never uploaded."
+          echo "Content is edited through /admin. Seed content.json by hand once, at launch."
