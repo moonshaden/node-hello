@@ -132,7 +132,7 @@ img { max-width: 100%; display: block; }
      rgb(150,108,34) at varying alpha, the same treatment the previous trace
      used, over a line drawing whose ink became that alpha. */
   background: url('../img/brand/leo-lion-trace.png') no-repeat center / contain;
-  opacity: .5; pointer-events: none;
+  opacity: .25; pointer-events: none;
 }
 .foot > .wrap { position: relative; z-index: 1; }
 
