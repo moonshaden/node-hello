@@ -348,21 +348,19 @@ test('the slides survive in the store even though nothing renders them', async (
 test('the real lockup and favicons are served, not a placeholder', async () => {
   await withServer(async (base) => {
     const home = await (await fetch(`${base}/`)).text();
-    // The client's own crest, not the line-art lion the repo derived earlier.
-    // The white-and-gold crest, which is drawn for the navy masthead and needs
-    // no plaque behind it -- not the navy-on-white artwork that did.
-    assert.match(home, /class="wordmark-crest"[^>]*leo-crest-white-header\.png/, 'the crest is the masthead mark');
+    // The lion mark alone. The full crest carried its own LEO FOUNDATION, which
+    // at masthead size was an illegible smudge beside the same words in type.
+    assert.match(home, /class="wordmark-lion"[^>]*leo-mark-lion\.png/, 'the lion is the masthead mark');
     assert.match(home, /class="wordmark-name"/, 'the name is set in type, not shipped as a raster');
-    // Footer lockup: white rules and a white FOUNDATION against the navy, with
-    // LEO and the strapline left gold.
-    assert.match(home, /foot-mark[^>]*leo-lockup-footer\.png/, 'the footer carries the footer lockup');
+    // The footer carries the same lion. The foundation's name and EIN are set
+    // in type in the legal line below it, so a lion-only mark loses nothing.
+    assert.match(home, /foot-mark[^>]*leo-mark-lion\.png/, 'the footer carries the lion mark');
     assert.match(home, /apple-touch-icon/, 'apple touch icon');
     assert.match(home, /favicon-32\.png/, 'png favicon');
     assert.doesNotMatch(home, /<span class="mark">LEO<\/span>/, 'placeholder is gone');
 
-    for (const asset of ['/img/brand/leo-crest-white-header.png',
+    for (const asset of ['/img/brand/leo-mark-lion.png',
                          '/img/brand/leo-crest-white.png',
-                         '/img/brand/leo-crest-header.png',
                          '/img/brand/leo-crest.png',
                          '/img/brand/leo-lockup-footer.png',
                          '/img/brand/leo-lion-white.png',

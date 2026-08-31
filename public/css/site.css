@@ -57,18 +57,19 @@ img { max-width: 100%; display: block; }
    img so the header does not reflow when it loads. */
 /* The lion carries the identity in the masthead; the name is type, so it
    stays crisp at any size and needs no second raster. */
-.wordmark { gap: 14px; text-decoration: none; }
+.wordmark { gap: 11px; text-decoration: none; }
 /* The crest is the client's artwork, drawn navy-on-white. The masthead is navy,
    so it sits on a light plaque rather than being recoloured -- a white-on-navy
    inversion would put a white lion against its own white face. */
-.wordmark-crest {
-  /* The white-and-gold crest is drawn for a dark ground, so it sits straight on
-     the navy -- no plaque. The earlier navy-on-white artwork needed one, because
-     inverting it would have put a white lion against its own white face.
+.wordmark-lion {
+  /* The lion mark alone, white and gold on transparent, sitting straight on the
+     navy. It replaced the full crest because at masthead size the crest's own
+     LEO FOUNDATION was an illegible smudge beside the same words set in type --
+     the name is carried by the type, so the mark only has to be the lion.
 
-     Sized so the masthead stays one row: at 58px the wordmark pushes past the
-     width the nav needs and the header wraps, going from 100px to 176px tall. */
-  height: 50px; width: auto; display: block; flex: none;
+     Sized so the masthead stays one row: the wordmark must not push past the
+     width the nav needs, or the header wraps and doubles in height. */
+  height: 42px; width: auto; display: block; flex: none;
 }
 .wordmark-type { display: flex; flex-direction: column; justify-content: center; }
 .wordmark-name {
@@ -79,10 +80,13 @@ img { max-width: 100%; display: block; }
   font-size: .68rem; letter-spacing: .17em; text-transform: uppercase;
   color: var(--gold-bright); margin-top: 5px;
 }
-.foot-mark { height: 62px; width: auto; margin-bottom: 18px; }
+/* The lion alone, so it carries less width than the wordmark lockup it replaced
+   and needs more height to hold its corner of the footer. The foundation's name
+   and EIN are set in type in the legal line below, so nothing is lost. */
+.foot-mark { height: 84px; width: auto; margin-bottom: 18px; }
 
 @media (max-width: 780px) {
-  .wordmark-crest { height: 42px; }
+  .wordmark-lion { height: 44px; }
   .wordmark-strap { display: none; }
 }
 
