@@ -125,11 +125,13 @@ img { max-width: 100%; display: block; }
 .foot::after {
   content: '';
   position: absolute; right: 2%; top: 50%; transform: translateY(-50%);
-  width: min(240px, 22vw); aspect-ratio: 368 / 433;
-  /* Gold rather than white here: the footer lockup is gold, and the two read
-     as one sign-off. This is the deeper brand gold, not the bright one, so the
-     trace sits down into the navy rather than glinting off it. */
-  background: url('../img/brand/leo-lion-gold-deep.png') no-repeat center / contain;
+  width: min(240px, 22vw); aspect-ratio: 448 / 520;
+  /* Gold rather than white here, so the trace and the gold in the lion mark
+     above it read as one sign-off. The deeper brand gold, not the bright one,
+     so it sits down into the navy rather than glinting off it: flat
+     rgb(150,108,34) at varying alpha, the same treatment the previous trace
+     used, over a line drawing whose ink became that alpha. */
+  background: url('../img/brand/leo-lion-trace.png') no-repeat center / contain;
   opacity: .5; pointer-events: none;
 }
 .foot > .wrap { position: relative; z-index: 1; }
