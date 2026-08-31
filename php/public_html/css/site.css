@@ -57,20 +57,19 @@ img { max-width: 100%; display: block; }
    img so the header does not reflow when it loads. */
 /* The lion carries the identity in the masthead; the name is type, so it
    stays crisp at any size and needs no second raster. */
-.wordmark { gap: 14px; text-decoration: none; }
+.wordmark { gap: 11px; text-decoration: none; }
 /* The crest is the client's artwork, drawn navy-on-white. The masthead is navy,
    so it sits on a light plaque rather than being recoloured -- a white-on-navy
    inversion would put a white lion against its own white face. */
-.wordmark-crest {
-  /* Sized so the masthead stays one row. The crest is wider than the line-art
-     lion it replaced, and at 58px it pushed the wordmark past the width the nav
-     needs, wrapping the header onto a second row and taking it from 100px to
-     176px tall. */
-  height: 46px; width: auto; display: block; flex: none;
-  background: #fff;
-  border-radius: 9px;
-  padding: 4px 6px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, .22);
+.wordmark-lion {
+  /* The lion mark alone, white and gold on transparent, sitting straight on the
+     navy. It replaced the full crest because at masthead size the crest's own
+     LEO FOUNDATION was an illegible smudge beside the same words set in type --
+     the name is carried by the type, so the mark only has to be the lion.
+
+     Sized so the masthead stays one row: the wordmark must not push past the
+     width the nav needs, or the header wraps and doubles in height. */
+  height: 42px; width: auto; display: block; flex: none;
 }
 .wordmark-type { display: flex; flex-direction: column; justify-content: center; }
 .wordmark-name {
@@ -81,23 +80,46 @@ img { max-width: 100%; display: block; }
   font-size: .68rem; letter-spacing: .17em; text-transform: uppercase;
   color: var(--gold-bright); margin-top: 5px;
 }
-.foot-mark { height: 62px; width: auto; margin-bottom: 18px; }
+/* The lion alone, so it carries less width than the wordmark lockup it replaced
+   and needs more height to hold its corner of the footer. The foundation's name
+   and EIN are set in type in the legal line below, so nothing is lost. */
+.foot-mark {
+  height: 84px; width: auto; margin-bottom: 14px;
+  /* The mark's own PNG carries 13% transparent padding down its left
+     edge, so without this the lion's ink sits 15px right of the
+     wordmark's rule below it and the pair reads as two loose elements
+     rather than one sign-off. Optical alignment, measured from the
+     artwork's alpha channel rather than eyeballed. */
+  margin-left: -15px;
+}
+
+/* The wordmark sits under the mark and reads as the second line of one
+   sign-off, so the gap above it is tighter than the gap below. Capped in px
+   rather than set to 100%, because the footer column is a 1fr track that grows
+   on wide screens and the lockup would otherwise outrun the mark it belongs
+   to. `height: auto` is load-bearing: the width/height attributes that reserve
+   its space would otherwise be applied as a real height. */
+.foot-lockup {
+  display: block; width: min(260px, 100%); height: auto; margin-bottom: 18px;
+}
 
 @media (max-width: 780px) {
-  .wordmark-crest { height: 44px; padding: 4px 6px; }
+  .wordmark-lion { height: 44px; }
   .wordmark-strap { display: none; }
 }
 
-/* The lion is a near-white line drawing published as a watermark. Recovered to
-   transparency, it is used the same way here: a trace behind a navy band,
-   never at a size or contrast that competes with the figures in front of it. */
+/* The client's line drawing, used as a trace behind a navy band -- never at a
+   size or contrast that competes with the figures in front of it. Same artwork
+   as the footer trace, recoloured white for these grounds and carried at a
+   lower opacity than the lion it replaced, because it holds far more line work
+   per square inch and the old values read heavier on it. */
 .impact { position: relative; }
 .impact::after {
   content: '';
   position: absolute; right: -40px; top: 50%; transform: translateY(-50%);
-  width: min(360px, 34vw); aspect-ratio: 368 / 433;
-  background: url('../img/brand/leo-lion-white.png') no-repeat center / contain;
-  opacity: .16; pointer-events: none;
+  width: min(360px, 34vw); aspect-ratio: 448 / 520;
+  background: url('../img/brand/leo-lion-trace-white.png') no-repeat center / contain;
+  opacity: .1; pointer-events: none;
 }
 .impact > .wrap { position: relative; z-index: 1; }
 
@@ -113,9 +135,9 @@ img { max-width: 100%; display: block; }
 .page-head::after {
   content: '';
   position: absolute; right: -30px; bottom: -60px;
-  width: min(300px, 30vw); aspect-ratio: 368 / 433;
-  background: url('../img/brand/leo-lion-white.png') no-repeat center / contain;
-  opacity: .12; pointer-events: none;
+  width: min(300px, 30vw); aspect-ratio: 448 / 520;
+  background: url('../img/brand/leo-lion-trace-white.png') no-repeat center / contain;
+  opacity: .08; pointer-events: none;
 }
 .page-head > .wrap { position: relative; z-index: 1; }
 
@@ -123,18 +145,41 @@ img { max-width: 100%; display: block; }
 .foot::after {
   content: '';
   position: absolute; right: 2%; top: 50%; transform: translateY(-50%);
-  width: min(240px, 22vw); aspect-ratio: 368 / 433;
-  /* Gold rather than white here: the footer lockup is gold, and the two read
-     as one sign-off. This is the deeper brand gold, not the bright one, so the
-     trace sits down into the navy rather than glinting off it. */
-  background: url('../img/brand/leo-lion-gold-deep.png') no-repeat center / contain;
-  opacity: .5; pointer-events: none;
+  width: min(240px, 22vw); aspect-ratio: 448 / 520;
+  /* Gold rather than white here, so the trace and the gold in the lion mark
+     above it read as one sign-off. The deeper brand gold, not the bright one,
+     so it sits down into the navy rather than glinting off it: flat
+     rgb(150,108,34) at varying alpha, the same treatment the previous trace
+     used, over a line drawing whose ink became that alpha. */
+  background: url('../img/brand/leo-lion-trace.png') no-repeat center / contain;
+  opacity: .14; pointer-events: none;
 }
 .foot > .wrap { position: relative; z-index: 1; }
 
 @media (max-width: 900px) {
   .page-head::after, .foot::after { display: none; }
 }
+
+/* ---------- the trace on the light bands ----------
+   The same drawing again, gold on white, at a fifth of the opacity it carries
+   on navy: on a light ground the same value reads far stronger, and the point
+   here is paper texture rather than a picture. Left rather than right, so the
+   traces do not all stack down one edge of the page, and gone under 900px
+   where a card grid leaves no margin to put it in. */
+section.band.tint { position: relative; overflow: hidden; }
+section.band.tint::after {
+  content: '';
+  position: absolute; left: -60px; top: 50%; transform: translateY(-50%);
+  width: min(300px, 26vw); aspect-ratio: 448 / 520;
+  background: url('../img/brand/leo-lion-trace.png') no-repeat center / contain;
+  opacity: .05; pointer-events: none;
+}
+section.band.tint > .wrap { position: relative; z-index: 1; }
+
+@media (max-width: 900px) {
+  section.band.tint::after { display: none; }
+}
+
 
 /* ---------- header ---------- */
 

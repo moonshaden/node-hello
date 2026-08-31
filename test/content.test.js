@@ -562,3 +562,29 @@ test('both builds ship the same client script and stylesheet', () => {
     );
   }
 });
+
+// The About page and the impact band were quoting different numbers -- About
+// said 3,000 students and $5 million, the band said 5,685 and $6.9M -- and a
+// visitor scrolling one page saw both. The client settled it on the band's
+// figures. This derives the expectation FROM the band rather than hardcoding,
+// so if those counters are ever updated the About copy has to follow rather
+// than quietly falling out of step again.
+test('the About page quotes the same figures as the impact band', () => {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  const band = Object.fromEntries(seed.site.impact.map((i) => [i.label, i.value]));
+  const about = seed.pages.find((p) => p.slug === 'about').body;
+
+  const students = band['students awarded'];
+  assert.ok(students, 'the band still carries a student count');
+  assert.ok(about.includes(students), `About does not quote the band's ${students} students`);
+
+  // The band writes "$6.9M", the prose writes "$6.9 million" -- compare the number.
+  const awarded = band['awarded in scholarships'];
+  const figure = awarded.replace(/[^0-9.]/g, '');
+  assert.ok(figure, 'the band still carries an awarded total');
+  assert.match(about, new RegExp('\\$' + figure.replace('.', '\\.') + '\\s*(million|M)\\b'),
+    `About does not quote the band's ${awarded}`);
+
+  // And the superseded pair must not survive anywhere in the copy.
+  assert.doesNotMatch(about, /3,000|\$5 million/, 'the old figures are still in the About copy');
+});

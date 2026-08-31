@@ -4,7 +4,8 @@ Replaces the WordPress site at leofoundationusa.org. No WordPress, no database,
 no build step. Read this before changing anything — most of it is here because
 something bit us.
 
-Branch for all work: `claude/leo-foundation-site-redesign-knr6vv`. PR #3 (draft).
+Branch for all work: `claude/leo-foundation-site-redesign-knr6vv`. PR #3 is merged;
+PR #4 (draft) is the open one.
 
 ## How to work on this — the standing rule
 
@@ -37,38 +38,74 @@ reaches real students and real donors. So:
   you did. Report the failure with the evidence, not a reassuring summary.
 
 
-## Where this left off — 2026-08-30, head `d9cf6f2`
+## Where this left off — 2026-08-31, head `7d5258d`
 
 Several sessions work this branch at once. Pull before starting, and expect the
-head to have moved mid-task.
+head to have moved mid-task. PR #3 is **merged**; the open one is **PR #4**
+(draft), which carries everything below.
 
-**Landed and verified** (76 node / 72 PHP tests, PHP lint clean, cross-build
+**Landed and verified** (85 node / 77 PHP tests, PHP lint clean, cross-build
 render diff zero on all ten public pages):
 
-- `/board` — six directors from the live `/leadership-2/`, Madeline leading.
-- `/programs` — three programs from `/programs-partnerships/`; the homepage hero
-  slide points at it, which closed half of *Open work* 7.
-- `/community` — Alice Cooper's Solid Rock Teen Center plus a four-photo gallery,
-  nested under About in the header.
-- Footer lockup `leo-lockup-footer.png`: white rules and white FOUNDATION, gold
-  LEO and strapline.
+- `/board`, `/programs`, `/community` — all three transcribed pages, shipped in
+  #3. See *Content accuracy*.
+- **The homepage hero is a student, not a carousel.** It centres on Keian's
+  cutout (`site.heroStudentId` → a recipient's `cutoutUrl`) with a `heroQuote`
+  that must stay a literal substring of the published bio. The slides are kept
+  in the store and editable in `/admin` on purpose; the homepage simply stops
+  rendering them. The `h1` is hidden, not deleted.
+- **The client's own artwork is now the site's identity.** The lion mark
+  (`/img/brand/leo-mark-lion.png`) is in the masthead at 42px, in the footer at
+  84px, and behind all five favicons — the favicons are matted on the brand
+  navy, not transparent. It replaced the derived `leo-lockup-footer.png`, which
+  is kept but no longer referenced.
+- **The line-art lion is a trace on four surfaces**, at a deliberate scale:
+  footer `.14` gold, impact band `.10` white, page heads `.08` white, light
+  tinted bands `.05` gold. All four use `aspect-ratio: 448 / 520` and all four
+  disappear under 900px. The light-band trace sits on the *left* so the traces
+  do not stack down one edge.
+- **About now agrees with the impact band** — "5,685 students to $6.9 million",
+  the pair the client picked. The tests derive that expectation *from*
+  `site.impact` rather than hardcoding it; do not rewrite them to literals.
 
 **Waiting on the client or the site owner — do not decide these unilaterally:**
 
-1. The three FTP secrets. Deploying is blocked without them; see *Deploying*.
-2. Whether to run `seed_content`. A code deploy alone does **not** publish the
-   new pages, and that run overwrites the server's content store.
-3. The About page says the board "set the scholarship criteria, steward the
+1. **The giving links move to QuixChex.** Every giving link on the site still
+   points at Aplos, and the client has said they are switching. These are live
+   money paths that are known to be wrong — the highest-value open item.
+2. The three FTP secrets. Deploying is blocked without them; see *Deploying*.
+3. Whether to run `seed_content` — the client said run it, but it **cannot**
+   run until (2) lands: it is a branch inside the `Deploy over FTPS` step and
+   uses the same three secrets, behind the same credentials guard. A code
+   deploy alone does not publish the new pages, and that run overwrites the
+   server's content store.
+4. The About page says the board "set the scholarship criteria, steward the
    funds, and select each year's recipients". That is **not transcribed**, and
    the live governance charter lists mission focus, CEO oversight and support,
    community advocacy, committee work, financial reporting, and legal and
    ethical integrity — not criteria-setting or recipient selection. Reword from
    the charter, or ask the client. Same failure mode as `7f81b6e`.
-4. Two `/community` calls: the YouTube video is a link rather than an iframe,
+5. Two `/community` calls: the YouTube video is a link rather than an iframe,
    and two of the four event photographs are candid shots of unnamed people.
-5. PR #3's title and body describe only the FAQ and Giving work.
-6. Whether the whole footer lockup should be white, not just the rules and
-   FOUNDATION.
+6. Whether `.05` on the light tinted bands is the right weight — the one trace
+   value most likely to want tuning.
+7. The supplied artwork appears nowhere on the live site, so confirm the client
+   considers it current before cutover.
+8. **The review site is indexable.** <https://build.leofoundationusa.org> serves
+   no `robots.txt` and no `X-Robots-Tag`, so a public duplicate of the client's
+   site can be crawled and a donor could land on it. It cannot be fixed by adding
+   `robots.txt` to `php/public_html/` — that ships to production and would
+   deindex the real site — so it needs to be host-conditional or placed on the
+   subdomain by hand. See *Deploying*.
+9. The security headers reach static assets but not the PHP-generated HTML, which
+   is the wrong way round. `mod_headers` is loaded, so that is not the cause.
+
+**Known and unfixed, deliberately:** the hero cutout is 607KB, the heaviest
+asset on the site; on a 390px phone the masthead and ribbon take ~448px before
+the hero begins (pre-existing — fixing it reworks the mobile header on all ten
+pages); and `7d5258d`'s own commit message garbles the footer opacity change (it
+went `.25` → `.14`, and `.14` is not shared with the other surfaces). The PR
+body carries the correct table; the message was not force-pushed over an open PR.
 
 **Browsable preview** (private until shared from its own share menu):
 <https://claude.ai/code/artifact/b52ed21b-3e3d-4d72-83cc-b71302700dda>. It is a
@@ -77,11 +114,12 @@ republish to that same URL rather than minting a new one. To rebuild: run the
 PHP dev server, capture each route's `<body>` plus `site.css`, `site.js` and
 every `/img` asset, and resolve **every** `url()` form — absolute, relative and
 quoted alike. Two things were missed the first time and both were invisible to a
-"does it load" check: omitting `site.js` left the hero slider dead, and an
-absolute-path-only `url()` rewrite dropped two `url('../img/...')` watermarks. So
-verify in a browser that every route has zero broken images **and that the
-slider actually advances** before republishing.
-
+"does it load" check: omitting `site.js` left the hero slider dead (the slider
+is gone now, but `site.js` still drives the scroll-staging, which fails just as
+silently), and an absolute-path-only `url()` rewrite dropped two
+`url('../img/...')` watermarks — there are now four of those, so check them all.
+Verify in a browser that every route has zero broken images and that the staged
+sections actually reveal before republishing.
 
 ## What the client asked for
 
@@ -117,8 +155,8 @@ once in `php/leo-app/views` + `php/public_html/css`, once in `views/` +
 ## Commands
 
 ```bash
-npm test                                    # 76 tests
-php php/test/run.php                        # 72 tests
+npm test                                    # 85 tests
+php php/test/run.php                        # 77 tests
 find php -name '*.php' -exec php -l {} \;   # lint
 
 ADMIN_PASSWORD='...' npm start              # Node build, :3000
@@ -266,14 +304,23 @@ against a host allowlist. Confirmed by testing, not assumed:
   `/wp-json/wp/v2/pages/<id>` returns rendered content. Far cleaner than parsing
   the theme's HTML. Note the impact counters render as `0` in the markup — the
   real figures are in the `data-value` attributes.
+- `build.leofoundationusa.org` on **443 is reachable**, so the deployed review
+  site CAN be fetched and checked from here. That is new, and it is how the
+  `.htaccess` redirect bug was found.
 - `160.153.181.93` (the client's server) → still 403 `host_not_allowed`
-- port 2083 (cPanel) and 21 (FTP) → connection reset even for allowed hosts
+- **ports 21, 990 and 22 → time out**, including against the build subdomain and
+  with valid credentials in hand. Re-tested 2026-08-31: `curl` reaches
+  `Trying 160.153.181.93:21...` and stalls at the TCP layer.
+- port 2083 (cPanel) → connection reset even for allowed hosts
 - `claude.ai` → 403
 
-So: **you cannot upload to the server or verify the deployed site.** Reading the
-old WordPress site does now work. Do not promise otherwise, and do not ask
-for cPanel credentials — the port is closed regardless of credentials. Hand the
-client a zip and File Manager steps, or use the cPanel Git deployment.
+So: **you still cannot upload from here, but you can now verify what was
+uploaded.** Do not ask for FTP or cPanel credentials to upload with — the ports
+are closed regardless of credentials, and being handed a password does not change
+that. Uploading goes through the GitHub Actions workflow, which runs on a runner
+with no such restriction; see *Deploying*. Checking the result is a plain
+`curl` from here, and it is worth doing every time: the one bug that reached a
+real server was invisible to every local check.
 
 ## Content accuracy
 
@@ -315,7 +362,8 @@ lost. `/donate/` (the header's Donate link) is a third, staler copy of the same
 eleven tabs with no donate buttons; `/give/` and `/leo-events/` are untouched
 Avada demo boilerplate, Lorem ipsum and all — do not seed from them.
 
-**The live donate processor is Aplos, not Mightycause.** `site.donateUrl` pointed
+**The live donate processor is Aplos, not Mightycause — and the client is
+moving off Aplos to QuixChex, so all of this is on notice; see *Open work* 6.** `site.donateUrl` pointed
 at `mightycause.com/organization/LEOFoundation`, which appears nowhere on the live
 site; it is now `https://www.aplos.com/aws/give/LEOFoundation/Donation`. Three ways
 to give have their own Aplos endpoints, carried in the body: `/donate-now`
@@ -429,8 +477,10 @@ base path so it survives the `/~leofoundationusa` temporary URL. `.cpanel.yml`
 copies the directory on deploy — if you add a photo, check it still does.
 Nothing on the site loads an image from the WordPress host any more.
 
-**The homepage hero is a `slides` array, seeded from the live hero on
-2026-08-29.** The live homepage publishes the same three-item hero *twice*, the
+**The `slides` array was seeded from the live hero on 2026-08-29.** The
+homepage no longer renders it — the hero centres on a student instead — but the
+slides stay in the store and stay editable in `/admin`, and the tests below
+still hold. The live homepage publishes the same three-item hero *twice*, the
 way `/ways-to-give/` publishes its tabs twice:
 
 - `fusion-builder-row-4`, three full-bleed panels, desktop only
@@ -479,25 +529,27 @@ is an empty string on all three. Do not compose one.
 3. ~~Rehost the recipient photos~~ — **done.** See *Content accuracy*.
 4. Confirm **Save works in `/admin`** on the server — depends on file
    permissions for `leo-app/data/content.json`, untestable from here.
-5. **The About page's figures disagree with the impact band, and the live site
-   disagrees with itself.** About says "more than 3,000 young people to over
-   $5 million"; the impact band says 5,685 students and $6.9M. Neither is what
-   the live site publishes. Its homepage prose reads "over 4,500 youth to over
-   $6M"; its counter widgets (on nine inner pages) read 5,685 students /
-   $6.9M awarded / $8.5M raised — except `/ways-to-give` ($8.9M raised) and
-   `/financial-statements` (4,500 students / $6M / $8M, evidently stale). The
-   "3,000 / $5 million" wording appears nowhere. Left unchanged deliberately:
-   picking one would be guessing which set the client considers current. Ask
-   them, then make the About copy and the impact band agree.
-6. **Confirm the four Aplos giving links with the client.** The live site sends
-   donors to `aplos.com/aws/give/LEOFoundation/{Donation,donate-now,fieldorstudy,donate}`.
-   Those are transcribed as published, but a dead giving link is the one bug that
-   costs money, so have the client click each before cutover.
+5. ~~The About figures disagree with the impact band~~ — **done.** The client
+   picked 5,685 students / $6.9M, and About now says exactly that. Keep the
+   underlying finding on record, because the live site still disagrees with
+   itself and it will come up again at cutover: its homepage prose reads "over
+   4,500 youth to over $6M"; its counter widgets (on nine inner pages) read
+   5,685 / $6.9M awarded / $8.5M raised — except `/ways-to-give` ($8.9M raised)
+   and `/financial-statements` (4,500 / $6M / $8M, evidently stale). The
+   "3,000 / $5 million" wording this site used to carry appears nowhere on the
+   live site at all.
+6. **The giving links move to QuixChex.** Every giving link here points at
+   `aplos.com/aws/give/LEOFoundation/{Donation,donate-now,fieldorstudy,donate}`,
+   transcribed as published — and the client has since said they are switching
+   processors. So these are live money paths that are *known* to be going
+   stale, not merely unverified. Get the QuixChex URLs from the client, replace
+   all four, and have them click each before cutover. Highest-value open item.
 7. **One homepage slide still links nowhere.** `/programs-partnerships/` is
-   done — transcribed, seeded as `/programs`, and the slide's `ctaUrl` now
-   points at it. `/mission-moments-newsletter/` is still untranscribed, so that
-   slide's `ctaUrl` stays empty. Seed it the way the others were seeded, then
-   fill the slide in.
+   done — transcribed, seeded as `/programs`, and that slide's `ctaUrl` points
+   at it. `/mission-moments-newsletter/` is still untranscribed, so its slide's
+   `ctaUrl` stays empty. Not user-visible today (the homepage renders a student
+   rather than the slides) but the slides are still live in `/admin`, so seed
+   the newsletter page the way the others were seeded, then fill the slide in.
 8. Old-URL redirect map verification before cutover. The scholarship slugs now
    match the WordPress ones, so most of the map should be one-to-one.
 9. ~~No CI~~ — **done.** `.github/workflows/deploy.yml` runs both suites and the
@@ -505,25 +557,67 @@ is an empty string on all three. Do not compose one.
 
 ## Deploying
 
-**As of 2026-08-30, deploying from `moonshaden/node-hello` is not possible: all
-three FTP secrets are empty.** A dry run dispatched that day
-(run `33290362975`) printed `FTP_SERVER:` / `FTP_USERNAME:` / `FTP_PASSWORD:`
-blank and `FTP secrets are not set, so there is nothing to deploy to`, and the
-deploy job then hit its own "Refuse a hand-triggered deploy with no credentials"
-guard. Nothing was written; `lftp` was never installed.
+**Deploying works, and there is now a review site: <https://build.leofoundationusa.org>.**
+The three FTP secrets were added to `moonshaden/node-hello` on 2026-08-31 and the
+first real deploy went out that evening. The subdomain is a staging copy — the
+production domain is still the old WordPress host; see *DNS* below.
 
-Read the older claim below with that in mind. The repo of record is the private
-`moonshaden/leo-foundation-site`, and `moonshaden/node-hello` is the old public
-copy — the earlier "deploying works, verified against the live account" note was
-almost certainly written about the private repo, whose secrets this one does not
-share. All the recent work is on `node-hello` regardless, so **from here a deploy
-needs someone to add the secrets to this repo first.** Only a person can: they
-cannot be written from a session.
+**The deploy is TWO runs, not one.** A code deploy alone gives you a hollow site:
+`leo-app/data/` is excluded from every ordinary deploy, so the server has no
+content store and every page but `/`, `/scholarships` and `/recipients` returns
+404 — the homepage renders at 5KB instead of 33KB and the scholarships page reads
+"0 of 13". That is not a bug; the exclusion is deliberate, because `/admin` owns
+that file on a live server. Seeding is the separate `seed_content: true` run,
+which uploads only `content.json` and stops. On a *fresh* target there is nothing
+to lose, so run it. On a server whose content has been edited through `/admin`, it
+**overwrites their edits** — ask first.
 
-A dispatched deploy also leaves a **red `deploy` check on the PR**, because a
-hand-triggered run fails rather than skipping. It is not a code regression and
-it clears on the next push. Do not chase it, and do not comment about it on the
-PR.
+So, from cold:
+
+1. `dry_run: true, probe_path: '.'` — lists the remote root, transfers nothing.
+2. `dry_run: true` — lists every file that would move.
+3. `dry_run: false` — the code deploy.
+4. `dry_run: false, seed_content: true` — the content store.
+
+**Confirmed layout for the build subdomain** (probed on 2026-08-31, run
+`33445026091`). The `leoftp@build.leofoundationusa.org` account lands directly on
+the subdomain's document root, so the defaults are already right:
+`FTP_PUBLIC_DIR` `./`, `FTP_APP_DIR` `./leo-app/`, `FTP_SERVER`
+`build.leofoundationusa.org`, `FTP_VERIFY_CERT` `false`. The docroot arrived with
+cPanel's own `.htaccess`, `.user.ini` and `php.ini`; the deploy overwrites
+`.htaccess` and that did **not** break the PHP handler.
+
+**`.htaccess` redirect targets must start with `/`.** All three old-WordPress
+redirects were broken on the real server and nowhere else:
+
+    /scholarship-faqs -> https://<host>/home/<account>/public_html/faq
+
+In a `.htaccess`, an external redirect whose substitution is relative resolves
+against the **filesystem**, not the URL space — a dead link that also leaked the
+server path. Fixed in `5c5013b` with root-relative targets. **Neither dev build
+reads `.htaccess`** (the Node twin routes itself, the PHP dev server uses
+`router.php`), so both suites and the cross-build render diff stay green whether
+this is right or wrong. Only the review site catches this class. Re-test the
+three legacy URLs on the server after any `.htaccess` change.
+
+**Verified on the live subdomain after deploying:** all ten routes 200 as
+distinct pages, all 38 referenced assets 200, the three legacy redirects landing
+on real pages, and `leo-app/` sealed — `config.php`, `boot.php` and
+`content.json` all 404 over HTTP, so `Require all denied` is working on this
+host. `/admin` is reachable but locked: no `config.php` ships, so the password is
+empty, `Auth::isConfigured()` is false and every login is refused.
+
+**Open on the review site:** it is fully indexable — no `robots.txt`, no
+`X-Robots-Tag`. A public duplicate of the client's site can be crawled and donors
+could land on it. A `robots.txt` cannot simply be added to `php/public_html/`,
+because that ships to production too and would deindex the real site; it needs to
+be host-conditional or dropped on the subdomain by hand. Also, the security
+headers in `.htaccess` reach static assets but **not** the PHP-generated HTML
+(`X-Frame-Options` is on `/css/site.css` and absent on `/`), which is the wrong
+way round — `mod_headers` is loaded, so this is not that.
+
+Note the account name in the leaked path was `buildleofoundati`, i.e. the
+subdomain has its own cPanel-style account, separate from `leofoundationusa`.
 
 The rest of this section was written when a deploy was expected to work, and its
 mechanics are still accurate:

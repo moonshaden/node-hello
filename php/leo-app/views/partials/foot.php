@@ -4,8 +4,14 @@
   <div class="wrap">
     <div class="foot-grid">
       <div>
-        <img class="foot-mark" src="<?= e(link_url('/img/brand/leo-lockup-footer.png', $basePath)) ?>"
-             alt="<?= e($site['name'] ?? '') ?>" width="679" height="146" loading="lazy">
+        <img class="foot-mark" src="<?= e(link_url('/img/brand/leo-mark-lion.png', $basePath)) ?>"
+             alt="" aria-hidden="true" width="520" height="380" loading="lazy">
+        <?php // The wordmark below is the accessible name of the pair, so the
+              // mark above it is decorative -- otherwise both announce the same
+              // thing. ?>
+        <img class="foot-lockup" src="<?= e(link_url('/img/brand/leo-lockup-footer.png', $basePath)) ?>"
+             alt="<?= e(($site['name'] ?? '') . ' — ' . ($site['tagline'] ?? '')) ?>"
+             width="679" height="146" loading="lazy">
         <p class="small"><?= e($site['mission'] ?? '') ?></p>
       </div>
       <div>

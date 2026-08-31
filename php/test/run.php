@@ -666,6 +666,78 @@ test('both builds ship the same client script and stylesheet', function () {
     }
 });
 
+// The client asked for the horizontal wordmark back in the footer, under the
+// lion mark. It is a view change, so it had to be made twice, and a footer that
+// silently lost it in one build only is exactly the drift the byte-identity
+// test above exists to catch -- except that test covers the CSS and the script,
+// not the templates. This covers the templates and the asset behind them.
+test('both footers carry the wordmark under the lion mark', function () {
+    $root = dirname(__DIR__, 2);
+    foreach ([
+        'views/partials/foot.ejs',
+        'php/leo-app/views/partials/foot.php',
+    ] as $view) {
+        $src = file_get_contents($root . '/' . $view);
+        ok(str_contains($src, 'leo-lockup-footer.png'), $view . ' lost the footer wordmark');
+        ok(str_contains($src, 'foot-lockup'), $view . ' lost the foot-lockup class');
+        // The wordmark names the organisation, so the mark above it is
+        // decorative -- otherwise a screen reader announces the org twice.
+        // Matched with a bounded .* rather than [^>]*: the PHP template's src
+        // is a short-echo tag, and the closing angle bracket of that tag would
+        // end a [^>]* run early. (Do not write that tag literally in a comment
+        // here -- its closing sequence would drop the parser out of PHP mode.)
+        ok(
+            preg_match('/class="foot-mark".{0,240}?aria-hidden="true"/s', $src) === 1,
+            $view . ': the footer mark must be decorative beside the wordmark'
+        );
+    }
+    // And the artwork itself has to be in both public trees, or one build
+    // renders a broken image.
+    foreach (['public/img/brand', 'php/public_html/img/brand'] as $dir) {
+        ok(
+            is_file($root . '/' . $dir . '/leo-lockup-footer.png'),
+            $dir . '/leo-lockup-footer.png is missing'
+        );
+    }
+});
+
+// The About page and the impact band were quoting different numbers -- About
+// said 3,000 students and $5 million, the band said 5,685 and $6.9M -- and a
+// visitor scrolling one page saw both. The client settled it on the band's
+// figures. This derives the expectation FROM the band rather than hardcoding,
+// so if those counters are ever updated the About copy has to follow rather
+// than quietly falling out of step again. Mirrors test/content.test.js.
+test('the About page quotes the same figures as the impact band', function () {
+    $seed = json_decode(file_get_contents(dirname(__DIR__, 2) . '/data/content.json'), true);
+    $band = [];
+    foreach ($seed['site']['impact'] as $i) {
+        $band[$i['label']] = $i['value'];
+    }
+    $about = '';
+    foreach ($seed['pages'] as $page) {
+        if (($page['slug'] ?? '') === 'about') {
+            $about = $page['body'];
+        }
+    }
+    ok($about !== '', 'the About page is missing');
+
+    $students = $band['students awarded'] ?? '';
+    ok($students !== '', 'the band still carries a student count');
+    ok(str_contains($about, $students), "About does not quote the band's $students students");
+
+    // The band writes "$6.9M", the prose writes "$6.9 million" -- compare the number.
+    $awarded = $band['awarded in scholarships'] ?? '';
+    $figure = preg_replace('/[^0-9.]/', '', $awarded);
+    ok($figure !== '', 'the band still carries an awarded total');
+    ok(
+        preg_match('/\\$' . preg_quote($figure, '/') . '\\s*(million|M)\\b/', $about) === 1,
+        "About does not quote the band's $awarded"
+    );
+
+    // And the superseded pair must not survive anywhere in the copy.
+    ok(preg_match('/3,000|\\$5 million/', $about) === 0, 'the old figures are still in the About copy');
+});
+
 // LEO is an acronym and the live homepage publishes a write-up for each word.
 // The words carry the brand, so a reordered or reworded set is a real change.
 test('the LEO pillars spell out Leadership, Education, Opportunity', function () {

@@ -6,9 +6,16 @@ RewriteEngine On
 # RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
 
 # Old WordPress URLs. These ran for years — keep them working.
-RewriteRule ^available-scholarships/?$ scholarships [R=301,L]
-RewriteRule ^scholarship-recipients/?$ recipients [R=301,L]
-RewriteRule ^scholarship-faqs/?$ faq [R=301,L]
+#
+# The targets MUST be root-relative ('/faq', not 'faq'). In a .htaccess an
+# external redirect with a relative substitution is resolved against the
+# FILESYSTEM directory, not the URL space, so 'faq' became
+# https://host/home/<account>/public_html/faq -- a dead link that also leaked
+# the server path. Caught on the build subdomain; it cannot reproduce in either
+# dev build, since neither reads this file.
+RewriteRule ^available-scholarships/?$ /scholarships [R=301,L]
+RewriteRule ^scholarship-recipients/?$ /recipients [R=301,L]
+RewriteRule ^scholarship-faqs/?$ /faq [R=301,L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
