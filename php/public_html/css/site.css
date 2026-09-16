@@ -267,17 +267,28 @@ section.band.tint > .wrap { position: relative; z-index: 1; }
   padding-top: 10px; padding-bottom: 10px; flex-wrap: wrap;
 }
 
-/* One line, wherever there is room for one.
+/* One line, always.
    With `flex-wrap: wrap` the button's `margin-left: auto` claims the leftover
-   space, and the moment that leaves less than the button needs the whole thing
-   tips onto a second row -- which is what put "Browse scholarships" on a line of
-   its own and doubled the ribbon's height. Holding the row together above 900px
-   and letting the text shrink instead keeps it to one. */
-@media (min-width: 901px) {
-  .ribbon-inner { flex-wrap: nowrap; }
-  .ribbon-inner > .pill { flex: 0 0 auto; }
-  .ribbon-inner > .btn { flex: 0 0 auto; }
-  .ribbon-inner > span:not(.pill) { min-width: 0; }
+   space, and the moment that leaves less than the button needs, the button tips
+   onto a row of its own -- which is what doubled the ribbon's height.
+
+   Never wrapping is only half of it. All four pieces at their natural width need
+   1025px, so below that no amount of shrinking fits them: something has to go.
+   They drop in reverse order of how much a visitor needs them -- the standing
+   location first, then the status pill (the date beside it already says the
+   same thing), then the full date, leaving the countdown and the button, which
+   are the two things anyone came to the ribbon for. Whole pieces, never a
+   truncated sentence. */
+.ribbon-inner { flex-wrap: nowrap; }
+.ribbon-inner > .pill,
+.ribbon-inner > .btn { flex: 0 0 auto; }
+.ribbon-inner > span:not(.pill) { min-width: 0; }
+
+@media (max-width: 1040px) { .ribbon-org { display: none; } }
+@media (max-width: 860px)  { .ribbon-inner > .pill { display: none; } }
+@media (max-width: 680px)  {
+  .ribbon strong { display: none; }         /* "Reopens November 1, 2026." */
+  .ribbon-inner { gap: 10px; }
 }
 .ribbon strong { font-family: var(--serif); }
 .ribbon .btn { margin-left: auto; }
@@ -302,11 +313,7 @@ section.band.tint > .wrap { position: relative; z-index: 1; }
 }
 .ribbon-inner > span:not(.pill) { min-width: 0; }
 
-@media (max-width: 860px) {
-  /* Wrapped onto its own line the rule reads as a stray mark, and the row
-     below already starts a new group. */
-  .ribbon-org { border-right: 0; padding-right: 0; width: 100%; }
-}
+
 
 .pill {
   display: inline-flex; align-items: center; gap: 7px;
