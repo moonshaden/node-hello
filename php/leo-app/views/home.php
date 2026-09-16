@@ -47,12 +47,13 @@
           this is a static trio rather than an empty box. The rest carry
           loading="lazy" AND the hidden attribute, which is what keeps fourteen
           portraits off the wire until they are actually wanted. */ ?>
+      <div class="hero-aside">
       <?php if ($heroRail): ?>
-        <ul class="hero-rail" data-hero-rail data-hero-interval="5000">
+        <ul class="hero-rail" data-hero-rail data-hero-interval="5000" data-hero-visible="2">
           <?php foreach ($heroRail as $index => $person): $line = \Leo\Content::heroLine($person); ?>
-            <li class="hero-rail-card<?= $index < 3 ? ' is-shown' : '' ?>"<?= $index < 3 ? '' : ' hidden' ?>>
+            <li class="hero-rail-card<?= $index < 2 ? ' is-shown' : '' ?>"<?= $index < 2 ? '' : ' hidden' ?>>
               <img class="hero-rail-photo" src="<?= e(link_url($person['photoUrl'] ?? '', $basePath)) ?>" alt="<?= e($person['name'] ?? '') ?>"
-                   width="96" height="96"<?= $index < 3 ? '' : ' loading="lazy"' ?>>
+                   width="96" height="96"<?= $index < 2 ? '' : ' loading="lazy"' ?>>
               <div class="hero-rail-text">
                 <?php if ($line['quoted']): ?>
                   <blockquote class="hero-rail-line">&ldquo;<?= e($line['text']) ?>&rdquo;</blockquote>
@@ -68,9 +69,13 @@
           <?php endforeach; ?>
         </ul>
       <?php endif; ?>
-      </div>
 
+      <?php /* The mission sat under the whole hero and cost a band of its own.
+          It now stands where the third student used to, which is the same copy
+          in less of the page. */ ?>
       <p class="hero-mission"><?= e($site['mission'] ?? '') ?></p>
+      </div>
+      </div>
 
       <div class="actions">
         <a class="btn btn-gold" href="<?= e($basePath) ?>/scholarships">

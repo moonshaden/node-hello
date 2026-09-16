@@ -1051,6 +1051,16 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   .logo-run { gap: 38px; }
 }
 
+/* ---------- the hero's right-hand column ----------
+   Two students and the mission, stacked. The mission used to sit under the
+   whole hero in a band of its own; standing it where the third student was is
+   the same copy in less of the page. */
+.hero-aside {
+  display: grid;
+  gap: 18px;
+  align-content: center;
+}
+
 /* ---------- the hero rail ----------
    Three more awarded students beside the lead, rotating through all of them.
 
@@ -1180,8 +1190,12 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .hero-centred .hero-mission {
   color: #c6d5e2;
   font-size: 1rem;
-  max-width: 52ch;
-  margin: 20px auto 0;
+  /* In the right-hand column now, so it ranges left with the cards above it
+     rather than centring under the whole hero. */
+  max-width: 46ch;
+  margin: 0;
+  text-align: left;
+  padding: 0 4px;
 }
 .hero-centred .actions { justify-content: center; }
 .hero-centred .hero-deadline {

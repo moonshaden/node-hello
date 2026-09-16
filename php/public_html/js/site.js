@@ -123,7 +123,10 @@
   if (!rail) return;
 
   var cards = Array.prototype.slice.call(rail.querySelectorAll('.hero-rail-card'));
-  var PER_VIEW = 3;
+  // How many show at once is the template's decision -- it is what decides
+  // which cards ship with the `hidden` attribute -- so read it rather than
+  // keeping a second copy of the number here that can fall out of step.
+  var PER_VIEW = parseInt(rail.getAttribute('data-hero-visible'), 10) || 3;
   if (cards.length <= PER_VIEW) return;              // nothing to rotate through
 
   var still = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -146,10 +149,17 @@
   var slots = cards.slice(0, PER_VIEW);
   slots.forEach(function (card, i) { card.style.order = i; });
 
+  // A cursor that walks the deck in order and wraps, rather than searching
+  // outward from whatever is on screen. That is what guarantees every student
+  // gets their turn: the cursor only ever moves forward, so nobody is stepped
+  // over, whether the rail shows two at a time or three.
+  var cursor = PER_VIEW % cards.length;
+
   function nextCard() {
-    for (var step = 1; step <= cards.length; step++) {
-      var candidate = cards[(cards.indexOf(slots[slots.length - 1]) + step) % cards.length];
-      if (slots.indexOf(candidate) === -1) return candidate;
+    for (var tries = 0; tries < cards.length; tries++) {
+      var candidate = cards[cursor];
+      cursor = (cursor + 1) % cards.length;
+      if (slots.indexOf(candidate) === -1) return candidate;   // skip anyone on screen
     }
     return null;
   }
