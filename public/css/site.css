@@ -1024,6 +1024,11 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   transition: opacity .6s ease;
 }
 .hero-rail-card.is-shown { opacity: 1; }
+/* `display: grid` above outranks the user agent's `[hidden] { display: none }`,
+   so without this every card takes up space. Eleven invisible ones made the rail
+   2,668px tall and pushed the student down to the middle of it. This is what
+   makes `hidden` mean hidden. */
+.hero-rail-card[hidden] { display: none; }
 .hero-rail-photo {
   width: 96px; height: 96px;
   object-fit: cover;
