@@ -263,8 +263,21 @@ section.band.tint > .wrap { position: relative; z-index: 1; }
 
 .ribbon { background: var(--gold-wash); border-bottom: 1px solid var(--rule); }
 .ribbon-inner {
-  display: flex; align-items: center; gap: 16px 24px;
-  padding-top: 14px; padding-bottom: 14px; flex-wrap: wrap;
+  display: flex; align-items: center; gap: 12px 18px;
+  padding-top: 10px; padding-bottom: 10px; flex-wrap: wrap;
+}
+
+/* One line, wherever there is room for one.
+   With `flex-wrap: wrap` the button's `margin-left: auto` claims the leftover
+   space, and the moment that leaves less than the button needs the whole thing
+   tips onto a second row -- which is what put "Browse scholarships" on a line of
+   its own and doubled the ribbon's height. Holding the row together above 900px
+   and letting the text shrink instead keeps it to one. */
+@media (min-width: 901px) {
+  .ribbon-inner { flex-wrap: nowrap; }
+  .ribbon-inner > .pill { flex: 0 0 auto; }
+  .ribbon-inner > .btn { flex: 0 0 auto; }
+  .ribbon-inner > span:not(.pill) { min-width: 0; }
 }
 .ribbon strong { font-family: var(--serif); }
 .ribbon .btn { margin-left: auto; }
