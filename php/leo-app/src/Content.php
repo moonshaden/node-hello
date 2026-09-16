@@ -301,6 +301,22 @@ final class Content
         return $flat;
     }
 
+    /**
+     * The legal pages, for the footer's own small print block.
+     *
+     * A page opts in with `legal: true` rather than the footer naming slugs, so
+     * adding the terms of service the client has not published yet is a store
+     * edit and not a template change. They are deliberately `inNav: false` --
+     * legal copy belongs in the footer, not in the header beside Scholarships.
+     */
+    public static function legalPages(array $pages): array
+    {
+        return array_values(array_filter(
+            $pages,
+            static fn (array $page) => ($page['legal'] ?? null) === true
+        ));
+    }
+
     /** Totals for the impact band — computed, so they cannot drift from the data. */
     public static function awardStats(array $recipients): array
     {

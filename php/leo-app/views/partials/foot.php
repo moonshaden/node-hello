@@ -33,6 +33,20 @@
           <?php if (!empty($site['location'])): ?><li><?= e($site['location']) ?></li><?php endif; ?>
           <?php if (!empty($site['facebookUrl'])): ?><li><a href="<?= e(link_url($site['facebookUrl'], $basePath)) ?>">Facebook</a></li><?php endif; ?>
         </ul>
+
+        <?php // Legal sits under Contact rather than in its own column: it is
+              // one or two links and a fourth column would leave the row
+              // lopsided. The list is whatever pages carry `legal: true`, so a
+              // terms of service appears here the moment one is written, with
+              // no change to this file. ?>
+        <?php if ($legalPages !== []): ?>
+          <h4 class="foot-legal-head">Legal</h4>
+          <ul>
+            <?php foreach ($legalPages as $legalPage): ?>
+              <li><a href="<?= e($basePath) ?>/<?= e($legalPage['slug'] ?? '') ?>"><?= e($legalPage['navLabel'] ?? $legalPage['title'] ?? '') ?></a></li>
+            <?php endforeach; ?>
+          </ul>
+        <?php endif; ?>
       </div>
     </div>
     <div class="foot-legal">

@@ -196,6 +196,18 @@ function navFlat(pages) {
   return navPages(pages).flatMap((page) => [page, ...page.children]);
 }
 
+/**
+ * The legal pages, for the footer's own small print block.
+ *
+ * A page opts in with `legal: true` rather than the footer naming slugs, so
+ * adding the terms of service the client has not published yet is a store edit
+ * and not a template change. They are deliberately `inNav: false` -- legal
+ * copy belongs in the footer, not in the header beside Scholarships.
+ */
+function legalPages(pages) {
+  return pages.filter((page) => page.legal === true);
+}
+
 /** Totals for the impact band. Computed, so they can never drift from the data. */
 function awardStats(recipients) {
   const total = recipients.reduce((sum, item) => sum + (Number(item.amount) || 0), 0);
@@ -256,6 +268,7 @@ module.exports = {
   publicPages,
   navPages,
   navFlat,
+  legalPages,
   awardStats,
   formatMoney,
   excerpt,

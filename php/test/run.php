@@ -1116,6 +1116,105 @@ test('the password check is exact', function () {
     ok(!(new Leo\Auth('', 'k'))->passwordMatches(''), 'an unset password must never match');
 });
 
+
+echo "\nLegal pages\n";
+
+test('legalPages picks only the pages that opt in', function () {
+    $pages = [
+        ['slug' => 'about'],
+        ['slug' => 'privacy', 'legal' => true],
+        ['slug' => 'faq', 'legal' => false],
+        ['slug' => 'terms', 'legal' => true],
+    ];
+    $legal = Content::legalPages($pages);
+    is_same(count($legal), 2, 'wrong number of legal pages');
+    is_same($legal[0]['slug'], 'privacy');
+    is_same($legal[1]['slug'], 'terms');
+    // A missing flag is not a legal page, and neither is a truthy string --
+    // the footer list has to be opt-in and nothing else.
+    is_same(count(Content::legalPages([['slug' => 'about'], ['slug' => 'x', 'legal' => 'yes']])), 0);
+});
+
+// The privacy policy is the live page verbatim, so the test pins the sentences
+// that carry the legal weight rather than a word count. Nine bold section
+// headings in the source became nine markdown headings, which is what earns the
+// page its jump-to index.
+test('the seeded privacy policy is the transcribed page', function () {
+    $seed = json_decode(file_get_contents(__DIR__ . '/../leo-app/data/content.json'), true);
+    $privacy = null;
+    foreach ($seed['pages'] as $page) {
+        if (($page['slug'] ?? '') === 'privacy') {
+            $privacy = $page;
+        }
+    }
+    ok($privacy !== null, 'no privacy page in the seed');
+    is_same($privacy['legal'] ?? null, true, 'the page does not opt in to the footer');
+    is_same($privacy['inNav'] ?? null, false, 'legal copy does not belong in the header');
+
+    ok(str_contains($privacy['body'], 'Last Updated: May 5, 2025'), 'the policy lost its date');
+    ok(
+        str_contains($privacy['body'], 'Our Website is not intended for children under 13 years of age.'),
+        "the children's clause was reworded"
+    );
+
+    $result = Markdown::renderSections($privacy['body']);
+    is_same(count($result['headings']), 9, 'section count');
+    is_same($result['headings'][0]['id'], '1-information-we-collect', 'first anchor');
+    is_same($result['headings'][8]['id'], '9-changes-to-our-privacy-policy', 'last anchor');
+});
+
+// The footer list is the only place a legal page is linked, so a build that
+// stops rendering it hides the policy entirely. A view change made once is the
+// drift this suite exists to catch.
+test('both footers render the legal list', function () {
+    $root = dirname(__DIR__, 2);
+    foreach ([
+        ['views/partials/foot.ejs', 'legalPages'],
+        ['php/leo-app/views/partials/foot.php', '$legalPages'],
+    ] as [$view, $needle]) {
+        $src = file_get_contents($root . '/' . $view);
+        ok(str_contains($src, $needle), $view . ' does not render the legal pages');
+        ok(str_contains($src, 'foot-legal-head'), $view . ' lost the Legal heading');
+    }
+});
+
+// The privacy policy is the first page with no summary, and that exposed a
+// divergence the seed had hidden: PHP's ?? falls back on null only, so the page
+// emitted an empty meta description while the EJS twin fell back to the mission.
+// Neither suite could see it -- only the rendered output differs.
+test('a page with no summary still describes itself in both builds', function () {
+    $root = dirname(__DIR__, 2);
+    $php = file_get_contents($root . '/php/leo-app/views/partials/head.php');
+    // Single-quoted: these needles contain PHP variables and must not interpolate.
+    ok(
+        !str_contains($php, 'e($description ?? ($site[\'mission\']'),
+        'the PHP head still falls back on null only, so an empty summary blanks the description'
+    );
+    ok(
+        str_contains($php, '($description ?? \'\') !== \'\''),
+        'the PHP head does not test for an empty summary'
+    );
+
+    // The page that exposed it: no summary in the seed, by design.
+    $seed = json_decode(file_get_contents(__DIR__ . '/../leo-app/data/content.json'), true);
+    foreach ($seed['pages'] as $page) {
+        if (($page['slug'] ?? '') === 'privacy') {
+            is_same($page['summary'] ?? null, '', 'the policy publishes no summary, so none is invented');
+        }
+    }
+});
+
+// A checkbox the save handler does not read comes back false on the first admin
+// edit, which would drop the page out of the footer silently. Both page forms
+// have to declare it.
+test('both page forms offer the legal checkbox', function () {
+    $root = dirname(__DIR__, 2);
+    foreach (['src/routes/admin.js', 'php/leo-app/src/Admin.php'] as $file) {
+        $src = file_get_contents($root . '/' . $file);
+        ok(str_contains($src, "'legal'"), $file . ' does not declare the legal field');
+    }
+});
+
 echo "\n" . str_repeat('-', 46) . "\n";
 echo ($failed === 0 ? "ALL PASSED" : "FAILURES") . ": $passed passed, $failed failed\n\n";
 exit($failed === 0 ? 0 : 1);

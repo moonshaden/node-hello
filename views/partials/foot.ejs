@@ -32,6 +32,19 @@
           <% if (site.location) { %><li><%= site.location %></li><% } %>
           <% if (site.facebookUrl) { %><li><a href="<%= site.facebookUrl %>">Facebook</a></li><% } %>
         </ul>
+
+        <%# Legal sits under Contact rather than in its own column: it is one or
+            two links and a fourth column would leave the row lopsided. The list
+            is whatever pages carry `legal: true`, so a terms of service appears
+            here the moment one is written, with no change to this file. %>
+        <% if (legalPages.length) { %>
+          <h4 class="foot-legal-head">Legal</h4>
+          <ul>
+            <% legalPages.forEach(function (p) { %>
+              <li><a href="/<%= p.slug %>"><%= p.navLabel || p.title %></a></li>
+            <% }) %>
+          </ul>
+        <% } %>
       </div>
     </div>
     <div class="foot-legal">

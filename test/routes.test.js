@@ -498,3 +498,62 @@ test('no rendered page escapes the quotes of an attribute it is building', async
     }
   });
 });
+
+// The privacy policy is the live page verbatim. The test pins the sentences
+// that carry the legal weight -- a "we may collect" list and the children's
+// clause -- so a well-meaning rewrite in /admin shows up here rather than on
+// the site.
+test('the privacy policy renders as transcribed', async () => {
+  await withServer(async (base) => {
+    const res = await fetch(`${base}/privacy`);
+    assert.equal(res.status, 200);
+    const body = await res.text();
+    assert.match(body, /Last Updated: May 5, 2025/);
+    assert.match(body, /Our Website is not intended for children under 13 years of age\./);
+    assert.match(body, /Children/, 'section 7 is present');
+    // Nine bold section headings in the source become nine anchored h2s, which
+    // is what earns the page its jump-to index.
+    assert.equal((body.match(/<h2 id=/g) || []).length, 9);
+    assert.match(body, /class="page-index"/);
+  });
+});
+
+// Legal pages are linked from the footer and deliberately kept out of the
+// header. The footer list is driven by `legal: true` rather than by slugs, so
+// this also covers the terms of service arriving later.
+test('a legal page is linked in the footer and stays out of the main nav', async () => {
+  await withServer(async (base) => {
+    // Checked from an unrelated page: the footer is on every route.
+    const body = await (await fetch(`${base}/scholarships`)).text();
+    assert.match(body, /foot-legal-head">Legal<\/h4>/);
+    assert.match(body, /href="\/privacy">Privacy<\/a>/);
+
+    const nav = body.slice(body.indexOf('<nav'), body.indexOf('</nav>'));
+    assert.ok(!nav.includes('/privacy'), 'legal copy does not belong in the header');
+  });
+});
+
+// `legal` is a real checkbox in the page form, and a checkbox that the save
+// handler does not read comes back false on the first admin edit -- which would
+// silently drop the page out of the footer. Same class as the settings
+// round-trip tests.
+test('the legal flag survives an admin save of the page', async () => {
+  await withServer(async (base) => {
+    const cookie = await signIn(base);
+    await fetch(`${base}/admin/pages/page-privacy`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded', cookie, origin: base },
+      body: new URLSearchParams({
+        title: 'Privacy Policy',
+        slug: 'privacy',
+        navLabel: 'Privacy',
+        body: 'Rewritten in the admin area.',
+        legal: 'on',
+      }).toString(),
+      redirect: 'manual',
+    });
+
+    const body = await (await fetch(`${base}/scholarships`)).text();
+    assert.match(body, /href="\/privacy">Privacy<\/a>/, 'the footer link did not survive the save');
+  });
+});

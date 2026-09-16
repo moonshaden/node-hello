@@ -4,7 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($title) ?><?= $title === ($site['name'] ?? '') ? '' : ' — ' . e($site['name'] ?? '') ?></title>
-<meta name="description" content="<?= e($description ?? ($site['mission'] ?? $site['tagline'] ?? '')) ?>">
+<?php // ?? falls back on null only, and page.php passes '' for a page with no
+      // summary -- which emitted an empty description here while the EJS twin,
+      // which tests truthiness, fell back to the mission. Match the twin. ?>
+<meta name="description" content="<?= e(($description ?? '') !== '' ? $description : ($site['mission'] ?? $site['tagline'] ?? '')) ?>">
 <link rel="stylesheet" href="<?= e(asset_url('/css/site.css', $basePath)) ?>">
 <link rel="icon" href="<?= e($basePath) ?>/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="<?= e($basePath) ?>/img/brand/favicon-32.png">

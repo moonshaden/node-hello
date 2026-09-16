@@ -81,6 +81,7 @@ function createApp({ store = new Store() } = {}) {
     const visiblePages = content.publicPages(store, req.today, { includeHidden: req.preview });
     res.locals.navPages = content.navPages(visiblePages);
     res.locals.navFlat = content.navFlat(visiblePages);
+    res.locals.legalPages = content.legalPages(visiblePages);
     res.locals.announcements = content.activeAnnouncements(store, req.today, enrollment.state);
     res.locals.scholarshipNames = store.list('scholarships').map((item) => item.name);
     res.locals.currentPath = req.path;

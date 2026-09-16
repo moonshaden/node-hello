@@ -90,6 +90,12 @@ final class Admin
                     ['key' => 'body', 'type' => 'markdown', 'label' => 'Body', 'rows' => 18],
                     ['key' => 'inNav', 'type' => 'checkbox', 'label' => 'Show in the main navigation'],
                     [
+                        'key' => 'legal',
+                        'type' => 'checkbox',
+                        'label' => 'List in the footer under Legal',
+                        'help' => 'For the privacy policy, terms of service and anything like them.',
+                    ],
+                    [
                         'key' => 'navParent',
                         'type' => 'text',
                         'label' => 'Nest under (URL slug)',
