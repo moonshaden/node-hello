@@ -48,9 +48,15 @@
       <% if (heroRail.length) { %>
         <ul class="hero-rail" data-hero-rail data-hero-interval="5000" data-hero-visible="2">
           <% heroRail.forEach((person, index) => { const line = heroLine(person); %>
-            <li class="hero-rail-card<%= index < 2 ? ' is-shown' : '' %>"<%= index < 2 ? '' : ' hidden' %>>
+            <%# These two interpolations BUILD an attribute rather than fill one,
+                so they take the raw output tag. The escaping one turns the
+                quotes around lazy into &#34;, which PHP's own tag does not do:
+                a broken attribute here and a divergence between the builds.
+                Do not write an EJS open tag inside a comment either -- the
+                tokenizer reads it as a real tag and the template stops parsing. %>
+            <li class="hero-rail-card<%= index < 2 ? ' is-shown' : '' %>"<%- index < 2 ? '' : ' hidden' %>>
               <img class="hero-rail-photo" src="<%= person.photoUrl %>" alt="<%= person.name %>"
-                   width="96" height="96"<%= index < 2 ? '' : ' loading="lazy"' %>>
+                   width="96" height="96"<%- index < 2 ? '' : ' loading="lazy"' %>>
               <div class="hero-rail-text">
                 <% if (line.quoted) { %>
                   <blockquote class="hero-rail-line">&ldquo;<%= line.text %>&rdquo;</blockquote>

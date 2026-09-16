@@ -884,6 +884,13 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 }
 .page-flow .prose { max-width: none; }
 
+/* A float only shortens the line boxes beside it, never the block boxes -- so a
+   boxed element in the copy runs its background and its rules straight under the
+   card. Making each one its own block formatting context keeps it out from under
+   the card, with the card's own 44px left margin as the gap between them. */
+.page-flow .prose > .page-index,
+.page-flow .prose > h2 { display: flow-root; }
+
 @media (max-width: 860px) {
   /* No room to float beside anything: the card goes back to being a block above
      the copy, which is where it reads anyway on a phone. */

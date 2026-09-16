@@ -474,3 +474,27 @@ test('an unset or unresolvable hero student leaves the hero as it was', async ()
     assert.match(home, /<aside class="deadline">/);
   }, (content) => { content.site.heroStudentId = 'rec-nobody'; });
 });
+
+// A `<%=` interpolation that BUILDS an attribute escapes the quotes it is meant
+// to emit, which leaves a broken attribute here and valid markup in the PHP
+// twin -- with both suites green, because both read the same seed and the same
+// source. It has happened twice (a `style` attribute, then `loading="lazy"` on
+// the hero rail), and the only check that catches it is looking at the output.
+// An escaped quote in rendered markup is always that mistake: real body copy
+// carrying a quotation mark comes out as `&#34;` inside a text node, never
+// as part of an attribute, and nothing seeded does even that.
+test('no rendered page escapes the quotes of an attribute it is building', async () => {
+  const paths = ['/', '/scholarships', '/recipients', '/faq', '/about', '/donate',
+    '/contact', '/programs', '/community', '/board'];
+  await withServer(async (base) => {
+    for (const p of paths) {
+      const res = await fetch(`${base}${p}`);
+      assert.equal(res.status, 200, `${p} renders`);
+      const html = await res.text();
+      assert.doesNotMatch(html, /=&#34;/, `${p} builds its attributes with the raw tag`);
+      // A template that fails to parse renders as a page, not as an error, so
+      // the status code above does not notice. EJS says so in the body.
+      assert.doesNotMatch(html, /Could not find matching close tag/, `${p} parses`);
+    }
+  });
+});
