@@ -866,6 +866,30 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .sidebar-card .eyebrow { color: var(--gold); }
 .split { display: grid; gap: 40px; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); align-items: start; }
 
+/* ---------- editable pages: the copy runs the whole column ----------
+   The grid version parked the card in a column of its own, so a long page --
+   the FAQ is thirteen questions -- ran down two thirds of the width with a tall
+   empty margin beside it. Floating the card instead lets the answers wrap past
+   it and then use the full width.
+
+   `.prose` loses its 68ch cap here, which is the point and also the cost: below
+   the card the measure is roughly 105 characters against the 60-75 that reads
+   comfortably. That is the trade that was asked for. */
+.page-flow { }
+.page-flow::after { content: ''; display: block; clear: both; }
+.page-flow > .sidebar-card {
+  float: right;
+  width: 300px;
+  margin: 0 0 28px 44px;
+}
+.page-flow .prose { max-width: none; }
+
+@media (max-width: 860px) {
+  /* No room to float beside anything: the card goes back to being a block above
+     the copy, which is where it reads anyway on a phone. */
+  .page-flow > .sidebar-card { float: none; width: auto; margin: 0 0 24px; }
+}
+
 .empty {
   border: 1px dashed var(--rule); border-radius: 14px; padding: 20px;
   text-align: center; color: var(--ink-faint); background: #fff;
