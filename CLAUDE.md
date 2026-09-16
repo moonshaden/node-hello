@@ -45,6 +45,10 @@ head to have moved mid-task. PR #3 is **merged**; the open one is **PR #4**
 (draft), which carries everything below and whose body is current as of this
 head.
 
+`docs/sessions/` holds a log per working session — what was asked, what was tried
+and rejected, and what went wrong. This file is the state; those are the reasons.
+The most recent is `docs/sessions/2026-09-15-homepage-rework.md`.
+
 **Landed and verified** (87 node / 80 PHP tests, PHP lint clean, cross-build
 render diff zero on all ten public pages, and every change byte-compared against
 the deployed build subdomain):
