@@ -38,14 +38,16 @@ reaches real students and real donors. So:
   you did. Report the failure with the evidence, not a reassuring summary.
 
 
-## Where this left off — 2026-08-31, head `7d5258d`
+## Where this left off — 2026-09-16, head `7c47917`
 
 Several sessions work this branch at once. Pull before starting, and expect the
 head to have moved mid-task. PR #3 is **merged**; the open one is **PR #4**
-(draft), which carries everything below.
+(draft), which carries everything below and whose body is current as of this
+head.
 
-**Landed and verified** (85 node / 77 PHP tests, PHP lint clean, cross-build
-render diff zero on all ten public pages):
+**Landed and verified** (87 node / 80 PHP tests, PHP lint clean, cross-build
+render diff zero on all ten public pages, and every change byte-compared against
+the deployed build subdomain):
 
 - `/board`, `/programs`, `/community` — all three transcribed pages, shipped in
   #3. See *Content accuracy*.
@@ -54,6 +56,30 @@ render diff zero on all ten public pages):
   that must stay a literal substring of the published bio. The slides are kept
   in the store and editable in `/admin` on purpose; the homepage simply stops
   rendering them. The `h1` is hidden, not deleted.
+- **Two more awarded students rotate beside the lead.** `.hero-rail`,
+  `data-hero-visible="2"`, `data-hero-interval="5000"`, cycling all 15 published
+  recipients. One card fades at a time (the tick picks slot `tick % PER_VIEW`),
+  600ms, opacity only; a forward cursor refuses any card already on screen so
+  nobody is skipped. The line under each name comes from `heroLine()` /
+  `Content::heroLine()` — a 40–150 character sentence lifted verbatim from that
+  recipient's own published bio, quoted **only** when it is first person (7 of
+  the 15 are). Nothing there is composed.
+- **A 26-logo donor and partner strip** sits between the hero and the impact
+  band. Pure CSS marquee, no JavaScript. See *Content accuracy* for where the
+  files came from and why they carry no alt text.
+- **The motion layer is gone.** Both systems — the scroll-reveal pass
+  (`.is-deep` / `.is-risen`) and `body.is-staged` — were removed at the client's
+  request, 1,070 lines out against 52 in. If you are reading an older note that
+  says to check the staged sections reveal, they no longer exist.
+- **Stylesheet and script URLs carry a content hash** (`asset_url()` /
+  `assetUrl()`, first ten hex of SHA-256). Before this, a correct deploy could
+  land and a returning visitor still be served the old CSS out of cache — which
+  looks exactly like a deploy that failed.
+- **The ribbon and the masthead each hold one line** at every width, by dropping
+  elements rather than wrapping. See *Gotchas*.
+- **Page copy runs the full width** on the editable-page template, with the card
+  floated into it (`.page-flow`). `.split` is still what the scholarship page
+  uses.
 - **The client's own artwork is now the site's identity.** The lion mark
   (`/img/brand/leo-mark-lion.png`) is in the masthead at 42px, in the footer at
   84px, and behind all five favicons — the favicons are matted on the brand
@@ -68,59 +94,69 @@ render diff zero on all ten public pages):
   the pair the client picked. The tests derive that expectation *from*
   `site.impact` rather than hardcoding it; do not rewrite them to literals.
 
+**The debt this branch carries, stated plainly:** *nothing in either suite covers
+the hero rail or the logo strip.* The rotation, the one-at-a-time slot logic, the
+no-skip cursor and the `heroLine` first-person rule were all verified by
+measurement in-session and on the deployed site, not by anything that will catch
+a regression next month. They are the newest and most moving parts of the
+homepage. If you are looking for the most valuable thing to do here that does not
+need the client, it is this.
+
 **Waiting on the client or the site owner — do not decide these unilaterally:**
 
 1. **The giving links move to QuixChex.** Every giving link on the site still
    points at Aplos, and the client has said they are switching. These are live
    money paths that are known to be wrong — the highest-value open item.
-2. The three FTP secrets. Deploying is blocked without them; see *Deploying*.
-3. Whether to run `seed_content` — the client said run it, but it **cannot**
-   run until (2) lands: it is a branch inside the `Deploy over FTPS` step and
-   uses the same three secrets, behind the same credentials guard. A code
-   deploy alone does not publish the new pages, and that run overwrites the
-   server's content store.
-4. The About page says the board "set the scholarship criteria, steward the
+2. **The 26 logos have no alt text.** Nothing the live site publishes names
+   those organisations, so they ship decorative rather than being given invented
+   names. The client is the only source.
+3. The About page says the board "set the scholarship criteria, steward the
    funds, and select each year's recipients". That is **not transcribed**, and
    the live governance charter lists mission focus, CEO oversight and support,
    community advocacy, committee work, financial reporting, and legal and
    ethical integrity — not criteria-setting or recipient selection. Reword from
    the charter, or ask the client. Same failure mode as `7f81b6e`.
-5. Two `/community` calls: the YouTube video is a link rather than an iframe,
+4. Two `/community` calls: the YouTube video is a link rather than an iframe,
    and two of the four event photographs are candid shots of unnamed people.
-6. Whether `.05` on the light tinted bands is the right weight — the one trace
+5. Whether `.05` on the light tinted bands is the right weight — the one trace
    value most likely to want tuning.
-7. The supplied artwork appears nowhere on the live site, so confirm the client
+6. The supplied artwork appears nowhere on the live site, so confirm the client
    considers it current before cutover.
-8. **The review site is indexable.** <https://build.leofoundationusa.org> serves
+7. **The review site is indexable.** <https://build.leofoundationusa.org> serves
    no `robots.txt` and no `X-Robots-Tag`, so a public duplicate of the client's
    site can be crawled and a donor could land on it. It cannot be fixed by adding
    `robots.txt` to `php/public_html/` — that ships to production and would
    deindex the real site — so it needs to be host-conditional or placed on the
    subdomain by hand. See *Deploying*.
-9. The security headers reach static assets but not the PHP-generated HTML, which
+8. The security headers reach static assets but not the PHP-generated HTML, which
    is the wrong way round. `mod_headers` is loaded, so that is not the cause.
+
+(The three FTP secrets and the first `seed_content` run were items 2 and 3 here
+until 2026-08-31. Both are done — the secrets are set and the store has been
+seeded on the build subdomain, including the logos. A further `seed_content` run
+on a server whose content has been edited through `/admin` still overwrites those
+edits, so still ask first.)
 
 **Known and unfixed, deliberately:** the hero cutout is 607KB, the heaviest
 asset on the site; on a 390px phone the masthead and ribbon take ~448px before
 the hero begins (pre-existing — fixing it reworks the mobile header on all ten
-pages); and `7d5258d`'s own commit message garbles the footer opacity change (it
-went `.25` → `.14`, and `.14` is not shared with the other surfaces). The PR
-body carries the correct table; the message was not force-pushed over an open PR.
+pages); below the floated card on a wide screen a line of page copy runs ~128
+characters, which is the direct cost of filling the width and is one `85ch` rule
+away from being capped; and `7d5258d`'s own commit message garbles the footer
+opacity change (it went `.25` → `.14`, and `.14` is not shared with the other
+surfaces). The PR body carries the correct table; the message was not
+force-pushed over an open PR.
 
-**Browsable preview** (private until shared from its own share menu):
-<https://claude.ai/code/artifact/b52ed21b-3e3d-4d72-83cc-b71302700dda>. It is a
-static snapshot, so **it goes stale the moment anything visual changes** —
-republish to that same URL rather than minting a new one. To rebuild: run the
-PHP dev server, capture each route's `<body>` plus `site.css`, `site.js` and
-every `/img` asset, and resolve **every** `url()` form — absolute, relative and
-quoted alike. Two things were missed the first time and both were invisible to a
-"does it load" check: omitting `site.js` left the hero slider dead (the slider
-is gone now, but `site.js` still drives the scroll-staging, which fails just as
-silently), and an absolute-path-only `url()` rewrite dropped two
-`url('../img/...')` watermarks — there are now four of those, so check them all.
-Verify in a browser that every route has zero broken images and that the staged
-sections actually reveal before republishing.
-
+**The build subdomain is the review surface now, not a static preview.**
+<https://build.leofoundationusa.org> is deployed from this branch and can be
+fetched from this sandbox over 443, so a change is confirmed by hashing the
+deployed bytes against the local build — see *Deploying*. There is an older
+artifact snapshot at
+<https://claude.ai/code/artifact/b52ed21b-3e3d-4d72-83cc-b71302700dda>; **it is
+stale** — it predates the motion removal, the hero rail, the logo strip and the
+header work. Do not hand it to anyone as current. If it is ever rebuilt, note
+that the scroll-staging it was told to verify no longer exists, and that there
+are four `url('../img/...')` watermarks to resolve, not two.
 ## What the client asked for
 
 In their words, from the opening request:
@@ -155,8 +191,8 @@ once in `php/leo-app/views` + `php/public_html/css`, once in `views/` +
 ## Commands
 
 ```bash
-npm test                                    # 85 tests
-php php/test/run.php                        # 77 tests
+npm test                                    # 87 tests
+php php/test/run.php                        # 80 tests
 find php -name '*.php' -exec php -l {} \;   # lint
 
 ADMIN_PASSWORD='...' npm start              # Node build, :3000
@@ -260,6 +296,54 @@ each suite pins it.
 **Cards are flex columns**, so children inherit `align-self: stretch`.
 `display: inline-flex` will not stop a pill filling the card width;
 `align-self: flex-start` will.
+
+**A class with `display` beats the browser's own `[hidden]` rule.**
+`.hero-rail-card { display: grid }` outranks the user-agent `[hidden] { display:
+none }`, so the rail's hidden cards were all visible and the hero stood 3,107px
+tall. `.hero-rail-card[hidden] { display: none }` is what makes `hidden` mean
+anything here. Any component that sets `display` on a class and then toggles
+`hidden` in script needs the same line.
+
+**A float shortens line boxes, never block boxes.** The page card floats right
+and the copy wraps beside it — but a block with a background (the `.page-index`
+jump list) ran its full width straight *under* the card, 300px past its left
+edge, because it had no right edge of its own. `display: flow-root` gives such an
+element its own block formatting context so it sits beside the float instead,
+with the float's own margin as the gap. Applies to anything boxed that lands
+next to a float: panels, tables, headings with a rule.
+
+**An EJS comment must not contain an EJS open tag.** Writing an output tag inside
+`<%# … %>` makes the tokenizer read it as a real tag and the template stops
+parsing — and the page then renders EJS's error text *as a page*, with status
+200. A route check that only looks at the status code will not notice. The test
+added for this looks at the body.
+
+**`section.band.logo-strip`, not `.logo-strip`.** `section.band` is specificity
+(0,1,1) and a bare class is (0,1,0), so a background set on the class alone loses
+to the band it sits in. Several bands on this site are `section.band`.
+
+**A stale dev server serves stale everything.** EJS re-reads its templates, but
+route modules, and now the asset-version `Map`, are read once at boot. An old
+`node server.js` left running on :3000 holds the port, so a fresh `npm start`
+dies with `EADDRINUSE` into a log nobody reads and the diff you then run compares
+the *old* build. It cost a false "10 of 10 pages differ" this session. Find it
+with `/proc/*/cmdline` and kill by PID — `pkill -f` matches the invoking bash
+command and kills the caller.
+
+**Size the header for headroom, not for a measured fit.** The client works
+full-screen on a Mac, which renders these strings roughly 12% wider than this
+sandbox's headless Chromium, and `.wrap` caps at 1120px so a wider screen never
+buys room. The ribbon and masthead therefore drop elements at deliberately early
+breakpoints (ribbon: org line 1040, pill 860, deadline sentence 680; masthead:
+three tiers at ≥1101, 901–1100, ≤900) rather than at the width where *this*
+browser starts to wrap. A `nowrap` that fits here will wrap there.
+
+**A logo's file size is not its optical size.** The strip's images are cropped to
+their own ink bounding box, so `height: 58px` is the height of the mark. Left
+uncropped, a wide wordmark in a padded square (Nippon's is 200×34) renders ~32px
+of visible ink next to a 58px roundel, and `object-fit: contain` with a
+`max-width` makes it worse by letterboxing. Measure the ink, crop to it, then
+size.
 
 ## Design system
 
@@ -512,6 +596,23 @@ and re-encoded as JPEG — 0.78 MB of originals down to **0.61 MB** for all thre
 The live media library publishes **no alt text on any image**, so the alt in the
 seed was written here from the photograph.
 
+**The 26 strip logos were taken from the live WordPress site** on 2026-09-16 and
+are committed under `public/img/logos/` and `php/public_html/img/logos/` (412KB
+for all 26). They are stored as a `logos` collection — which had to be added to
+`COLLECTIONS` in **both** stores, or `/admin` answers 500 with `unknown
+collection: logos` — and they reach the server only through a `seed_content` run,
+never through a code deploy.
+
+Each file is cropped to its own **ink bounding box**, measured from the alpha
+channel, so the CSS `height: 58px` is the height of the mark rather than the
+height of a square with a mark somewhere inside it. That crop is what makes them
+frame consistently; see the matching note in *Gotchas*.
+
+**No alt text, deliberately.** The live media library publishes none, and nothing
+on the live site names those 26 organisations — so naming them here would be
+composing content, which this project does not do. They ship decorative and the
+client is the only source. This is an open item.
+
 **The three LEO write-ups are a `pillars` array.** The name is an acronym and
 `fusion-builder-row-21` on the homepage publishes a paragraph for each word —
 Leadership, Education, Opportunity, in that order. That row is the *only* place
@@ -554,6 +655,13 @@ is an empty string on all three. Do not compose one.
    match the WordPress ones, so most of the map should be one-to-one.
 9. ~~No CI~~ — **done.** `.github/workflows/deploy.yml` runs both suites and the
    PHP lint on every push, which catches the seed-drift class of bug.
+10. **The hero rail and the logo strip have no tests.** Nothing in either suite
+    covers the rotation, the one-at-a-time slot logic, the no-skip cursor, the
+    `heroLine` first-person rule, or the strip at all. They were verified by
+    measurement in-session and on the deployed site, which catches nothing next
+    month. The most valuable item here that does not need the client.
+11. **The 26 strip logos have no alt text**, because nothing published names
+    those organisations. See *Content accuracy*.
 
 ## Deploying
 
@@ -578,6 +686,19 @@ So, from cold:
 2. `dry_run: true` — lists every file that would move.
 3. `dry_run: false` — the code deploy.
 4. `dry_run: false, seed_content: true` — the content store.
+
+**Confirm a deploy by bytes, and only then say it is live.** A 200 proves the
+server answered, not that it answered with *this* build, and this session burned
+three rounds of the client reporting something "still wrong" when the real answer
+was that the deploy had not finished. The check is short: hash the local
+`php/public_html/css/site.css`, poll `https://build.leofoundationusa.org/css/site.css`
+until it matches, then run the PHP dev server and compare each route's HTML
+against the live one. Identical hashes or it is not live.
+
+    sha256sum php/public_html/css/site.css | cut -c1-16
+    curl -s https://build.leofoundationusa.org/css/site.css | sha256sum | cut -c1-16
+
+A deploy takes roughly 90 seconds to show up. Poll it; do not assume it.
 
 **Confirmed layout for the build subdomain** (probed on 2026-08-31, run
 `33445026091`). The `leoftp@build.leofoundationusa.org` account lands directly on
@@ -647,8 +768,10 @@ credential makes a direct upload possible. Tested, not assumed.
   writing to a live site.
 - Code only. `leo-app/data/content.json` and `config.php` are excluded, and
   neither mirror uses `--delete`.
-- **The seeded `content.json` still has to be uploaded by hand once**, or the
-  site goes live with the placeholder drafts.
+- The seeded `content.json` reaches the server through the separate
+  `seed_content: true` run, not by hand. It has been run on the build subdomain,
+  so that target is populated; a **new** target still needs it or the site goes
+  live with the placeholder drafts.
 
 ### Confirmed remote layout (probed, not assumed)
 
