@@ -119,6 +119,138 @@
       "order": 3
     }
   ],
+  "logos": [
+    {
+      "id": "logo-10-1",
+      "src": "/img/logos/10-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-110-1",
+      "src": "/img/logos/110-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-12-1",
+      "src": "/img/logos/12-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-13-1",
+      "src": "/img/logos/13-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-14-1",
+      "src": "/img/logos/14-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-15-1-1",
+      "src": "/img/logos/15-1-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-16-1",
+      "src": "/img/logos/16-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-17-1",
+      "src": "/img/logos/17-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-18-1",
+      "src": "/img/logos/18-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-19-1",
+      "src": "/img/logos/19-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-20-1",
+      "src": "/img/logos/20-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-30-1",
+      "src": "/img/logos/30-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-40-1",
+      "src": "/img/logos/40-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-51-1",
+      "src": "/img/logos/51-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-60-1",
+      "src": "/img/logos/60-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-7-1",
+      "src": "/img/logos/7-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-8-1",
+      "src": "/img/logos/8-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-9-1",
+      "src": "/img/logos/9-1.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-aed-logo-1",
+      "src": "/img/logos/AED-LOGO-1.jpg",
+      "alt": ""
+    },
+    {
+      "id": "logo-donors-10",
+      "src": "/img/logos/Donors-10.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-donors-2",
+      "src": "/img/logos/Donors-2.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-donors-3",
+      "src": "/img/logos/Donors-3.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-donors2",
+      "src": "/img/logos/Donors2.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-ibis",
+      "src": "/img/logos/IBIS.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-download",
+      "src": "/img/logos/download.png",
+      "alt": ""
+    },
+    {
+      "id": "logo-images",
+      "src": "/img/logos/images.png",
+      "alt": ""
+    }
+  ],
   "scholarships": [
     {
       "id": "sch-leo",

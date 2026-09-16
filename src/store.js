@@ -16,7 +16,7 @@ const crypto = require('node:crypto');
 
 const DEFAULT_FILE = path.join(__dirname, '..', 'data', 'content.json');
 
-const COLLECTIONS = ['announcements', 'scholarships', 'recipients', 'pages', 'slides', 'pillars'];
+const COLLECTIONS = ['announcements', 'scholarships', 'recipients', 'pages', 'slides', 'pillars', 'logos'];
 
 const EMPTY = {
   site: {

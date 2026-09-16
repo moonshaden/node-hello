@@ -18,6 +18,7 @@ router.get('/', (req, res) => {
     title: store.site.name,
     slides: store.list('slides'),
     pillars: store.list('pillars'),
+    logos: store.list('logos'),
     scholarships,
     openScholarships: content.openScholarships(scholarships),
     featuredRecipients: content.featuredRecipients(recipients, 3),
