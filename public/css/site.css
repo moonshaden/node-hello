@@ -999,11 +999,14 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
    copy where the first began -- the restart is invisible. If the number of
    logos changes, nothing here needs touching; only the duration is a judgement,
    and it is slow on purpose. */
-.logo-strip {
+/* `section.band` is element-plus-class and outranks a lone `.logo-strip`, so
+   the strip was quietly paying the band's 64px top and bottom -- 188px of page
+   for a 58px row of logos. Matching that specificity is what takes it back. */
+section.band.logo-strip {
   background: #fff;
   border-top: 1px solid var(--rule);
   border-bottom: 1px solid var(--rule);
-  padding: 26px 0;
+  padding: 22px 0;
   overflow: hidden;
 }
 .logo-track {
@@ -1023,8 +1026,14 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   list-style: none;
 }
 .logo-run img {
-  height: 66px;
+  /* The files are cropped to the mark itself, so this is the height of the
+     logo rather than the height of a square with the logo somewhere in it --
+     which is why they used to come out at wildly different sizes. The width cap
+     stops a long wordmark taking over the row. */
+  height: 58px;
   width: auto;
+  max-width: 190px;
+  object-fit: contain;
   display: block;
   /* The logos arrive in every colour and weight the donors happen to use. A
      light grey pass settles them into one row without editing anyone's mark,
@@ -1047,7 +1056,7 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 }
 
 @media (max-width: 700px) {
-  .logo-run img { height: 52px; }
+  .logo-run img { height: 46px; max-width: 150px; }
   .logo-run { gap: 38px; }
 }
 
@@ -1158,6 +1167,31 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   .hero-rail-card { transition: none; }
 }
 
+/* Narrow screens need taller rows, not the same ones.
+   The 152px row was measured beside the student on a wide screen. Below 900px
+   the column is the full width of the page, the quote wraps to more lines, and
+   the card -- which clips, because a fixed row is what stops the fade moving
+   the page -- was cutting the last line off. Measured: 156px of content at
+   390px against 112px of usable row. */
+@media (max-width: 900px) {
+  .hero-rail { grid-auto-rows: 184px; }
+}
+@media (max-width: 520px) {
+  .hero-rail { grid-auto-rows: 204px; }
+  /* The portrait can give up a little to buy the words some room. */
+  .hero-rail-card { grid-template-columns: 76px minmax(0, 1fr); gap: 14px; }
+  .hero-rail-photo { width: 76px; height: 76px; }
+}
+
+/* Stacked, the right-hand column is the page, so its copy and buttons keep the
+   same left edge as everything else in the wrap rather than ranging against a
+   column that no longer exists. */
+@media (max-width: 900px) {
+  .hero-aside { gap: 14px; }
+  .hero-centred .hero-mission { max-width: none; }
+  .hero-centred .actions { justify-content: flex-start; }
+}
+
 .hero-centred .hero-stage {
   max-width: 780px;
   margin: 0 auto;
@@ -1197,7 +1231,9 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   text-align: left;
   padding: 0 4px;
 }
-.hero-centred .actions { justify-content: center; }
+/* In the right-hand column under the mission, so they line up with the copy
+   they belong to rather than centring under the whole hero. */
+.hero-centred .actions { justify-content: flex-start; margin-top: 4px; }
 .hero-centred .hero-deadline {
   justify-content: center;
   max-width: 46ch;

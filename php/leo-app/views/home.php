@@ -74,14 +74,17 @@
           It now stands where the third student used to, which is the same copy
           in less of the page. */ ?>
       <p class="hero-mission"><?= e($site['mission'] ?? '') ?></p>
-      </div>
-      </div>
 
+      <?php /* The buttons belong to the copy above them, so they sit under it
+          and range left with it rather than being centred under the whole hero
+          -- which also took a row of its own the page need not spend. */ ?>
       <div class="actions">
         <a class="btn btn-gold" href="<?= e($basePath) ?>/scholarships">
           <?= $enrollment['state'] === 'open' ? 'Apply for a scholarship' : 'See available scholarships' ?>
         </a>
         <a class="btn btn-outline" style="color:#fff" href="<?= e($basePath) ?>/recipients">Meet our recipients</a>
+      </div>
+      </div>
       </div>
 
       <?php // The deadline is still what applicants come here for, so it stays
