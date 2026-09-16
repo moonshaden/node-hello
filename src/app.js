@@ -1,5 +1,7 @@
 'use strict';
 
+const crypto = require('node:crypto');
+const fs = require('node:fs');
 const path = require('node:path');
 const express = require('express');
 
@@ -11,6 +13,36 @@ const auth = require('./auth');
 const publicRoutes = require('./routes/public');
 const adminRoutes = require('./routes/admin');
 
+// A cache-busting URL for a static asset.
+//
+// The host sends no Cache-Control for css or js, so a browser caches them
+// heuristically off Last-Modified -- and a file that was a fortnight old when it
+// was fetched stays "fresh" for over a day. After a deploy the server had the
+// new stylesheet and a visitor kept being shown the old one, with nothing a page
+// reload would fix.
+//
+// The version is the CONTENT hash, not the mtime: a deploy rewrites mtimes
+// whether or not the bytes changed, and this build and the PHP one must emit the
+// identical string or the cross-build render diff reads it as a divergence. The
+// drift test keeps the two copies byte-identical, so the same hash falls out of
+// both. Cached, because hashing 47KB per request is silly.
+const assetVersions = new Map();
+
+function assetUrl(urlPath) {
+  if (!assetVersions.has(urlPath)) {
+    const file = path.join(__dirname, '..', 'public', urlPath);
+    let version = '';
+    try {
+      version = crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex').slice(0, 10);
+    } catch {
+      version = '';                       // missing file: ship the bare path
+    }
+    assetVersions.set(urlPath, version);
+  }
+  const version = assetVersions.get(urlPath);
+  return version ? `${urlPath}?v=${version}` : urlPath;
+}
+
 function createApp({ store = new Store() } = {}) {
   const app = express();
 
@@ -20,6 +52,7 @@ function createApp({ store = new Store() } = {}) {
   app.locals.schedule = schedule;
   app.locals.formatMoney = content.formatMoney;
   app.locals.excerpt = content.excerpt;
+  app.locals.assetUrl = assetUrl;
 
   app.use(express.static(path.join(__dirname, '..', 'public'), { maxAge: '1h' }));
   app.use(express.urlencoded({ extended: false, limit: '256kb' }));

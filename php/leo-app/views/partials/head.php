@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($title) ?><?= $title === ($site['name'] ?? '') ? '' : ' — ' . e($site['name'] ?? '') ?></title>
 <meta name="description" content="<?= e($description ?? ($site['mission'] ?? $site['tagline'] ?? '')) ?>">
-<link rel="stylesheet" href="<?= e($basePath) ?>/css/site.css">
+<link rel="stylesheet" href="<?= e(asset_url('/css/site.css', $basePath)) ?>">
 <link rel="icon" href="<?= e($basePath) ?>/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="<?= e($basePath) ?>/img/brand/favicon-32.png">
 <link rel="icon" type="image/png" sizes="512x512" href="<?= e($basePath) ?>/img/brand/favicon-512.png">

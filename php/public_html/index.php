@@ -38,5 +38,9 @@ if ($boot === null) {
     exit;
 }
 
+// The public root is wherever this file sits, under either layout above. The
+// asset helper needs it to hash the stylesheet and the script.
+define('LEO_PUBLIC_DIR', __DIR__);
+
 $app = require $boot;
 $app->run();

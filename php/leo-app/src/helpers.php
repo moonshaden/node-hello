@@ -35,6 +35,33 @@ function link_url(?string $url, string $basePath): string
     return ($url !== '' && $url[0] === '/') ? $basePath . $url : $url;
 }
 
+/**
+ * A cache-busting URL for a static asset.
+ *
+ * The host sends no Cache-Control for css or js, so a browser caches them
+ * heuristically off Last-Modified -- and a file that was a fortnight old when
+ * it was fetched stays "fresh" for over a day. After a deploy the server had
+ * the new stylesheet and a visitor kept being shown the old one, with no way
+ * to tell and nothing a page reload would fix.
+ *
+ * The version is the CONTENT hash, not the mtime: a deploy rewrites mtimes
+ * whether or not the bytes changed, and the two builds must emit the identical
+ * string or the cross-build render diff reads it as a divergence. Same bytes,
+ * same URL, in both builds and on every server.
+ */
+function asset_url(string $path, string $basePath): string
+{
+    static $versions = [];
+
+    if (!array_key_exists($path, $versions)) {
+        $root = defined('LEO_PUBLIC_DIR') ? LEO_PUBLIC_DIR : dirname(__DIR__, 2) . '/public_html';
+        $file = $root . $path;
+        $versions[$path] = is_file($file) ? substr(hash_file('sha256', $file), 0, 10) : '';
+    }
+
+    return $basePath . $path . ($versions[$path] !== '' ? '?v=' . $versions[$path] : '');
+}
+
 /** Format a stored calendar date for display. */
 function fdate(?string $date, bool $short = false): string
 {

@@ -43,7 +43,7 @@
   </div>
 </footer>
 
-<script src="<?= e($basePath) ?>/js/site.js" defer></script>
+<script src="<?= e(asset_url('/js/site.js', $basePath)) ?>" defer></script>
 
 </body>
 </html>

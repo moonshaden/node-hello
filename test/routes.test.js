@@ -2,6 +2,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
+const crypto = require('node:crypto');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
@@ -50,6 +51,37 @@ async function signIn(base) {
   });
   return response.headers.getSetCookie().join('; ');
 }
+
+// A deploy replaced the stylesheet and the script on the server and a visitor
+// kept being served the old pair: the URLs carried no version and the host
+// sends no Cache-Control, so the browser cached them heuristically off
+// Last-Modified and a file that had been a fortnight old stayed "fresh" for
+// over a day. Nothing on the page could dislodge it.
+//
+// The version is the CONTENT hash, not the mtime: a deploy rewrites every mtime
+// whether or not the bytes changed, which would bust every cache on every
+// deploy AND give the two builds different URLs for the same file, which the
+// cross-build render diff reads as a divergence.
+test('the stylesheet and the script are requested with a version of their content', async () => {
+  await withServer(async (base) => {
+    const html = await (await fetch(`${base}/`)).text();
+
+    for (const [asset, urlPath] of [
+      ['public/css/site.css', '/css/site.css'],
+      ['public/js/site.js', '/js/site.js'],
+    ]) {
+      const expected = crypto
+        .createHash('sha256')
+        .update(fs.readFileSync(path.join(__dirname, '..', asset)))
+        .digest('hex')
+        .slice(0, 10);
+      assert.ok(
+        html.includes(`${urlPath}?v=${expected}`),
+        `${urlPath} is not requested with the hash of its own bytes`,
+      );
+    }
+  });
+});
 
 test('every public page renders', async () => {
   await withServer(async (base) => {

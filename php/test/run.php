@@ -666,6 +666,48 @@ test('both builds ship the same client script and stylesheet', function () {
     }
 });
 
+// A deploy replaced the stylesheet and the script on the server and a visitor
+// kept being served the old pair: the URLs carried no version and the host
+// sends no Cache-Control, so the browser cached them heuristically off
+// Last-Modified and a file that had been a fortnight old stayed "fresh" for
+// over a day. Nothing on the page could dislodge it.
+//
+// The version is the CONTENT hash rather than the mtime. A deploy rewrites
+// every mtime whether or not the bytes changed, so an mtime would bust every
+// cache on every deploy AND give the two builds different URLs for the same
+// file -- which the cross-build render diff reads as a divergence.
+test('asset_url versions a file by its content', function () {
+    $root = dirname(__DIR__, 2);
+
+    foreach (['/css/site.css', '/js/site.js'] as $urlPath) {
+        $expected = substr(hash_file('sha256', $root . '/php/public_html' . $urlPath), 0, 10);
+        is_same(asset_url($urlPath, ''), $urlPath . '?v=' . $expected, $urlPath . ' is not versioned by its bytes');
+        // The mount point still has to come first, or the site breaks under a
+        // base path the way every other link would.
+        is_same(asset_url($urlPath, '/~leo'), '/~leo' . $urlPath . '?v=' . $expected, $urlPath . ' lost its base path');
+    }
+
+    // A missing file must not emit a bare '?v=' -- that is a cache key that
+    // never changes, which is worse than no version at all.
+    is_same(asset_url('/css/nope.css', ''), '/css/nope.css', 'a missing asset should carry no version');
+});
+
+// The templates are the other half: the helper is no use if a build stops
+// calling it. Both have to, for both assets -- a view change made once is the
+// drift this suite exists to catch.
+test('both builds request the stylesheet and the script through the asset helper', function () {
+    $root = dirname(__DIR__, 2);
+    foreach ([
+        ['views/partials/head.ejs', "assetUrl('/css/site.css')"],
+        ['views/partials/foot.ejs', "assetUrl('/js/site.js')"],
+        ['php/leo-app/views/partials/head.php', "asset_url('/css/site.css'"],
+        ['php/leo-app/views/partials/foot.php', "asset_url('/js/site.js'"],
+    ] as [$view, $needle]) {
+        $src = file_get_contents($root . '/' . $view);
+        ok(str_contains($src, $needle), $view . ' does not version its asset URL');
+    }
+});
+
 // The client asked for the horizontal wordmark back in the footer, under the
 // lion mark. It is a view change, so it had to be made twice, and a footer that
 // silently lost it in one build only is exactly the drift the byte-identity
