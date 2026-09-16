@@ -987,10 +987,97 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
    No headline above it: the student is the headline. Everything else in the
    hero is arranged under them, so the eye lands on a face before it lands on
    any copy. */
+/* ---------- the hero rail ----------
+   Three more awarded students beside the lead, rotating through all of them.
+
+   The fade is the only thing on this site that moves by itself, and it is here
+   because it was asked for. It follows the rules the old carousel followed,
+   because they are what stops an auto-advancing element being hostile: it stops
+   on hover, stops when anything inside it has keyboard focus, stops while the
+   tab is in the background, and does not run at all for a visitor who has asked
+   for reduced motion -- who simply gets the first three and no rotation.
+
+   Nothing is hidden by this stylesheet. A card that is not showing carries the
+   `hidden` ATTRIBUTE, written by the template, so with no JavaScript the page is
+   a static trio and the other portraits are never fetched. */
+.hero-rail {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+  align-content: center;
+  text-align: left;
+}
+.hero-rail-card {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid #2c4f70;
+  border-radius: 16px;
+  padding: 20px;
+  /* The fade. `is-shown` is added a frame after the card is un-hidden, so the
+     transition has a state to move from -- setting both at once would snap. */
+  opacity: 0;
+  transition: opacity .6s ease;
+}
+.hero-rail-card.is-shown { opacity: 1; }
+.hero-rail-photo {
+  width: 96px; height: 96px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  display: block;
+}
+.hero-rail-line {
+  font-family: var(--serif);
+  margin: 0 0 10px;
+  font-size: .98rem;
+  line-height: 1.5;
+  color: #eaf1f7;
+}
+.hero-rail-who { margin: 0; }
+.hero-rail-who strong { color: var(--gold-bright); display: block; font-size: 1rem; }
+.hero-rail-who span {
+  color: #9fb4c7;
+  font-size: .76rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  display: block;
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+/* No JavaScript means no `is-shown` is ever added, and a card left at opacity 0
+   would be an empty box. The template's own trio must stand on its own. */
+.hero-rail-card:not([hidden]) { opacity: 1; }
+.hero-rail[data-hero-live] .hero-rail-card:not([hidden]) { opacity: 0; }
+.hero-rail[data-hero-live] .hero-rail-card.is-shown { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rail-card { transition: none; }
+}
+
 .hero-centred .hero-stage {
   max-width: 780px;
   margin: 0 auto;
   text-align: center;
+}
+
+/* With a rail beside it the stage is two columns and wider: the student on the
+   left at the size they already were, the three cards on the right. */
+.hero-has-rail .hero-stage { max-width: var(--wrap); }
+.hero-centred .hero-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+@media (max-width: 900px) {
+  .hero-centred .hero-split { grid-template-columns: 1fr; gap: 28px; }
 }
 /* The whole stack has to stay close to one screen, so the padding comes in
    and the figure stops short of the column width. */

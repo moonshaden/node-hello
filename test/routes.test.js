@@ -355,7 +355,7 @@ test('the homepage leads with the student, not a carousel', async () => {
     assert.doesNotMatch(body, /slider-arrow|slider-dots/, 'and none of its controls');
 
     // The hero is now the first thing inside main.
-    assert.match(body, /<main>\s*<section class="hero hero-centred"/,
+    assert.match(body, /<main>\s*<section class="hero hero-centred/,
       'the hero opens the page');
 
     assert.equal((body.match(/class="pillar"/g) || []).length, 3);
@@ -426,7 +426,7 @@ test('the hero centres on an awarded student, with no headline above them', asyn
   await withServer(async (base) => {
     const home = await (await fetch(`${base}/`)).text();
 
-    assert.match(home, /class="hero hero-centred"/, 'the hero centres on the student');
+    assert.match(home, /class="hero hero-centred/, 'the hero centres on the student');
     // The visible headline is gone, but the page must still have a heading.
     assert.match(home, /<h1 class="visually-hidden">Every scholarship is a door someone walks through\.<\/h1>/,
       'the h1 is hidden, not deleted');

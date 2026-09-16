@@ -182,6 +182,7 @@ final class App
                 // them, not a sample. publicRecipients() orders featured first.
                 'awardees' => $recipients,
                 'heroStudent' => Content::heroStudent($this->store, $recipients),
+                'heroRail' => Content::heroRail($recipients, (string) ($this->store->site()['heroStudentId'] ?? '')),
                 'stats' => Content::awardStats($recipients),
             ]);
             return;

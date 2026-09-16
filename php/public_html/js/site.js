@@ -95,6 +95,111 @@
 })();
 
 
+/* The hero rail.
+ *
+ * Three awarded students beside the one in the hero, rotating through every
+ * published recipient with a cross-fade.
+ *
+ * This is the only thing on the site that moves by itself, so it carries the
+ * rules that stop an auto-advancing element being hostile -- the same ones the
+ * old carousel had:
+ *
+ *  - It stops on hover, and while anything inside it holds keyboard focus. A
+ *    card changing under a pointer or mid-read is the worst thing a rotator
+ *    does.
+ *  - It stops while the tab is in the background. Nobody needs fourteen
+ *    portraits fetched behind their back.
+ *  - prefers-reduced-motion turns it off entirely. Not a slower fade: off. The
+ *    visitor keeps the three the server rendered.
+ *
+ * The markup is already correct without this file: the first three cards are
+ * shown and the rest carry the `hidden` attribute, so no JS means a static trio
+ * rather than an empty box, and the other portraits are never fetched.
+ */
+(function () {
+  'use strict';
+
+  var rail = document.querySelector('[data-hero-rail]');
+  if (!rail) return;
+
+  var cards = Array.prototype.slice.call(rail.querySelectorAll('.hero-rail-card'));
+  var PER_VIEW = 3;
+  if (cards.length <= PER_VIEW) return;              // nothing to rotate through
+
+  var still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (still.matches) return;                         // the server's trio stands
+
+  // Tell the stylesheet the rotation is live, so a card that is visible but not
+  // yet faded in starts from transparent rather than snapping into place.
+  rail.setAttribute('data-hero-live', '');
+
+  var interval = parseInt(rail.getAttribute('data-hero-interval'), 10) || 5000;
+  var FADE = 600;                                    // must match the CSS transition
+  var start = 0;
+  var timer = null;
+  var fading = false;
+
+  function windowAt(offset) {
+    var out = [];
+    for (var i = 0; i < PER_VIEW; i++) out.push(cards[(offset + i) % cards.length]);
+    return out;
+  }
+
+  function show(offset) {
+    var next = windowAt(offset);
+
+    // Fade the current three out, then swap. Reading `hidden` rather than a
+    // list we maintain keeps this honest if anything else ever touches them.
+    cards.forEach(function (card) { card.classList.remove('is-shown'); });
+
+    window.setTimeout(function () {
+      cards.forEach(function (card) {
+        if (next.indexOf(card) === -1) card.hidden = true;
+      });
+      next.forEach(function (card) { card.hidden = false; });
+
+      // A frame between un-hiding and the class, or there is no state to
+      // transition from and the fade does not happen at all.
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          next.forEach(function (card) { card.classList.add('is-shown'); });
+          fading = false;
+        });
+      });
+    }, FADE);
+  }
+
+  function advance() {
+    if (fading) return;
+    fading = true;
+    start = (start + PER_VIEW) % cards.length;
+    show(start);
+  }
+
+  function play() {
+    if (timer || still.matches) return;
+    timer = window.setInterval(advance, interval);
+  }
+
+  function pause() {
+    if (timer) { window.clearInterval(timer); timer = null; }
+  }
+
+  rail.addEventListener('mouseenter', pause);
+  rail.addEventListener('mouseleave', play);
+  rail.addEventListener('focusin', pause);
+  rail.addEventListener('focusout', play);
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) pause(); else play();
+  });
+  still.addEventListener('change', function () { if (still.matches) pause(); });
+
+  // The three the server rendered are already correct; just mark them shown so
+  // the first rotation has something to fade out of.
+  windowAt(0).forEach(function (card) { card.classList.add('is-shown'); });
+  play();
+})();
+
 /* The awarded students.
  *
  * Turns the flat list of every awarded student into a stage that steps through

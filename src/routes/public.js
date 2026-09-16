@@ -25,6 +25,8 @@ router.get('/', (req, res) => {
     // not a sample. publicRecipients() already orders featured first.
     awardees: recipients,
     heroStudent: content.heroStudent(store, recipients),
+    heroRail: content.heroRail(recipients, (store.site && store.site.heroStudentId) || ''),
+    heroLine: content.heroLine,
     stats: content.awardStats(recipients),
   });
 });

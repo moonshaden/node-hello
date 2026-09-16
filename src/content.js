@@ -101,6 +101,47 @@ function heroStudent(store, recipients) {
 }
 
 /**
+ * A short line for a student's hero card.
+ *
+ * `heroQuote` on the record wins when staff have curated one. Otherwise the
+ * first sentence of the published bio that fits a card is used -- lifted
+ * verbatim, never composed, the same rule the hero has always followed.
+ *
+ * Quotation marks are NOT automatic. Several bios are written about the
+ * student rather than by them ("Matthew became a Christian at 18..."), and
+ * setting that in quotes would put words in their mouth. Only a line written
+ * in the first person is presented as something they said. Mirrors
+ * Content::heroLine(); a test asserts the two agree on all fifteen.
+ */
+const HERO_LINE_MIN = 40;
+const HERO_LINE_MAX = 150;
+const FIRST_PERSON = /\b(I|I['\u2019]\w+|my|me|mine|we|our)\b/;
+
+function heroLine(person) {
+  if (!person) return null;
+  const stored = String(person.heroQuote || '').trim();
+  const bio = String(person.quote || '').trim();
+  let text = stored;
+
+  if (!text) {
+    if (!bio) return null;
+    const sentences = (bio.match(/[^.!?]+[.!?]/g) || [bio]).map((item) => item.trim());
+    text = sentences.find((item) => item.length >= HERO_LINE_MIN && item.length <= HERO_LINE_MAX) || '';
+    if (!text) return null;
+  }
+
+  return { text, quoted: FIRST_PERSON.test(text) };
+}
+
+/**
+ * The students the hero rail rotates through: every published recipient except
+ * the one already standing in the hero, who would otherwise appear twice.
+ */
+function heroRail(recipients, heroId) {
+  return recipients.filter((item) => item.id !== heroId && heroLine(item));
+}
+
+/**
  * Announcements visible right now.
  *
  * Besides the usual show-from/show-until dates, an announcement can be tied to
@@ -209,6 +250,8 @@ module.exports = {
   groupRecipientsByYear,
   featuredRecipients,
   heroStudent,
+  heroLine,
+  heroRail,
   activeAnnouncements,
   publicPages,
   navPages,

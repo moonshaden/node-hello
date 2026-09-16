@@ -5,7 +5,7 @@
     above them was the one element competing for that. The slides, their images
     and their /admin section are all still in place, so this is a change of
     what the page renders, not a deletion of anything the client can edit. %>
-<section class="hero<%= heroStudent ? ' hero-centred' : '' %>">
+<section class="hero<%= heroStudent ? ' hero-centred' : '' %><%= heroStudent && heroRail.length ? ' hero-has-rail' : '' %>">
   <% if (heroStudent) { %>
     <div class="wrap hero-stage">
       <%# The visible headline is gone -- the student is the headline now. The
@@ -21,6 +21,7 @@
           the site is a student who is plainly glad to be at university.
           Everything shown is their own record -- the name, the award, the
           school, and a line lifted verbatim out of the bio they published. %>
+      <div class="hero-split">
       <figure class="hero-student">
         <div class="hero-student-stage">
           <img class="hero-student-cut" src="<%= heroStudent.cutoutUrl %>"
@@ -37,6 +38,35 @@
           </p>
         </figcaption>
       </figure>
+
+      <%# Three more awarded students beside the lead, rotating through every
+          published recipient. Every card is in the document from the start and
+          the first three are simply the ones not hidden, so with no JavaScript
+          this is a static trio rather than an empty box. The rest carry
+          loading="lazy" AND the hidden attribute, which is what keeps fourteen
+          portraits off the wire until they are actually wanted. %>
+      <% if (heroRail.length) { %>
+        <ul class="hero-rail" data-hero-rail data-hero-interval="5000">
+          <% heroRail.forEach((person, index) => { const line = heroLine(person); %>
+            <li class="hero-rail-card<%= index < 3 ? ' is-shown' : '' %>"<%= index < 3 ? '' : ' hidden' %>>
+              <img class="hero-rail-photo" src="<%= person.photoUrl %>" alt="<%= person.name %>"
+                   width="96" height="96"<%= index < 3 ? '' : ' loading="lazy"' %>>
+              <div class="hero-rail-text">
+                <% if (line.quoted) { %>
+                  <blockquote class="hero-rail-line">&ldquo;<%= line.text %>&rdquo;</blockquote>
+                <% } else { %>
+                  <p class="hero-rail-line"><%= line.text %></p>
+                <% } %>
+                <p class="hero-rail-who">
+                  <strong><%= person.name %></strong>
+                  <span><%= person.school || person.scholarship %></span>
+                </p>
+              </div>
+            </li>
+          <% }) %>
+        </ul>
+      <% } %>
+      </div>
 
       <p class="hero-mission"><%= site.mission %></p>
 

@@ -6,7 +6,7 @@
       // slides, their images and their /admin section are all still in place,
       // so this is a change of what the page renders, not a deletion of
       // anything the client can edit. ?>
-<section class="hero<?= $heroStudent !== null ? ' hero-centred' : '' ?>">
+<section class="hero<?= $heroStudent !== null ? ' hero-centred' : '' ?><?= $heroStudent !== null && $heroRail ? ' hero-has-rail' : '' ?>">
   <?php if ($heroStudent !== null): ?>
     <div class="wrap hero-stage">
       <?php // The visible headline is gone -- the student is the headline now.
@@ -23,6 +23,7 @@
             // university. Everything shown is their own record -- the name, the
             // award, the school, and a line lifted verbatim out of the bio they
             // published. ?>
+      <div class="hero-split">
       <figure class="hero-student">
         <div class="hero-student-stage">
           <img class="hero-student-cut" src="<?= e(link_url($heroStudent['cutoutUrl'], $basePath)) ?>"
@@ -39,6 +40,35 @@
           </p>
         </figcaption>
       </figure>
+
+      <?php /* Three more awarded students beside the lead, rotating through every
+          published recipient. Every card is in the document from the start and
+          the first three are simply the ones not hidden, so with no JavaScript
+          this is a static trio rather than an empty box. The rest carry
+          loading="lazy" AND the hidden attribute, which is what keeps fourteen
+          portraits off the wire until they are actually wanted. */ ?>
+      <?php if ($heroRail): ?>
+        <ul class="hero-rail" data-hero-rail data-hero-interval="5000">
+          <?php foreach ($heroRail as $index => $person): $line = \Leo\Content::heroLine($person); ?>
+            <li class="hero-rail-card<?= $index < 3 ? ' is-shown' : '' ?>"<?= $index < 3 ? '' : ' hidden' ?>>
+              <img class="hero-rail-photo" src="<?= e(link_url($person['photoUrl'] ?? '', $basePath)) ?>" alt="<?= e($person['name'] ?? '') ?>"
+                   width="96" height="96"<?= $index < 3 ? '' : ' loading="lazy"' ?>>
+              <div class="hero-rail-text">
+                <?php if ($line['quoted']): ?>
+                  <blockquote class="hero-rail-line">&ldquo;<?= e($line['text']) ?>&rdquo;</blockquote>
+                <?php else: ?>
+                  <p class="hero-rail-line"><?= e($line['text']) ?></p>
+                <?php endif; ?>
+                <p class="hero-rail-who">
+                  <strong><?= e($person['name'] ?? '') ?></strong>
+                  <span><?= e(($person['school'] ?? '') !== '' ? $person['school'] : ($person['scholarship'] ?? '')) ?></span>
+                </p>
+              </div>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      <?php endif; ?>
+      </div>
 
       <p class="hero-mission"><?= e($site['mission'] ?? '') ?></p>
 
