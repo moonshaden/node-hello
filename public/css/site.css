@@ -113,7 +113,7 @@ img { max-width: 100%; display: block; }
    as the footer trace, recoloured white for these grounds and carried at a
    lower opacity than the lion it replaced, because it holds far more line work
    per square inch and the old values read heavier on it. */
-.impact { position: relative; }
+.impact { position: relative; overflow: hidden; }
 .impact::after {
   content: '';
   position: absolute; right: -40px; top: 50%; transform: translateY(-50%);
@@ -817,24 +817,12 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 }
 
 /* ============================================================
-   Depth
+   Surface
    ============================================================
-   A 3D layer over the existing design rather than a replacement for it: the
-   navy, the gold, the Georgia headings and the 1120px wrap are untouched. What
-   changes is that surfaces now sit at real depths, cards turn toward the
-   pointer, and sections arrive from behind the screen instead of appearing.
-
-   Three rules hold this together and are worth keeping:
-
-   1. Nothing here hides content. Every reveal starts from the *visible* state;
-      JS adds `.is-deep` to opt an element in, so a page with no JS, a crawler,
-      or a failed script shows the finished page rather than a blank one.
-      /admin loads this stylesheet and no script at all, which is exactly the
-      case that would break if the hidden state lived in CSS.
-   2. Transforms and opacity only. Both are composited, so none of this costs a
-      layout pass on a school laptop.
-   3. Tilt is for fine pointers with hover. A finger has no hover state, and a
-      card that tilts under a thumb just looks broken.
+   What is left of the 3D layer after the motion came out: elevation, and the
+   hover affordances on a button. Surfaces are lit from above by a two-part
+   shadow rather than outlined, and nothing on the page moves by itself --
+   no scroll reveal, no pointer tilt, no parallax, no staged journey.
    ------------------------------------------------------------ */
 
 :root {
@@ -844,106 +832,21 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   --lift-2: 0 2px 5px rgba(16, 38, 61, .07), 0 10px 26px rgba(16, 38, 61, .09);
   --lift-3: 0 6px 12px rgba(16, 38, 61, .09), 0 24px 56px rgba(16, 38, 61, .16);
   --depth-ease: cubic-bezier(.2, .7, .3, 1);
-  --tilt-speed: .32s;
 }
 
-/* ---------- perspective containers ----------
-   Perspective must live on the parent, not the card: siblings sharing one
-   vanishing point read as a single scene, whereas per-card perspective makes
-   every card its own little world and the row falls apart. */
-.grid,
-.impact-grid,
-.pillars,
-.program-list,
-.gallery,
-.hero-grid,
-.slider { perspective: 1400px; perspective-origin: 50% 40%; }
 
-/* ---------- scroll reveal ----------
-   `.is-deep` is applied by JS. Anything it wraps is already visible without it. */
-.is-deep {
-  opacity: 0;
-  transform: translate3d(0, 22px, -70px) rotateX(3.5deg);
-  transition:
-    opacity .7s var(--depth-ease) var(--deep-delay, 0ms),
-    transform .8s var(--depth-ease) var(--deep-delay, 0ms);
-  will-change: transform, opacity;
-}
-.is-deep.is-risen {
-  opacity: 1;
-  transform: none;
-  will-change: auto;
-}
 
-/* ---------- cards turn toward the pointer ----------
-   The card rotates; its contents sit forward of it on Z, so they swing slightly
-   wider than the card face and the whole thing reads as a solid object rather
-   than a printed rectangle. */
-.card, .pillar, .sidebar-card {
-  transform-style: preserve-3d;
-  transition: box-shadow var(--tilt-speed) var(--depth-ease),
-              transform var(--tilt-speed) var(--depth-ease);
-}
+/* ---------- card elevation ----------
+   Static lift only. The cards used to rotate toward the pointer with a glare
+   tracking it; that came out with the rest of the motion, and what a raised
+   surface needs to read as raised is the shadow, not the movement. */
 .card { box-shadow: var(--lift-1); }
 .sidebar-card { box-shadow: var(--lift-2); }
 
-@media (hover: hover) and (pointer: fine) {
-  .card.is-tilting, .pillar.is-tilting, .sidebar-card.is-tilting {
-    transform:
-      rotateX(var(--tilt-x, 0deg))
-      rotateY(var(--tilt-y, 0deg))
-      translate3d(0, -3px, 14px);
-    box-shadow: var(--lift-3);
-    /* while the pointer drives it, following must be immediate or it lags */
-    transition: box-shadow var(--tilt-speed) var(--depth-ease);
-  }
-  .is-tilting .portrait,
-  .is-tilting .program-photo,
-  .is-tilting .name,
-  .is-tilting .pillar-initial { transform: translateZ(26px); }
-  .is-tilting .role,
-  .is-tilting .award,
-  .is-tilting .amount { transform: translateZ(16px); }
-  .card > *, .pillar > * { transition: transform var(--tilt-speed) var(--depth-ease); }
-
-  /* a specular edge that tracks the pointer -- the cue that sells a tilted
-     surface as a surface. Sits above the card, under its content. */
-  .is-tilting::after {
-    content: '';
-    position: absolute; inset: 0; border-radius: inherit;
-    background: radial-gradient(
-      36% 46% at var(--glare-x, 50%) var(--glare-y, 0%),
-      rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 70%);
-    pointer-events: none;
-    transform: translateZ(1px);
-  }
-  .card, .pillar, .sidebar-card { position: relative; }
-}
-
-/* ---------- parallax ----------
-   Driven by a scroll-linked custom property, so the browser composites it and
-   nothing here reads layout. */
-.page-head { overflow: hidden; }
-.page-head::before { transform: translate3d(0, var(--drift, 0px), 0) scale(1.04); }
-.slide-img { transform: translate3d(0, var(--drift, 0px), 0) scale(1.06); }
+/* The hero holds absolutely positioned children of its own. */
 .hero { position: relative; }
 
-/* ---------- the slider gains a third dimension ----------
-   The outgoing slide falls back into the screen instead of cross-fading, which
-   is what makes it read as a stack rather than a dissolve. */
-.slide {
-  transform: translate3d(0, 0, -140px) scale(.985);
-  transition: opacity .62s var(--depth-ease), transform .62s var(--depth-ease);
-}
-.slide.is-current { transform: none; }
 
-/* ---------- the About dropdown opens as a panel, not a fade ---------- */
-.nav-menu {
-  transform-origin: top center;
-  transform: perspective(900px) rotateX(-10deg) translateY(-6px);
-}
-.nav-group:hover .nav-menu,
-.nav-group:focus-within .nav-menu { transform: perspective(900px) rotateX(0) translateY(0); }
 
 /* ---------- buttons pick up the same light ---------- */
 .btn { transition: transform .18s var(--depth-ease), box-shadow .18s var(--depth-ease); }
@@ -952,122 +855,15 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .btn-gold:active, .btn-ink:active { transform: translateY(0); box-shadow: var(--lift-1); }
 
 /* ---------- respect a stated preference for stillness ----------
-   Not a softened version: off. Everything lands in its finished state. */
+   Little is left to suppress: the scroll reveal, the pointer tilt, the
+   parallax and the staged journey are gone for everyone, not merely for
+   people who ask for stillness. What remains is the hover nudge on a
+   button, and that goes too. */
 @media (prefers-reduced-motion: reduce) {
-  .is-deep,
-  .is-deep.is-risen { opacity: 1; transform: none; transition: none; }
-  .is-tilting { transform: none; }
-  .is-tilting::after { display: none; }
-  .slide { transform: none; }
-  .page-head::before, .slide-img { transform: none; }
-  .nav-menu,
-  .nav-group:hover .nav-menu,
-  .nav-group:focus-within .nav-menu { transform: none; }
+  .btn { transition: none; }
   .btn-gold:hover, .btn-ink:hover { transform: none; }
 }
 
-/* ============================================================
-   Cinematic staging
-   ============================================================
-   The page stops being a document and becomes a corridor. Sections are panels
-   suspended at different depths; scrolling moves a camera through them, so each
-   one approaches from far off, arrives at the plane of the screen, and recedes
-   behind you as you pass.
-
-   Every rule here is scoped under `body.is-staged`, which the script adds. With
-   no JavaScript, a reader mode, a crawler, or prefers-reduced-motion, none of
-   it applies and the page is exactly the document it was before. That is the
-   whole safety model: the dramatic version is the enhancement, never the
-   baseline.
-   ------------------------------------------------------------ */
-
-.is-staged main {
-  perspective: 1500px;
-  perspective-origin: 50% 45%;
-  /* Panels rotate and scale; without this their corners can push a horizontal
-     scrollbar onto the page. clip rather than hidden so position:sticky inside
-     still works. */
-  overflow-x: clip;
-}
-
-/* ---------- a panel's journey ----------
-   --p  signed progress: -1 approaching from below, 0 at the screen, +1 gone past
-   --pa its magnitude, so depth is symmetrical coming and going
-   Both are written by the script, one rAF for the whole page. */
-.is-staged main > section {
-  transform:
-    translate3d(0, 0, calc(var(--pa, 0) * -520px))
-    rotateX(calc(var(--p, 0) * -4.5deg))
-    scale(calc(1 - var(--pa, 0) * .08));
-  opacity: calc(1 - var(--pa, 0) * .72);
-  transform-origin: 50% 50%;
-  will-change: transform, opacity;
-}
-
-/* ---------- the hero is the first scene, and it fills the screen ---------- */
-.is-staged .slider { height: 78svh; min-height: 460px; }
-.is-staged .slider .slide-img { height: 100%; object-fit: cover; }
-
-.is-staged .hero {
-  min-height: 92svh;
-  display: grid;
-  align-items: center;
-  position: relative;
-}
-/* The deadline card is what applicants come for, so it travels forward rather
-   than back -- it arrives ahead of the headline instead of behind it. */
-.is-staged .hero .deadline {
-  transform: translate3d(0, 0, calc(80px - var(--pa, 0) * 120px));
-}
-.is-staged .hero h1 { transform: translate3d(0, 0, 40px); }
-
-/* ---------- travelling backdrop ----------
-   A slow field behind every panel. Without something moving back there the
-   camera has nothing to move against and the depth reads as a slideshow. */
-.is-staged main::before {
-  content: '';
-  position: fixed; inset: -10% -10% -10% -10%;
-  z-index: -1; pointer-events: none;
-  background:
-    radial-gradient(60% 50% at 20% calc(18% + var(--travel, 0px)), rgba(184, 134, 43, .10), transparent 70%),
-    radial-gradient(50% 45% at 82% calc(72% - var(--travel, 0px)), rgba(16, 38, 61, .12), transparent 68%);
-}
-
-/* ---------- impact numbers assemble in depth ----------
-   Each figure sits on its own plane, so the row has thickness rather than being
-   four numbers on a wall. */
-.is-staged .impact-grid > * {
-  transform: translate3d(0, 0, calc(var(--tier, 0) * 34px));
-}
-.is-staged .impact-grid .value { font-variant-numeric: tabular-nums; }
-
-/* ---------- page heads become title scenes ---------- */
-.is-staged .page-head {
-  min-height: 62svh;
-  display: grid;
-  align-content: center;
-}
-.is-staged .page-head h1 { transform: translate3d(0, 0, 56px); }
-.is-staged .page-head .lede { transform: translate3d(0, 0, 24px); }
-
-/* ---------- the pillars fan ---------- */
-.is-staged .pillars > .pillar:first-child { transform: rotateY(3.5deg) translateZ(-18px); }
-.is-staged .pillars > .pillar:last-child { transform: rotateY(-3.5deg) translateZ(-18px); }
-.is-staged .pillars > .pillar.is-tilting { transform: none; }
-
-@media (max-width: 860px) {
-  /* On a phone the panels are already the width of the screen; travelling them
-     in Z just makes text small and shaky. Keep the depth, drop the journey. */
-  .is-staged main > section {
-    transform: translate3d(0, 0, calc(var(--pa, 0) * -180px));
-    opacity: calc(1 - var(--pa, 0) * .4);
-  }
-  .is-staged .hero { min-height: 0; }
-  .is-staged .page-head { min-height: 0; }
-  .is-staged .slider { height: 62svh; }
-  .is-staged .pillars > .pillar:first-child,
-  .is-staged .pillars > .pillar:last-child { transform: none; }
-}
 
 /* ============================================================
    The awarded students
@@ -1125,7 +921,6 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .is-live.awardee-deck {
   display: block;
   position: relative;
-  perspective: 1500px;
   /* Height is set by the script from the tallest student, so stepping between
      them never jolts the page. */
   min-height: var(--stage-height, 520px);
@@ -1133,22 +928,20 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .is-live .awardee {
   position: absolute; inset: 0;
   align-content: center;
-  transition: opacity .55s var(--depth-ease), transform .55s var(--depth-ease), filter .55s var(--depth-ease);
-  transform-style: preserve-3d;
+  /* A plain cross-fade. Stepping still needs to read as a change rather than a
+     jump-cut, but the student no longer swings back in depth to do it. */
+  transition: opacity .55s var(--depth-ease);
 }
-/* Behind: still there, pushed back and out of the way. Not display:none, so the
-   browser keeps the images decoded and stepping stays instant. */
+/* Behind: still there, just not shown. Not display:none, so the browser keeps
+   the images decoded and stepping stays instant. */
 .is-live .awardee[aria-hidden="true"] {
   opacity: 0;
-  transform: translate3d(0, 0, -320px) rotateY(9deg) scale(.94);
   pointer-events: none;
 }
 .is-live .awardee:not([aria-hidden="true"]) {
-  opacity: 1; transform: none; pointer-events: auto;
+  opacity: 1; pointer-events: auto;
 }
-.is-live .awardee-portrait { transform: translateZ(50px); box-shadow: var(--lift-3); }
-.is-live .awardee-name { transform: translateZ(30px); }
-.is-live .awardee-award { transform: translateZ(38px); }
+.is-live .awardee-portrait { box-shadow: var(--lift-3); }
 
 .is-live ~ .awardee-controls {
   display: flex; align-items: center; justify-content: center; gap: 20px;
@@ -1198,10 +991,6 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   max-width: 780px;
   margin: 0 auto;
   text-align: center;
-  /* The figure sits in a 3D scene like the other panels do. Perspective has to
-     live on the parent or each child becomes its own little world. */
-  perspective: 1400px;
-  perspective-origin: 50% 40%;
 }
 /* The whole stack has to stay close to one screen, so the padding comes in
    and the figure stops short of the column width. */
@@ -1348,8 +1137,3 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   .hero-centred .hero-mission { font-size: 1rem; }
 }
 
-/* The student takes over the plane the deadline card used to travel on, so the
-   staged hero still arrives in two depths rather than flattening to one. */
-.is-staged .hero .hero-student {
-  transform: translate3d(0, 0, calc(60px - var(--pa, 0) * 100px));
-}
