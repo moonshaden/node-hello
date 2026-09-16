@@ -269,6 +269,32 @@ section.band.tint > .wrap { position: relative; z-index: 1; }
 .ribbon strong { font-family: var(--serif); }
 .ribbon .btn { margin-left: auto; }
 
+/* Who and where, at the head of the ribbon. Set quietly: it is standing
+   information, and the deadline beside it is the thing anyone is actually
+   looking for, so this must not compete with it. The rule to its right does the
+   separating, which keeps the gap tight without a bullet or a dash. */
+.ribbon-org {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding-right: 16px;
+  border-right: 1px solid var(--rule);
+  /* The deadline beside it is the load-bearing text, so if anything has to give
+     up room it is this. Without the shrink the button's auto margin tips the
+     whole row onto a second line -- 66px of ribbon became 113px. */
+  flex: 0 1 auto;
+  min-width: 0;
+}
+.ribbon-inner > span:not(.pill) { min-width: 0; }
+
+@media (max-width: 860px) {
+  /* Wrapped onto its own line the rule reads as a stray mark, and the row
+     below already starts a new group. */
+  .ribbon-org { border-right: 0; padding-right: 0; width: 100%; }
+}
+
 .pill {
   display: inline-flex; align-items: center; gap: 7px;
   align-self: flex-start; /* a card is a flex column, which would stretch it full width */
@@ -1215,7 +1241,9 @@ section.band.logo-strip {
    and the figure stops short of the column width. */
 /* With the carousel gone the hero is the top of the page, so it should not
    need scrolling to take in. */
-.hero-centred { padding: 40px 0 48px; }
+/* The eyebrow that used to open this is in the ribbon now, so the hero starts
+   on the student and can afford to start higher. */
+.hero-centred { padding: 26px 0 44px; }
 .hero-centred .eyebrow { margin-bottom: 18px; }
 .hero-centred .hero-student { width: min(350px, 100%); margin: 0 auto; }
 /* The card is centred in the column, but its own text is ranged left --

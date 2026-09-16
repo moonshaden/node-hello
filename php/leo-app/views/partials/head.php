@@ -82,6 +82,10 @@
 
 <div class="ribbon">
   <div class="wrap ribbon-inner">
+    <?php /* Who and where. It used to open the homepage hero and cost a line of
+        its own there; in the ribbon it is on every page instead of one, and the
+        hero starts on the student. */ ?>
+    <span class="ribbon-org"><?= e($site['location'] ?? '') ?> · 501(c)(3) nonprofit</span>
     <span class="pill pill-<?= e($enrollment['state']) ?>">
       <?= $enrollment['state'] === 'open' ? 'Applications open' : 'Applications closed' ?>
     </span>

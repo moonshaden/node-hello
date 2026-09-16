@@ -14,7 +14,6 @@
             // heading is a page screen readers and search engines cannot
             // outline. Same words as before; only the display changes. ?>
       <h1 class="visually-hidden">Every scholarship is a door someone walks through.</h1>
-      <p class="eyebrow"><?= e($site['location'] ?? '') ?> · 501(c)(3) nonprofit</p>
 
       <?php // One of the awarded students, cut free of their own photograph and
             // stood at the centre of the page. The client asked for the awards
@@ -106,7 +105,6 @@
   <?php else: ?>
     <div class="wrap hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow"><?= e($site['location'] ?? '') ?> · 501(c)(3) nonprofit</p>
         <h1>Every scholarship is a door someone walks through.</h1>
         <p><?= e($site['mission'] ?? '') ?></p>
         <div class="actions">
