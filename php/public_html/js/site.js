@@ -135,45 +135,52 @@
 
   var interval = parseInt(rail.getAttribute('data-hero-interval'), 10) || 5000;
   var FADE = 600;                                    // must match the CSS transition
-  var start = 0;
   var timer = null;
-  var fading = false;
+  var tick = 0;
+  var busy = false;
 
-  function windowAt(offset) {
-    var out = [];
-    for (var i = 0; i < PER_VIEW; i++) out.push(cards[(offset + i) % cards.length]);
-    return out;
+  // One card changes at a time, each in its own slot, so the rail never swaps
+  // as a block. `order` is what pins a card to its slot: grid otherwise lays the
+  // visible cards out in DOM order, so replacing the first one would slide the
+  // other two up a place -- a jump, not a fade.
+  var slots = cards.slice(0, PER_VIEW);
+  slots.forEach(function (card, i) { card.style.order = i; });
+
+  function nextCard() {
+    for (var step = 1; step <= cards.length; step++) {
+      var candidate = cards[(cards.indexOf(slots[slots.length - 1]) + step) % cards.length];
+      if (slots.indexOf(candidate) === -1) return candidate;
+    }
+    return null;
   }
 
-  function show(offset) {
-    var next = windowAt(offset);
+  function advance() {
+    if (busy) return;
+    var slot = tick % PER_VIEW;
+    var outgoing = slots[slot];
+    var incoming = nextCard();
+    if (!incoming || !outgoing) return;
 
-    // Fade the current three out, then swap. Reading `hidden` rather than a
-    // list we maintain keeps this honest if anything else ever touches them.
-    cards.forEach(function (card) { card.classList.remove('is-shown'); });
+    busy = true;
+    tick++;
 
+    outgoing.classList.remove('is-shown');
     window.setTimeout(function () {
-      cards.forEach(function (card) {
-        if (next.indexOf(card) === -1) card.hidden = true;
-      });
-      next.forEach(function (card) { card.hidden = false; });
+      outgoing.hidden = true;
+      outgoing.style.removeProperty('order');
+      incoming.style.order = slot;
+      incoming.hidden = false;
+      slots[slot] = incoming;
 
       // A frame between un-hiding and the class, or there is no state to
       // transition from and the fade does not happen at all.
       requestAnimationFrame(function () {
         requestAnimationFrame(function () {
-          next.forEach(function (card) { card.classList.add('is-shown'); });
-          fading = false;
+          incoming.classList.add('is-shown');
+          busy = false;
         });
       });
     }, FADE);
-  }
-
-  function advance() {
-    if (fading) return;
-    fading = true;
-    start = (start + PER_VIEW) % cards.length;
-    show(start);
   }
 
   function play() {
@@ -195,8 +202,8 @@
   still.addEventListener('change', function () { if (still.matches) pause(); });
 
   // The three the server rendered are already correct; just mark them shown so
-  // the first rotation has something to fade out of.
-  windowAt(0).forEach(function (card) { card.classList.add('is-shown'); });
+  // the first change has something to fade out of.
+  slots.forEach(function (card) { card.classList.add('is-shown'); });
   play();
 })();
 
