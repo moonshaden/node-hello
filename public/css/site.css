@@ -192,6 +192,60 @@ section.band.tint > .wrap { position: relative; z-index: 1; }
 .wordmark { display: flex; align-items: center; gap: 12px; }
 .nav { margin-left: auto; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 .nav a { font-size: .95rem; padding: 4px 0; border-bottom: 2px solid transparent; }
+
+/* One row, and enough room to stay one.
+   The masthead measured a comfortable single row here and wrapped the whole nav
+   onto a second one on the client's machine -- the same eight links simply
+   render wider in their fonts than in this environment's, and there were only
+   about 60px of slack in the 1120px column to absorb it.
+
+   So it cannot wrap on a desktop, and it comes in twice on the way down so that
+   "cannot wrap" never turns into "overflows the page" instead. Forcing one row
+   at 901px did exactly that: the row needs about 1000px and the column there is
+   952px. Below 900px it wraps on purpose -- see the phone rules further down. */
+@media (min-width: 1101px) {
+  .masthead-inner { flex-wrap: nowrap; }
+  .nav { flex-wrap: nowrap; gap: 15px; white-space: nowrap; }
+  .nav a { font-size: .86rem; }
+  .nav .btn { padding: 8px 14px; }
+  .wordmark { flex: 0 0 auto; }
+  .wordmark-lion { height: 38px; }
+  .wordmark-name { font-size: 1.28rem; }
+  /* The slack here is the whole point. This row measured as fitting before and
+     still wrapped on the client's machine, so it is sized for the widest
+     plausible rendering of the same eight links rather than for this one. */
+}
+@media (min-width: 901px) and (max-width: 1100px) {
+  /* Same row, less of everything, because the column is 150px narrower here. */
+  .masthead-inner { flex-wrap: nowrap; gap: 18px; }
+  .nav { flex-wrap: nowrap; gap: 11px; white-space: nowrap; }
+  .nav a { font-size: .82rem; }
+  .nav .btn { padding: 7px 12px; }
+  .wordmark { flex: 0 0 auto; gap: 9px; }
+  .wordmark-lion { height: 34px; }
+  .wordmark-name { font-size: 1.15rem; }
+  .wordmark-strap { font-size: .58rem; letter-spacing: .12em; }
+}
+
+/* Phones: the row is going to wrap, so make it wrap into something deliberate
+   -- the mark on its own line, the links centred under it, and the whole
+   masthead shorter than the 264px it used to take at 390px. */
+@media (max-width: 900px) {
+  .masthead-inner {
+    justify-content: center;
+    gap: 12px;
+    padding-top: 14px; padding-bottom: 14px;
+  }
+  .wordmark { margin: 0 auto; }
+  .nav {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+    gap: 10px 14px;
+  }
+  .nav a { font-size: .86rem; }
+  .nav .btn { padding: 7px 14px; }
+}
 .nav a:hover, .nav a.is-current { border-bottom-color: var(--gold-bright); color: #fff; }
 .nav .btn { border-bottom: 0; padding: 8px 18px; }
 
@@ -1074,12 +1128,14 @@ section.band.logo-strip {
 .logo-run img {
   /* The files are cropped to the mark itself, so this is the height of the
      logo rather than the height of a square with the logo somewhere in it --
-     which is why they used to come out at wildly different sizes. The width cap
-     stops a long wordmark taking over the row. */
+     which is why they used to come out at wildly different sizes.
+     There is deliberately NO width cap. With one, `object-fit: contain`
+     letterboxed the wide wordmarks -- Nippon is 200x34, so capped at 190px wide
+     its mark stood about 32px tall inside a 58px box, which is exactly the
+     "still looks small" this was meant to fix. A wide logo simply takes more of
+     the row, and the row is moving anyway. */
   height: 58px;
   width: auto;
-  max-width: 190px;
-  object-fit: contain;
   display: block;
   /* The logos arrive in every colour and weight the donors happen to use. A
      light grey pass settles them into one row without editing anyone's mark,
@@ -1102,7 +1158,7 @@ section.band.logo-strip {
 }
 
 @media (max-width: 700px) {
-  .logo-run img { height: 46px; max-width: 150px; }
+  .logo-run img { height: 46px; }
   .logo-run { gap: 38px; }
 }
 
