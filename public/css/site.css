@@ -85,7 +85,14 @@ img { max-width: 100%; display: block; }
    screens, and centring the mark in *that* would float it away from the name it
    belongs to. Capping here rather than on each image also means the mark's size
    is one value below and nothing has to be kept in step with it. */
-.foot-sign { width: min(260px, 100%); }
+.foot-sign {
+  width: min(260px, 100%);
+  /* The strapline below is sized as a share of THIS box rather than in rem, so
+     it keeps filling the wordmark's width when the footer column narrows. At
+     780px the column is 223px, not 260px, and a fixed size overran the wordmark
+     it sits under. */
+  container-type: inline-size;
+}
 
 /* The lion alone, so it carries less width than the wordmark lockup it replaced
    and needs more height to hold its corner of the footer. The foundation's name
@@ -106,7 +113,27 @@ img { max-width: 100%; display: block; }
    width/height attributes that reserve its space would otherwise be applied as
    a real height. */
 .foot-lockup {
-  display: block; width: 100%; height: auto; margin-bottom: 18px;
+  display: block; width: 100%; height: auto; margin-bottom: 7px;
+}
+
+/* The strapline the artwork used to carry, now set in type -- same words, same
+   gold and the same uppercase tracking as the masthead's. Worth stating why
+   this is type and not part of the raster: at the size the footer renders it,
+   the baked strapline was about eight pixels tall and going soft, which is the
+   same reason the masthead sets it in type beside the lion.
+   The colour is not a guess: the artwork's own strapline is exactly #d9a441,
+   sampled from the file, which is --gold-bright already.
+   The size is set so the line fills the wordmark's width on ONE line -- it is
+   the base of a stacked sign-off and a wrapped strapline breaks the shape. */
+.foot-strap {
+  display: block;
+  /* rem first as the fallback, then the container share for browsers that have
+     container query units. Both land on the same size at the 260px width. */
+  font-size: .6rem;
+  font-size: 3.7cqw;
+  letter-spacing: .133em; text-transform: uppercase;
+  color: var(--gold-bright); white-space: nowrap;
+  margin-bottom: 18px;
 }
 
 @media (max-width: 780px) {

@@ -720,8 +720,13 @@ test('both footers carry the wordmark under the lion mark', function () {
         'php/leo-app/views/partials/foot.php',
     ] as $view) {
         $src = file_get_contents($root . '/' . $view);
-        ok(str_contains($src, 'leo-lockup-footer.png'), $view . ' lost the footer wordmark');
+        // Cropped to the name and its two rules -- the strapline the artwork
+        // used to carry is set in type below it now, the way the masthead does
+        // it, so the raster is the name only.
+        ok(str_contains($src, 'leo-wordmark-footer.png'), $view . ' lost the footer wordmark');
         ok(str_contains($src, 'foot-lockup'), $view . ' lost the foot-lockup class');
+        ok(str_contains($src, 'class="foot-strap"'), $view . ' lost the typed strapline');
+        ok(!str_contains($src, 'leo-lockup-footer.png'), $view . ' still ships the strapline baked into the raster');
         // The wordmark names the organisation, so the mark above it is
         // decorative -- otherwise a screen reader announces the org twice.
         // Matched with a bounded .* rather than [^>]*: the PHP template's src
@@ -737,10 +742,17 @@ test('both footers carry the wordmark under the lion mark', function () {
     // renders a broken image.
     foreach (['public/img/brand', 'php/public_html/img/brand'] as $dir) {
         ok(
-            is_file($root . '/' . $dir . '/leo-lockup-footer.png'),
-            $dir . '/leo-lockup-footer.png is missing'
+            is_file($root . '/' . $dir . '/leo-wordmark-footer.png'),
+            $dir . '/leo-wordmark-footer.png is missing'
         );
     }
+    // Both copies have to be the same file, or the two builds render a
+    // different wordmark and only the deployed one is wrong.
+    is_same(
+        md5_file($root . '/public/img/brand/leo-wordmark-footer.png'),
+        md5_file($root . '/php/public_html/img/brand/leo-wordmark-footer.png'),
+        'the two builds ship different wordmark artwork'
+    );
 });
 
 // The About page and the impact band were quoting different numbers -- About
@@ -1223,7 +1235,10 @@ test('both footers stack the mark over the wordmark in one centred block', funct
 
     foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
         $css = file_get_contents($root . '/' . $sheet);
-        ok(str_contains($css, '.foot-sign { width: min(260px, 100%); }'), $sheet . ' does not cap the sign-off block');
+        // Matched on the declaration rather than the whole rule: the rule gained
+        // a container-type line when the strapline became type.
+        ok(str_contains($css, 'width: min(260px, 100%);'), $sheet . ' does not cap the sign-off block');
+        ok(str_contains($css, 'container-type: inline-size;'), $sheet . ' does not scale the strapline with the block');
         ok(str_contains($css, 'margin: 0 auto 14px'), $sheet . ' does not centre the mark');
         // The nudge that ranged the mark left is gone; leaving it would pull the
         // centred mark off by its own left padding.

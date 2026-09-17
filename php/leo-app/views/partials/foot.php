@@ -12,12 +12,16 @@
         <div class="foot-sign">
           <img class="foot-mark" src="<?= e(link_url('/img/brand/leo-mark-lion.png', $basePath)) ?>"
                alt="" aria-hidden="true" width="520" height="380" loading="lazy">
-          <?php // The wordmark below is the accessible name of the pair, so the
-                // mark above it is decorative -- otherwise both announce the
-                // same thing. ?>
-          <img class="foot-lockup" src="<?= e(link_url('/img/brand/leo-lockup-footer.png', $basePath)) ?>"
-               alt="<?= e(($site['name'] ?? '') . ' — ' . ($site['tagline'] ?? '')) ?>"
-               width="679" height="146" loading="lazy">
+          <?php // The wordmark below is the accessible name of the group, so
+                // the mark above it is decorative -- otherwise both announce the
+                // same thing. The artwork is cropped to the name and its two
+                // rules; the strapline it used to carry is set in type
+                // underneath, the way the masthead does it, so it stays sharp
+                // and can be restyled in CSS. ?>
+          <img class="foot-lockup" src="<?= e(link_url('/img/brand/leo-wordmark-footer.png', $basePath)) ?>"
+               alt="<?= e($site['name'] ?? '') ?>"
+               width="679" height="101" loading="lazy">
+          <span class="foot-strap">Leadership &middot; Education &middot; Opportunity</span>
         </div>
         <p class="small"><?= e($site['mission'] ?? '') ?></p>
       </div>
