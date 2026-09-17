@@ -37,6 +37,14 @@ $index = count($article['headings']) >= $indexFrom ? $article['headings'] : [];
   </div>
 </section>
 
+<?php /* A page with short copy leaves a long gap between its body and whatever
+    follows. A page record can set `logoStrip: true` to fill it with the donor
+    and partner marquee -- the same component the homepage uses, in its larger
+    variant, which shows fewer marks at a bigger size. Mirrored in page.ejs. */ ?>
+<?php if (!empty($page['logoStrip']) && !empty($logos)): ?>
+  <?php $app->partial('logo-strip', ['logos' => $logos, 'stripSize' => 'large']); ?>
+<?php endif; ?>
+
 <?php
 // A page can carry a list of programs alongside its prose, the same way it can
 // carry a roster. Stored on the page record, so the admin page form still edits

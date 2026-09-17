@@ -148,29 +148,10 @@
 
 <?php if (!empty($site['impact'])): ?>
 <?php /* The donors and partners the live site carries in a carousel on its own
-    homepage, between the student and the figures. The track holds the set
-    twice: the animation travels exactly half its width and restarts, which is
-    what makes the loop seamless rather than snapping back. The second copy is
-    aria-hidden so a screen reader is not read the same logos again.
-
-    No names. The live site publishes no alt text on any of these and the files
-    are called things like "13-1.png", so nothing published says who they are.
-    Each logo is decorative and the strip itself carries the label. */ ?>
+    homepage, between the student and the figures. How it works is in the
+    partial, which the community page shares. */ ?>
 <?php if ($logos): ?>
-<section class="band logo-strip" aria-label="Our donors and partners">
-  <div class="logo-track">
-    <ul class="logo-run">
-      <?php foreach ($logos as $logo): ?>
-        <li><img src="<?= e(link_url($logo['src'] ?? '', $basePath)) ?>" alt="<?= e($logo['alt'] ?? '') ?>" width="200" height="200" loading="lazy"></li>
-      <?php endforeach; ?>
-    </ul>
-    <ul class="logo-run" aria-hidden="true">
-      <?php foreach ($logos as $logo): ?>
-        <li><img src="<?= e(link_url($logo['src'] ?? '', $basePath)) ?>" alt="" width="200" height="200" loading="lazy"></li>
-      <?php endforeach; ?>
-    </ul>
-  </div>
-</section>
+<?php $app->partial('logo-strip', ['logos' => $logos]); ?>
 <?php endif; ?>
 
 <section class="impact">

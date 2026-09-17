@@ -1307,6 +1307,40 @@ section.band.logo-strip {
   .logo-run { gap: 38px; }
 }
 
+/* The larger variant, for a page with room for it. Same markup, same animation,
+   bigger marks and fewer of them across the viewport. The travel time scales
+   with the size so the marks move at roughly the same speed rather than the
+   bigger ones whipping past: the track is wider, so the same 70s would be
+   faster in pixels per second. */
+section.band.logo-strip.is-large { padding: 40px 0; }
+.is-large .logo-run { gap: 104px; padding: 0 52px; }
+/* A width cap, which the base row deliberately does not have. The marks run
+   from 0.93 to 5.88 in aspect, and at 118px tall the widest wordmark is 694px --
+   nearly half the viewport for one logo, which is why only two or three fitted.
+   Capping the width lets a wide mark be shorter instead of longer.
+   `object-fit: contain` is safe HERE, unlike on the base row: there the cap was
+   on the width and the box height was fixed, so a wide mark shrank to a third of
+   the row's height with padding around it. Here the shortfall is only the empty
+   space above and below a centred mark, which is what a shorter logo looks like
+   anyway. */
+.is-large .logo-run img {
+  height: 118px; max-width: 340px; object-fit: contain;
+}
+.is-large .logo-track { animation-duration: 128s; }
+
+/* Stepped down at 1100 rather than at the usual 900: at the desktop size a
+   340px mark plus a 104px gap is a 444px slot, so a 1024px window fitted only
+   two whole marks. This tier makes it three. */
+@media (max-width: 1100px) {
+  .is-large .logo-run { gap: 72px; padding: 0 36px; }
+  .is-large .logo-run img { height: 92px; max-width: 265px; }
+}
+@media (max-width: 700px) {
+  .is-large .logo-run { gap: 52px; }
+  .is-large .logo-run img { height: 70px; max-width: 200px; }
+  section.band.logo-strip.is-large { padding: 28px 0; }
+}
+
 /* ---------- the hero's right-hand column ----------
    Two students and the mission, stacked. The mission used to sit under the
    whole hero in a band of its own; standing it where the third student was is

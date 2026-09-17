@@ -259,7 +259,14 @@ final class App
         if (preg_match('#^/([a-z0-9-]+)$#', $path, $match)) {
             $page = $this->store->findBySlug('pages', $match[1]);
             if ($page !== null && ($preview || Schedule::isPublished($page, $today))) {
-                $this->render('page', ['title' => $page['title'] ?? '', 'page' => $page]);
+                // A page opts into the donor strip with `logoStrip: true` on its
+            // record, so which pages carry it is content rather than a slug
+            // listed in a template.
+            $this->render('page', [
+                'title' => $page['title'] ?? '',
+                'page' => $page,
+                'logos' => $this->store->list('logos'),
+            ]);
                 return;
             }
         }

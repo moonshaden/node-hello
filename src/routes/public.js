@@ -86,7 +86,9 @@ router.get('/:slug', (req, res, next) => {
   if (!page) return next();
   if (!preview && !require('../schedule').isPublished(page, today)) return next();
 
-  return res.render('page', { title: page.title, page });
+  // A page opts into the donor strip with `logoStrip: true` on its record, so
+  // which pages carry it is content rather than a slug listed in a template.
+  return res.render('page', { title: page.title, page, logos: store.list('logos') });
 });
 
 module.exports = router;

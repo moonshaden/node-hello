@@ -1371,6 +1371,48 @@ test('no page body contains a markdown image', function () {
     }
 });
 
+// The donor strip is one partial shared by the homepage and by any page that
+// opts in, so the two cannot drift. Before this it was the same twenty lines of
+// markup written out twice per build -- four copies.
+test('the donor strip is one shared partial, opted into by the page record', function () {
+    $root = dirname(__DIR__, 2);
+    foreach (['views/partials/logo-strip.ejs', 'php/leo-app/views/partials/logo-strip.php'] as $partial) {
+        ok(is_file($root . '/' . $partial), $partial . ' is missing');
+    }
+    // Neither homepage may carry its own copy of the markup.
+    foreach (['views/home.ejs', 'php/leo-app/views/home.php'] as $view) {
+        $src = file_get_contents($root . '/' . $view);
+        ok(str_contains($src, 'logo-strip'), $view . ' no longer renders the strip');
+        ok(!str_contains($src, 'class="logo-track"'), $view . ' still inlines the strip markup');
+    }
+    // Both page templates render the large variant behind the record flag, so a
+    // page opts in through content rather than through a slug in a template.
+    foreach (['views/page.ejs', 'php/leo-app/views/page.php'] as $view) {
+        $src = file_get_contents($root . '/' . $view);
+        ok(str_contains($src, 'logoStrip'), $view . ' does not read the record flag');
+        ok(str_contains($src, "'large'"), $view . ' does not ask for the large variant');
+    }
+    // And the page that asked for it has the flag.
+    $seed = json_decode(file_get_contents(__DIR__ . '/../leo-app/data/content.json'), true);
+    $community = null;
+    foreach ($seed['pages'] as $page) {
+        if (($page['slug'] ?? '') === 'community') {
+            $community = $page;
+        }
+    }
+    is_same($community['logoStrip'] ?? null, true, 'the community page no longer carries the strip');
+
+    // The large variant's width cap is what keeps three or four marks on screen:
+    // the widest wordmark is 5.88:1, so uncapped it is 694px at 118px tall.
+    foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
+        $css = file_get_contents($root . '/' . $sheet);
+        ok(
+            preg_match('/\.is-large \.logo-run img \{[^}]*max-width: 340px;/s', $css) === 1,
+            $sheet . ': the large marks have no width cap, so one wordmark fills the row'
+        );
+    }
+});
+
 // A checkbox the save handler does not read comes back false on the first admin
 // edit, which would drop the page out of the footer silently. Both page forms
 // have to declare it.

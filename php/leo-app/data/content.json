@@ -909,7 +909,8 @@
           "alt": "Two guests together at the back of the room during the show"
         }
       ],
-      "navParent": "about"
+      "navParent": "about",
+      "logoStrip": true
     },
     {
       "id": "page-board",
