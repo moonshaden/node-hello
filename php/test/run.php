@@ -1257,6 +1257,39 @@ test('both footers stack the mark over the wordmark in one centred block', funct
     }
 });
 
+// The contact cards are sized from the email address, which is the widest thing
+// in them and has no space to break on. Two numbers are load-bearing and both
+// are easy to "tidy" back: the 330px minimum track is what makes auto-fit drop
+// to two columns rather than squeeze three too narrow, and the container query
+// is what stops three cards over two columns leaving a panel of the grid's own
+// rule colour showing on the last row.
+test('the contact cards are sized to hold the email on one line', function () {
+    $root = dirname(__DIR__, 2);
+    foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
+        $css = file_get_contents($root . '/' . $sheet);
+        $grid = null;
+        if (preg_match('/\.contact-grid \{[^}]*\}/s', $css, $m)) {
+            $grid = $m[0];
+        }
+        ok($grid !== null, $sheet . ' has no .contact-grid rule');
+        ok(
+            str_contains($grid, 'minmax(330px, 1fr)'),
+            $sheet . ': the minimum track no longer holds the email on one line'
+        );
+        ok(
+            preg_match('/max-width: (\d+)px/', $grid, $w) === 1 && (int) $w[1] >= 1000,
+            $sheet . ': the grid is too narrow for three cards that each hold the address'
+        );
+        ok(
+            str_contains($css, '@container (min-width: 661px) and (max-width: 991px)'),
+            $sheet . ': nothing closes the half-empty last row at two columns'
+        );
+        // The safety net stays: a longer address entered in /admin must wrap
+        // inside the card rather than overrun it.
+        ok(str_contains($css, 'overflow-wrap: anywhere;'), $sheet . ' lost the wrap safety net');
+    }
+});
+
 // A checkbox the save handler does not read comes back false on the first admin
 // edit, which would drop the page out of the footer silently. Both page forms
 // have to declare it.
