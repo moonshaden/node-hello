@@ -985,6 +985,27 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .foot a { color: #fff; }
 .foot h4 { color: #fff; font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; font-family: var(--sans); }
 .foot-grid { display: grid; gap: 32px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+
+/* Three equal 1fr tracks are even by the ruler and not to the eye: the brand
+   column fills its track, the two menus do not, so the link lists sat in the
+   left of their columns with 90-190px of dead space to the right of each and a
+   ragged right edge to the footer. Sizing the menus to their content and
+   spreading the leftover between the columns instead puts equal air between the
+   three, and takes the last column out to the right edge.
+   Above 1080px only. The three columns need 829px of content plus the two 32px
+   gaps to sit side by side, and the threshold is set well clear of that rather
+   than at it -- the menus are sized by their own text, which is wider on the
+   client's machine than it measures here. Below it the auto-fit tracks above
+   still apply, unchanged. */
+@media (min-width: 1080px) {
+  .foot-grid {
+    /* The first track is the sign-off block's own width, so the mission
+       paragraph under it wraps to the same measure instead of running to a
+       max-content line of its own. */
+    grid-template-columns: 320px max-content max-content;
+    justify-content: space-between;
+  }
+}
 .foot ul { list-style: none; padding: 0; margin: 0; }
 .foot li { margin-bottom: 8px; }
 .foot-legal { border-top: 1px solid #24455f; margin-top: 40px; padding-top: 24px; font-size: .85rem; color: #7f95a8; }

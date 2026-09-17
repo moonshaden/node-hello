@@ -1290,6 +1290,31 @@ test('the contact cards are sized to hold the email on one line', function () {
     }
 });
 
+// Equal 1fr tracks are even by the ruler and not to the eye -- the menus do not
+// fill their columns, so the footer read left-heavy with a ragged right edge.
+// The spread that fixes it is three declarations working together and any one of
+// them alone does nothing, which is exactly the kind of rule a later tidy-up
+// removes without noticing.
+test('the footer spreads its columns rather than sharing equal tracks', function () {
+    $root = dirname(__DIR__, 2);
+    foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
+        $css = file_get_contents($root . '/' . $sheet);
+        ok(
+            preg_match('/@media \(min-width: 1080px\) \{\s*\.foot-grid \{(.*?)\}/s', $css, $m) === 1,
+            $sheet . ' has no footer spread rule'
+        );
+        $rule = $m[1];
+        ok(str_contains($rule, 'grid-template-columns: 320px max-content max-content;'), $sheet . ': the menu columns are not sized to their content');
+        ok(str_contains($rule, 'justify-content: space-between;'), $sheet . ': the leftover width is not spread between the columns');
+        // The fallback below the breakpoint has to stay, or a narrow window gets
+        // three content-width columns bunched at the left.
+        ok(
+            str_contains($css, '.foot-grid { display: grid; gap: 32px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }'),
+            $sheet . ' lost the auto-fit fallback under the breakpoint'
+        );
+    }
+});
+
 // A checkbox the save handler does not read comes back false on the first admin
 // edit, which would drop the page out of the footer silently. Both page forms
 // have to declare it.
