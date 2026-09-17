@@ -1308,8 +1308,12 @@ test('the footer spreads its columns rather than sharing equal tracks', function
         ok(str_contains($rule, 'justify-content: space-between;'), $sheet . ': the leftover width is not spread between the columns');
         // The fallback below the breakpoint has to stay, or a narrow window gets
         // three content-width columns bunched at the left.
+        // Matched on the declaration inside the base rule, not on the whole
+        // line: the rule is reformatted whenever it gains a property, and an
+        // assertion that pins its exact text fails on formatting rather than on
+        // behaviour. That is what it did when align-items was added to it.
         ok(
-            str_contains($css, '.foot-grid { display: grid; gap: 32px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }'),
+            preg_match('/\.foot-grid \{[^}]*grid-template-columns: repeat\(auto-fit, minmax\(220px, 1fr\)\);/s', $css) === 1,
             $sheet . ' lost the auto-fit fallback under the breakpoint'
         );
     }
