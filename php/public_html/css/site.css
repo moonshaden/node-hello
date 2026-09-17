@@ -847,6 +847,27 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .page-index a { color: var(--ink-soft); text-decoration-color: rgba(184, 134, 43, .45); }
 .page-index a:hover { color: var(--gold); }
 
+/* A page's own photograph. `height: auto` is load-bearing here for the same
+   reason it is on the portraits: the width/height attributes that reserve its
+   space before it loads are applied as a real height otherwise. It sits inside
+   the prose, which on this template runs the full width with the card floated
+   into it, so the figure is capped rather than left to fill a very wide column. */
+.page-figure {
+  margin: 28px 0 0; max-width: 720px;
+  /* The card floats right in this template, and a float only shortens line
+     boxes -- a block box like this one runs straight under it. Measured at
+     1024px, where the card is still in play when the figure starts. `clear`
+     puts the photograph below the card rather than beside it, so it keeps one
+     width instead of shrinking whenever it happens to land level with the card.
+     Same trap as the jump index, different answer: that one wants to sit beside
+     the card, this one does not. */
+  clear: right;
+}
+.page-figure img {
+  display: block; width: 100%; height: auto;
+  border-radius: 14px; border: 1px solid var(--rule);
+}
+
 /* The anchor target sits flush against the viewport top otherwise. */
 .prose h2[id] { scroll-margin-top: 20px; }
 

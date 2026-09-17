@@ -351,6 +351,27 @@ of visible ink next to a 58px roundel, and `object-fit: contain` with a
 `max-width` makes it worse by letterboxing. Measure the ink, crop to it, then
 size.
 
+**Never put an image in a markdown body.** marked renders `![alt](src)` as an
+`<img>`; the PHP `Markdown` has no image rule at all, so its link rule matches
+the bracket pair and leaves the `!` in front of it. Checked, not assumed:
+
+    node  <p><img src="/img/pages/about-students.jpg" alt="Six students"></p>
+    php   <p>!<a href="/img/pages/about-students.jpg">Six students</a></p>
+
+So the deployed build shows an exclamation mark and a link to a JPEG where the
+dev twin shows a photograph, with both suites green — only the cross-build render
+diff catches it. A page photograph rides on the page record as `image`
+(`{src, alt}`) and is rendered by `page.ejs` / `page.php`, the same way the
+board roster and the programs list do. A test asserts no page body contains a
+markdown image.
+
+**A block box in the prose runs under the floated card.** The same float rule
+that bit the jump index bites anything boxed: `.page-figure` is 720px wide and
+at 1024px the card is still in play when the figure starts. The index wants to
+sit *beside* the card, so it gets `display: flow-root`; the photograph does not,
+so it gets `clear: right` and keeps one width instead of shrinking whenever it
+lands level with the card.
+
 ## Design system
 
 Navy `--ink: #10263d`, gold `--gold: #b8862b` / `--gold-bright: #d9a441`,
@@ -619,10 +640,11 @@ Each shipped sentence was checked to appear verbatim in the live markup.
   this site's own header); the contact form, which needs a mail handler this
   build does not have; and `/who-we-are-2/`'s counters, whose `data-value`
   attributes read 20 / 8500000 / 5685 / 6900000 -- the same four numbers the
-  impact band already renders. `/what-we-do/` also publishes one photograph
-  (`happy-students-walking-in-university.jpg`, 1400x825, no alt text). It is
-  **not** carried: nothing in the store uses a markdown image and `.prose` has
-  no rule for one, so it needs a pattern rather than a paste. Worth adding.
+  impact band already renders.
+- `/what-we-do/`'s photograph **is** carried, rehosted as
+  `/img/pages/about-students.jpg` (1400x825 -> 1200x707, 0.28 MB -> 0.17 MB).
+  The live media library publishes no alt text, so the alt was written here from
+  the photograph, as it was for the programs, partner and board images.
 - The one line that is not transcribed is the navigation link to `/board`. The
   live page offers the same destination as a LEO LEADERSHIP button in the nav
   strip above, and `/board` is `inNav: false`, so without it the page is

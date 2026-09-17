@@ -33,6 +33,22 @@ $index = count($article['headings']) >= $indexFrom ? $article['headings'] : [];
       </nav>
       <?php endif; ?>
       <?= $article['html'] ?>
+
+      <?php /* A page can carry one photograph, the way it can carry a roster or
+          a list of programs: on the record, rendered by the template. It does
+          NOT go in the markdown body -- marked renders an image and the PHP
+          Markdown here has no image rule at all, so `![alt](src)` would come out
+          as an exclamation mark followed by a link on the deployed build and as
+          a picture on the dev twin. Nothing in either suite would catch that;
+          the cross-build render diff is the only check that would. Mirrored in
+          page.ejs. */ ?>
+      <?php $image = is_array($page['image'] ?? null) ? $page['image'] : []; ?>
+      <?php if (!empty($image['src'])): ?>
+        <figure class="page-figure">
+          <img src="<?= e(link_url($image['src'], $basePath)) ?>" alt="<?= e($image['alt'] ?? '') ?>"
+               width="1200" height="707" loading="lazy">
+        </figure>
+      <?php endif; ?>
     </div>
   </div>
 </section>

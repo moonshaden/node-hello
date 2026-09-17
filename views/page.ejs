@@ -33,6 +33,21 @@
       </nav>
       <% } %>
       <%- article.html %>
+
+      <%# A page can carry one photograph, the way it can carry a roster or a
+          list of programs: on the record, rendered by the template. It does NOT
+          go in the markdown body -- marked renders an image and the PHP Markdown
+          has no image rule at all, so an image in the body would come out as an
+          exclamation mark followed by a link on the deployed build and as a
+          picture here. Nothing in either suite would catch that; the cross-build
+          render diff is the only check that would. Mirrored in page.php. %>
+      <% const image = page.image && page.image.src ? page.image : null; %>
+      <% if (image) { %>
+        <figure class="page-figure">
+          <img src="<%= image.src %>" alt="<%= image.alt || '' %>"
+               width="1200" height="707" loading="lazy">
+        </figure>
+      <% } %>
     </div>
   </div>
 </section>

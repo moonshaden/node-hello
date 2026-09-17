@@ -11,7 +11,7 @@ deployment:
     - /bin/mkdir -p $DEPLOYPATH/leo-app/src $DEPLOYPATH/leo-app/views/admin
     - /bin/mkdir -p $DEPLOYPATH/public_html/css $DEPLOYPATH/public_html/js
     - /bin/mkdir -p $DEPLOYPATH/public_html/img/recipients $DEPLOYPATH/public_html/img/board $DEPLOYPATH/public_html/img/programs $DEPLOYPATH/public_html/img/partners
-    - /bin/mkdir -p $DEPLOYPATH/public_html/img/slides
+    - /bin/mkdir -p $DEPLOYPATH/public_html/img/slides $DEPLOYPATH/public_html/img/logos $DEPLOYPATH/public_html/img/pages
 
     - /bin/cp -R php/leo-app/src/. $DEPLOYPATH/leo-app/src/
     - /bin/cp -R php/leo-app/views/. $DEPLOYPATH/leo-app/views/

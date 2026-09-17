@@ -1350,6 +1350,55 @@ test('the footer menus centre against the brand column', function () {
     }
 });
 
+// The About photograph rides on the page record and is rendered by the
+// template, NOT written into the markdown body. marked renders an image; the
+// PHP Markdown here has no image rule at all, so the same source would be a
+// picture on the dev twin and an exclamation mark followed by a link on the
+// deployed build -- with both suites green. This pins the arrangement that
+// avoids it.
+test('a page photograph is a record field, not markdown', function () {
+    $root = dirname(__DIR__, 2);
+    $seed = json_decode(file_get_contents(__DIR__ . '/../leo-app/data/content.json'), true);
+    $about = null;
+    foreach ($seed['pages'] as $page) {
+        if (($page['slug'] ?? '') === 'about') {
+            $about = $page;
+        }
+    }
+    ok($about !== null, 'the About page is missing');
+    is_same($about['image']['src'] ?? null, '/img/pages/about-students.jpg', 'the photograph is not on the record');
+    ok(($about['image']['alt'] ?? '') !== '', 'the photograph has no alt text');
+
+    // No page may carry a markdown image, in any build.
+    foreach ($seed['pages'] as $page) {
+        ok(
+            preg_match('/!\[[^\]]*\]\(/', $page['body'] ?? '') === 0,
+            ($page['slug'] ?? '?') . ' puts an image in its markdown body, which the two builds render differently'
+        );
+    }
+
+    // The artwork itself has to be in both public trees and be the same file.
+    foreach (['public/img/pages', 'php/public_html/img/pages'] as $dir) {
+        ok(is_file($root . '/' . $dir . '/about-students.jpg'), $dir . '/about-students.jpg is missing');
+    }
+    is_same(
+        md5_file($root . '/public/img/pages/about-students.jpg'),
+        md5_file($root . '/php/public_html/img/pages/about-students.jpg'),
+        'the two builds ship different photographs'
+    );
+
+    // Both templates have to render it, or one build silently drops it.
+    foreach (['views/page.ejs', 'php/leo-app/views/page.php'] as $view) {
+        $src = file_get_contents($root . '/' . $view);
+        ok(str_contains($src, 'class="page-figure"'), $view . ' does not render a page photograph');
+    }
+    // And the deploy has to carry the directory.
+    ok(
+        str_contains(file_get_contents($root . '/.cpanel.yml'), 'public_html/img/pages'),
+        '.cpanel.yml does not create the pages image directory'
+    );
+});
+
 // A checkbox the save handler does not read comes back false on the first admin
 // edit, which would drop the page out of the footer silently. Both page forms
 // have to declare it.
