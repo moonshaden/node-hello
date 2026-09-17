@@ -1315,6 +1315,29 @@ test('the footer spreads its columns rather than sharing equal tracks', function
     }
 });
 
+// The menus sit on the brand column's middle. Three declarations do it and the
+// two margin resets look like tidying rather than layout, so they are the ones a
+// later pass would drop -- and dropping either leaves the menus a few pixels
+// high with nothing failing.
+test('the footer menus centre against the brand column', function () {
+    $root = dirname(__DIR__, 2);
+    foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
+        $css = file_get_contents($root . '/' . $sheet);
+        ok(
+            preg_match('/\.foot-grid \{[^}]*align-items: center;/s', $css) === 1,
+            $sheet . ': the footer columns are not centred against each other'
+        );
+        ok(
+            str_contains($css, '.foot-grid > div > :last-child { margin-bottom: 0; }'),
+            $sheet . ": the brand column's trailing margin is back, which pushes its box past its ink"
+        );
+        ok(
+            str_contains($css, '.foot li:last-child { margin-bottom: 0; }'),
+            $sheet . ': the last list item keeps its margin, which lifts the menus off centre'
+        );
+    }
+});
+
 // A checkbox the save handler does not read comes back false on the first admin
 // edit, which would drop the page out of the footer silently. Both page forms
 // have to declare it.

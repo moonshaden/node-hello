@@ -984,7 +984,21 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .foot { background: var(--ink); color: #b9c9d7; padding: 56px 0 32px; font-size: .95rem; }
 .foot a { color: #fff; }
 .foot h4 { color: #fff; font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; font-family: var(--sans); }
-.foot-grid { display: grid; gap: 32px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+/* The menus sit on the brand column's middle rather than on its top edge. The
+   sign-off runs 350px -- mark, wordmark, strapline, mission -- against 278px of
+   links and 217px of contact details, so ranged to the top they read as three
+   columns of different lengths hanging off a line. Centred, they read as one
+   row.
+   Done with alignment rather than a top padding on each menu, because the offset
+   is the difference between two content heights (36px and 67px today) and any
+   edit to the mission, the links or the contact details changes it. A padding
+   would be right once and wrong after the next admin save. Where a column is
+   alone on its row -- one and two-column layouts -- this is a no-op. */
+.foot-grid {
+  display: grid; gap: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  align-items: center;
+}
 
 /* Three equal 1fr tracks are even by the ruler and not to the eye: the brand
    column fills its track, the two menus do not, so the link lists sat in the
@@ -1007,7 +1021,17 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   }
 }
 .foot ul { list-style: none; padding: 0; margin: 0; }
+/* The mission paragraph carries a trailing margin, which made the brand
+   column's box 15px taller than its ink -- so centring the menus against it left
+   them a few pixels high, and the footer carried dead space under the one column
+   that did not need it. The grid gap is what spaces these columns. */
+.foot-grid > div > :last-child { margin-bottom: 0; }
 .foot li { margin-bottom: 8px; }
+/* and not under the last one: that 8px sits inside the list, so it is not the
+   column's own trailing margin and survives the rule above -- which left the
+   menus' visible text 4px high of centre while their boxes were centred
+   exactly. */
+.foot li:last-child { margin-bottom: 0; }
 .foot-legal { border-top: 1px solid #24455f; margin-top: 40px; padding-top: 24px; font-size: .85rem; color: #7f95a8; }
 /* The second heading in the Contact column needs the air the first one gets
    from the grid gap, or Legal reads as part of the contact list above it. */
