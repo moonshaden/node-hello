@@ -360,17 +360,21 @@ the bracket pair and leaves the `!` in front of it. Checked, not assumed:
 
 So the deployed build shows an exclamation mark and a link to a JPEG where the
 dev twin shows a photograph, with both suites green — only the cross-build render
-diff catches it. A page photograph rides on the page record as `image`
-(`{src, alt}`) and is rendered by `page.ejs` / `page.php`, the same way the
-board roster and the programs list do. A test asserts no page body contains a
-markdown image.
+diff catches it. A test asserts no page body contains a markdown image, and page
+bodies are editable in `/admin`, so that guard matters even with no images in
+the seed today. **If a page ever needs a picture**, put it on the page record and
+render it in `page.ejs` / `page.php`, the way the board roster and the programs
+list already work — `271c13a` ("Carry the What We Do photograph onto the About
+page") did exactly that, and the commit after it took it out again — a commit
+cannot name its own hash, so look for the pair by message rather than by SHA.
 
 **A block box in the prose runs under the floated card.** The same float rule
-that bit the jump index bites anything boxed: `.page-figure` is 720px wide and
-at 1024px the card is still in play when the figure starts. The index wants to
-sit *beside* the card, so it gets `display: flow-root`; the photograph does not,
-so it gets `clear: right` and keeps one width instead of shrinking whenever it
-lands level with the card.
+that bit the jump index bites anything boxed. Worth knowing before adding a
+figure, a table or a panel to a page body: the index wants to sit *beside* the
+card, so it gets `display: flow-root`; something like a photograph does not, and
+wants `clear: right` so it keeps one width instead of shrinking whenever it
+lands level with the card. Measured on a 720px figure, where the overlap showed
+at 1024px only.
 
 ## Design system
 
@@ -641,10 +645,10 @@ Each shipped sentence was checked to appear verbatim in the live markup.
   build does not have; and `/who-we-are-2/`'s counters, whose `data-value`
   attributes read 20 / 8500000 / 5685 / 6900000 -- the same four numbers the
   impact band already renders.
-- `/what-we-do/`'s photograph **is** carried, rehosted as
-  `/img/pages/about-students.jpg` (1400x825 -> 1200x707, 0.28 MB -> 0.17 MB).
-  The live media library publishes no alt text, so the alt was written here from
-  the photograph, as it was for the programs, partner and board images.
+- `/what-we-do/`'s one photograph (`happy-students-walking-in-university.jpg`,
+  1400x825, no alt text published) is **not** carried. It was added and then
+  taken back out at the client's word — "forget it, dont use picture on about
+  page". The page is copy only.
 - The one line that is not transcribed is the navigation link to `/board`. The
   live page offers the same destination as a LEO LEADERSHIP button in the nav
   strip above, and `/board` is `inNav: false`, so without it the page is
