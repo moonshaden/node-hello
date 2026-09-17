@@ -1235,10 +1235,21 @@ test('both footers stack the mark over the wordmark in one centred block', funct
 
     foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
         $css = file_get_contents($root . '/' . $sheet);
-        // Matched on the declaration rather than the whole rule: the rule gained
-        // a container-type line when the strapline became type.
-        ok(str_contains($css, 'width: min(260px, 100%);'), $sheet . ' does not cap the sign-off block');
+        // Matched on the declarations rather than the whole rule, which has
+        // grown comments and a container-type line. The width is deliberately
+        // not pinned to a number here -- it is a design value that has already
+        // moved twice -- only that the block is capped at all, since everything
+        // inside it is sized as a share of that cap.
+        ok(
+            preg_match('/\.foot-sign \{[^}]*?width: min\(\d+px, 100%\);/s', $css) === 1,
+            $sheet . ' does not cap the sign-off block'
+        );
         ok(str_contains($css, 'container-type: inline-size;'), $sheet . ' does not scale the strapline with the block');
+        // The strapline is centred under the wordmark, not ranged left with it.
+        ok(
+            preg_match('/\.foot-strap \{[^}]*?text-align: center;/s', $css) === 1,
+            $sheet . ' does not centre the strapline'
+        );
         ok(str_contains($css, 'margin: 0 auto 14px'), $sheet . ' does not centre the mark');
         // The nudge that ranged the mark left is gone; leaving it would pull the
         // centred mark off by its own left padding.
