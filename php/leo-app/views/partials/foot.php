@@ -4,14 +4,21 @@
   <div class="wrap">
     <div class="foot-grid">
       <div>
-        <img class="foot-mark" src="<?= e(link_url('/img/brand/leo-mark-lion.png', $basePath)) ?>"
-             alt="" aria-hidden="true" width="520" height="380" loading="lazy">
-        <?php // The wordmark below is the accessible name of the pair, so the
-              // mark above it is decorative -- otherwise both announce the same
-              // thing. ?>
-        <img class="foot-lockup" src="<?= e(link_url('/img/brand/leo-lockup-footer.png', $basePath)) ?>"
-             alt="<?= e(($site['name'] ?? '') . ' — ' . ($site['tagline'] ?? '')) ?>"
-             width="679" height="146" loading="lazy">
+        <?php // The mark is centred over the wordmark rather than ranged left
+              // with it, so the pair reads as one stacked sign-off. Centring
+              // needs a box the width of the wordmark to centre inside -- the
+              // footer column is a 1fr track and is wider -- which is what this
+              // wrapper is for. Sizing the mark then stays one height value. ?>
+        <div class="foot-sign">
+          <img class="foot-mark" src="<?= e(link_url('/img/brand/leo-mark-lion.png', $basePath)) ?>"
+               alt="" aria-hidden="true" width="520" height="380" loading="lazy">
+          <?php // The wordmark below is the accessible name of the pair, so the
+                // mark above it is decorative -- otherwise both announce the
+                // same thing. ?>
+          <img class="foot-lockup" src="<?= e(link_url('/img/brand/leo-lockup-footer.png', $basePath)) ?>"
+               alt="<?= e(($site['name'] ?? '') . ' — ' . ($site['tagline'] ?? '')) ?>"
+               width="679" height="146" loading="lazy">
+        </div>
         <p class="small"><?= e($site['mission'] ?? '') ?></p>
       </div>
       <div>

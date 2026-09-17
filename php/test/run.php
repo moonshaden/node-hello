@@ -1204,6 +1204,33 @@ test('a page with no summary still describes itself in both builds', function ()
     }
 });
 
+// The mark is centred over the wordmark by sharing a wrapper with it: the
+// footer column is a 1fr track and centring in that would float the mark away
+// from the name it belongs to. A build that loses the wrapper still renders
+// both images, just ranged left -- no error, no failing route, which is exactly
+// the kind of silent drift this suite exists to catch.
+test('both footers stack the mark over the wordmark in one centred block', function () {
+    $root = dirname(__DIR__, 2);
+    foreach (['views/partials/foot.ejs', 'php/leo-app/views/partials/foot.php'] as $view) {
+        $src = file_get_contents($root . '/' . $view);
+        ok(str_contains($src, 'class="foot-sign"'), $view . ' lost the sign-off wrapper');
+        // Order matters: the mark reads as the first line of the pair.
+        $mark = strpos($src, 'foot-mark');
+        $lockup = strpos($src, 'foot-lockup');
+        ok($mark !== false && $lockup !== false, $view . ' is missing one of the pair');
+        ok($mark < $lockup, $view . ' puts the wordmark above the mark');
+    }
+
+    foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
+        $css = file_get_contents($root . '/' . $sheet);
+        ok(str_contains($css, '.foot-sign { width: min(260px, 100%); }'), $sheet . ' does not cap the sign-off block');
+        ok(str_contains($css, 'margin: 0 auto 14px'), $sheet . ' does not centre the mark');
+        // The nudge that ranged the mark left is gone; leaving it would pull the
+        // centred mark off by its own left padding.
+        ok(!str_contains($css, 'margin-left: -15px'), $sheet . ' still carries the left-alignment nudge');
+    }
+});
+
 // A checkbox the save handler does not read comes back false on the first admin
 // edit, which would drop the page out of the footer silently. Both page forms
 // have to declare it.
