@@ -755,6 +755,17 @@ So, from cold:
 3. `dry_run: false` — the code deploy.
 4. `dry_run: false, seed_content: true` — the content store.
 
+**Two runs means two runs, one after the other — never back to back.** The
+workflow sets `concurrency: deploy-<ref>` with `cancel-in-progress: false`, which
+queues rather than cancels — but GitHub keeps only **one pending run per group**,
+so dispatching the second while the first is still pending **cancels the first**.
+Firing the code deploy and the `seed_content` run seconds apart therefore ships
+the content and silently drops the code. It happened twice in one session (runs
+119/120 and 123/124: the code deploy cancelled, the seed succeeded), and the
+symptom is a server whose content store has a field the deployed templates do not
+render yet. Nothing breaks — an unknown field is ignored — so only a byte check
+catches it. Wait for the first run to finish before dispatching the second.
+
 **Confirm a deploy by bytes, and only then say it is live.** A 200 proves the
 server answered, not that it answered with *this* build, and this session burned
 three rounds of the client reporting something "still wrong" when the real answer
