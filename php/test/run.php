@@ -755,41 +755,49 @@ test('both footers carry the wordmark under the lion mark', function () {
     );
 });
 
-// The About page and the impact band were quoting different numbers -- About
-// said 3,000 students and $5 million, the band said 5,685 and $6.9M -- and a
-// visitor scrolling one page saw both. The client settled it on the band's
-// figures. This derives the expectation FROM the band rather than hardcoding,
-// so if those counters are ever updated the About copy has to follow rather
-// than quietly falling out of step again. Mirrors test/content.test.js.
-test('the About page quotes the same figures as the impact band', function () {
+// About is the live WHO WE ARE and WHAT WE DO pages combined, so it is checked
+// the way the other transcribed pages are: pin the sentences, not a paraphrase.
+//
+// It used to quote the impact band's 5,685 / $6.9M and a test derived that
+// expectation from the band. Neither live page states a figure in its copy --
+// they carry the counters, whose real values sit in data-value attributes and
+// are the same four numbers the band already renders -- so the transcription
+// does not carry figures and there is nothing left to drift. The band is now the
+// only place on the site that states them. The client chose to have them on this
+// page once; if they want that back it is a line of copy they have to supply,
+// not one to compose here. Mirrors test/content.test.js.
+test('the About page carries the transcribed copy, and no figures to drift', function () {
     $seed = json_decode(file_get_contents(dirname(__DIR__, 2) . '/data/content.json'), true);
-    $band = [];
-    foreach ($seed['site']['impact'] as $i) {
-        $band[$i['label']] = $i['value'];
-    }
-    $about = '';
+    $about = null;
     foreach ($seed['pages'] as $page) {
         if (($page['slug'] ?? '') === 'about') {
-            $about = $page['body'];
+            $about = $page;
         }
     }
-    ok($about !== '', 'the About page is missing');
+    ok($about !== null, 'the About page is missing');
 
-    $students = $band['students awarded'] ?? '';
-    ok($students !== '', 'the band still carries a student count');
-    ok(str_contains($about, $students), "About does not quote the band's $students students");
-
-    // The band writes "$6.9M", the prose writes "$6.9 million" -- compare the number.
-    $awarded = $band['awarded in scholarships'] ?? '';
-    $figure = preg_replace('/[^0-9.]/', '', $awarded);
-    ok($figure !== '', 'the band still carries an awarded total');
+    // WHO WE ARE's own headline is the page's lede.
+    // Double quotes: \u{...} is only an escape in a double-quoted PHP string, and
+    // the published sentence uses a right single quotation mark, not an apostrophe.
     ok(
-        preg_match('/\\$' . preg_quote($figure, '/') . '\\s*(million|M)\\b/', $about) === 1,
-        "About does not quote the band's $awarded"
+        str_starts_with($about['summary'], "Leo Foundation\u{2019}s mission is to invest in future generations"),
+        'the lede is not the transcribed mission sentence'
     );
+    // WHAT WE DO's headline and body.
+    ok(
+        str_starts_with(
+            $about['body'],
+            'For nearly 20 years, the LEO Foundation, *formerly known as Grand Canyon University Scholarship Foundation*, has connected'
+        ),
+        'the opening sentence is not the transcribed one'
+    );
+    ok(str_contains($about['body'], 'Today, college has become out of reach for many aspiring students.'), 'the WHAT WE DO paragraph is gone');
+    ok(str_contains($about['body'], 'LEO Foundation welcomes you to become a part of a growing, Christ-centered group'), 'the welcome line is gone');
 
-    // And the superseded pair must not survive anywhere in the copy.
-    ok(preg_match('/3,000|\\$5 million/', $about) === 0, 'the old figures are still in the About copy');
+    // The superseded pair must not come back, and nor must the governance
+    // sentence that was never transcribed from the live charter.
+    ok(preg_match('/3,000|\$5 million/', $about['body']) === 0, 'the old figures are back in the About copy');
+    ok(!str_contains($about['body'], "select each year's recipients"), 'the untranscribed governance claim is back');
 });
 
 // LEO is an acronym and the live homepage publishes a write-up for each word.

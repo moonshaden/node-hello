@@ -94,9 +94,11 @@ the deployed build subdomain):
   tinted bands `.05` gold. All four use `aspect-ratio: 448 / 520` and all four
   disappear under 900px. The light-band trace sits on the *left* so the traces
   do not stack down one edge.
-- **About now agrees with the impact band** — "5,685 students to $6.9 million",
-  the pair the client picked. The tests derive that expectation *from*
-  `site.impact` rather than hardcoding it; do not rewrite them to literals.
+- **About is the live WHO WE ARE and WHAT WE DO pages, combined and
+  transcribed.** It replaced composed copy, and with it went both the
+  untranscribed board-governance sentence and the "5,685 students to $6.9
+  million" pair the client had picked — neither live page states a figure. See
+  *Content accuracy*, and item 3 below.
 
 **The debt this branch carries, stated plainly:** *nothing in either suite covers
 the hero rail or the logo strip.* The rotation, the one-at-a-time slot logic, the
@@ -114,12 +116,12 @@ need the client, it is this.
 2. **The 26 logos have no alt text.** Nothing the live site publishes names
    those organisations, so they ship decorative rather than being given invented
    names. The client is the only source.
-3. The About page says the board "set the scholarship criteria, steward the
-   funds, and select each year's recipients". That is **not transcribed**, and
-   the live governance charter lists mission focus, CEO oversight and support,
-   community advocacy, committee work, financial reporting, and legal and
-   ethical integrity — not criteria-setting or recipient selection. Reword from
-   the charter, or ask the client. Same failure mode as `7f81b6e`.
+3. **About no longer states the impact figures.** It is now the two live pages
+   transcribed, and neither states a figure in its copy. The client had chosen
+   "5,685 students to $6.9 million" for this page; that choice is reversed by the
+   transcription, and the impact band is now the only place the numbers appear.
+   Confirm that is what they want. (The untranscribed board-governance sentence
+   that used to sit here went with the same rewrite.)
 4. Two `/community` calls: the YouTube video is a link rather than an iframe,
    and two of the four event photographs are candid shots of unnamed people.
 5. Whether `.05` on the light tinted bands is the right weight — the one trace
@@ -599,6 +601,42 @@ Slide images are committed to `public/img/slides/` and
 and re-encoded as JPEG — 0.78 MB of originals down to **0.61 MB** for all three.
 The live media library publishes **no alt text on any image**, so the alt in the
 seed was written here from the photograph.
+
+The **About page is the live `/who-we-are-2/` and `/what-we-do/` pages
+combined**, transcribed on 2026-09-17. Between them the two pages publish seven
+sentences of body copy and nothing else; everything around them is Avada chrome.
+Each shipped sentence was checked to appear verbatim in the live markup.
+
+- `/who-we-are-2/` contributes one sentence, its own `h1`: the mission
+  statement. It is the page's lede here for the same reason. Note it publishes
+  "Leo Foundation's", not "LEO" -- carried as published.
+- `/what-we-do/` contributes its `h1` (with *formerly known as Grand Canyon
+  University Scholarship Foundation* in italics, as published -- it is emphasis,
+  not a link) and the paragraph under it.
+- The "LEO Foundation welcomes you..." line is on **both** pages, as the band
+  above the contact form. It ships once.
+- **Not carried across:** the nav strips on both pages (Avada chrome duplicating
+  this site's own header); the contact form, which needs a mail handler this
+  build does not have; and `/who-we-are-2/`'s counters, whose `data-value`
+  attributes read 20 / 8500000 / 5685 / 6900000 -- the same four numbers the
+  impact band already renders. `/what-we-do/` also publishes one photograph
+  (`happy-students-walking-in-university.jpg`, 1400x825, no alt text). It is
+  **not** carried: nothing in the store uses a markdown image and `.prose` has
+  no rule for one, so it needs a pattern rather than a paste. Worth adding.
+- The one line that is not transcribed is the navigation link to `/board`. The
+  live page offers the same destination as a LEO LEADERSHIP button in the nav
+  strip above, and `/board` is `inNav: false`, so without it the page is
+  reachable only from Contact.
+
+**This replaced composed copy, and took two things with it.** The old About body
+was largely written here rather than transcribed. Gone with it: the governance
+sentence that claimed the board "set the scholarship criteria ... and select
+each year's recipients", which was never transcribed and contradicted the live
+charter -- that open item is closed by deletion. Also gone: "5,685 students to
+$6.9 million", which the **client chose** for this page. Neither live page
+states a figure in its copy, so the transcription carries none and the impact
+band is now the only place on the site that states them. If the client wants
+them back on About, that is a line of copy they have to supply.
 
 **The 26 strip logos were taken from the live WordPress site** on 2026-09-16 and
 are committed under `public/img/logos/` and `php/public_html/img/logos/` (412KB

@@ -563,28 +563,30 @@ test('both builds ship the same client script and stylesheet', () => {
   }
 });
 
-// The About page and the impact band were quoting different numbers -- About
-// said 3,000 students and $5 million, the band said 5,685 and $6.9M -- and a
-// visitor scrolling one page saw both. The client settled it on the band's
-// figures. This derives the expectation FROM the band rather than hardcoding,
-// so if those counters are ever updated the About copy has to follow rather
-// than quietly falling out of step again.
-test('the About page quotes the same figures as the impact band', () => {
+// About is the live WHO WE ARE and WHAT WE DO pages combined, so it is checked
+// the way the other transcribed pages are: pin the sentences, not a paraphrase.
+//
+// It used to quote the impact band's 5,685 / $6.9M and a test derived that
+// expectation from the band. Neither live page states a figure in its copy --
+// they carry the counters, whose real values sit in data-value attributes and
+// are the same four numbers the band already renders -- so the transcription
+// does not carry figures and there is nothing left to drift. The band is now the
+// only place on the site that states them. The client chose to have them on this
+// page once; if they want that back it is a line of copy they have to supply,
+// not one to compose here.
+test('the About page carries the transcribed copy, and no figures to drift', () => {
   const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
-  const band = Object.fromEntries(seed.site.impact.map((i) => [i.label, i.value]));
-  const about = seed.pages.find((p) => p.slug === 'about').body;
+  const about = seed.pages.find((p) => p.slug === 'about');
 
-  const students = band['students awarded'];
-  assert.ok(students, 'the band still carries a student count');
-  assert.ok(about.includes(students), `About does not quote the band's ${students} students`);
+  // WHO WE ARE's own headline is the page's lede.
+  assert.match(about.summary, /^Leo Foundation’s mission is to invest in future generations/);
+  // WHAT WE DO's headline and body.
+  assert.match(about.body, /^For nearly 20 years, the LEO Foundation, \*formerly known as Grand Canyon University Scholarship Foundation\*, has connected/);
+  assert.match(about.body, /Today, college has become out of reach for many aspiring students\./);
+  assert.match(about.body, /LEO Foundation welcomes you to become a part of a growing, Christ-centered group/);
 
-  // The band writes "$6.9M", the prose writes "$6.9 million" -- compare the number.
-  const awarded = band['awarded in scholarships'];
-  const figure = awarded.replace(/[^0-9.]/g, '');
-  assert.ok(figure, 'the band still carries an awarded total');
-  assert.match(about, new RegExp('\\$' + figure.replace('.', '\\.') + '\\s*(million|M)\\b'),
-    `About does not quote the band's ${awarded}`);
-
-  // And the superseded pair must not survive anywhere in the copy.
-  assert.doesNotMatch(about, /3,000|\$5 million/, 'the old figures are still in the About copy');
+  // The superseded pair must not come back, and nor must the governance sentence
+  // that was never transcribed from the live charter.
+  assert.doesNotMatch(about.body, /3,000|\$5 million/, 'the old figures are back in the About copy');
+  assert.doesNotMatch(about.body, /select each year's recipients/, 'the untranscribed governance claim is back');
 });
