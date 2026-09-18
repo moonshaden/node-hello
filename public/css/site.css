@@ -1325,9 +1325,15 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
    is a flex container, which already establishes its own formatting context --
    checked by measuring the box against the card at seven widths rather than
    assumed, because the plain block version of this (the jump index) did need
-   one. The bottom margin is the break before the copy; the 6px above it is the
-   index's own. */
-.page-notice { margin: 0 0 24px; }
+   one. 50px above is the gap the inline logo strip and the programs picture also
+   sit on, so the three components share one rhythm. The measured space above is
+   50px, not 56: the index's own 6px bottom margin COLLAPSES with this one.
+   Being a flex container stops a box's margins collapsing with its CHILDREN's
+   and keeps it out from under a float; it does nothing to sibling margins in the
+   block container around it. Measured before it was written down, because the
+   first version of this comment said 56. The bottom margin is the break before
+   the copy. */
+.page-notice { margin: 50px 0 24px; }
 
 .notice h3 { margin: 0 0 2px; font-size: 1.05rem; }
 .notice p { margin: 0; color: var(--ink-soft); font-size: .95rem; }

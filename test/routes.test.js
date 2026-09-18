@@ -531,7 +531,12 @@ test('the giving callout carries its two sentences once each, above the copy', a
     // column or it is just another paragraph.
     const at = body.indexOf('page-notice');
     assert.ok(at > body.indexOf('page-index'), 'the callout is above the jump index');
-    assert.ok(at < body.indexOf('tax-deductible'), 'the callout is below the copy it introduces');
+    // Anchored on the copy's own first words. It used to be anchored on
+    // "tax-deductible", which moved INTO the callout when the third sentence
+    // did -- the assertion would then have been comparing the callout with
+    // itself and passing for the wrong reason.
+    assert.ok(at < body.indexOf('Scholarship assistance can be designated'),
+      'the callout is below the copy it introduces');
   });
 });
 
