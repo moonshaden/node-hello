@@ -1389,6 +1389,22 @@ test('the memorial scholarships carry their photographs, sized and described', f
         'joyce-k-smith-nursing-memorial-scholarship' => [['', 924, 300]],
         'tiffany-d-mealman-women-excellence-in-chemistry-and-christian-character-scholarship' => [['', 543, 700]],
         'evan-c-gary-memorial-scholarship' => [['', 250, 312]],
+        // The other four published images are logos and award artwork rather
+        // than photographs, and they are .png: flat colour and sharp type, which
+        // JPEG rings around.
+        'gcu-guild-continuing-student-scholarship' => [['', 142, 80, 'png']],
+        'leo-foundation-christian-studies-scholarship' => [['', 700, 144, 'png']],
+        'skw-play-it-forward-music-scholarship' => [['', 608, 500, 'png']],
+        'bhhs-legacy-nursing-health-related-scholarship' => [['', 482, 134, 'png']],
+    ];
+
+    // The live site publishes no image at all on these four, so they must carry
+    // none here either -- "all of them" has to mean all of them and no more.
+    $withoutPhoto = [
+        'leo-foundation-scholarship',
+        'leo-foundation-entrepreneurial-scholarship',
+        'foundation-theatre-scholarship',
+        'foster-youth-scholarships',
     ];
 
     foreach (['data/content.json', 'php/leo-app/data/content.json'] as $store) {
@@ -1403,9 +1419,11 @@ test('the memorial scholarships carry their photographs, sized and described', f
             $photos = $record['photos'] ?? [];
             ok(count($photos) === count($pictures),
                 $store . ': ' . $slug . ' has ' . count($photos) . ' photos, expected ' . count($pictures));
-            foreach ($pictures as $i => [$suffix, $w, $h]) {
+            foreach ($pictures as $i => $picture) {
+                [$suffix, $w, $h] = $picture;
+                $ext = $picture[3] ?? 'jpg';
                 $photo = $photos[$i] ?? [];
-                ok(($photo['src'] ?? '') === '/img/scholarships/' . $slug . $suffix . '.jpg',
+                ok(($photo['src'] ?? '') === '/img/scholarships/' . $slug . $suffix . '.' . $ext,
                     $store . ': ' . $slug . ' photo ' . ($i + 1) . ' has the wrong src');
                 ok((int) ($photo['width'] ?? 0) === $w && (int) ($photo['height'] ?? 0) === $h,
                     $store . ': ' . $slug . ' photo ' . ($i + 1) . ' is not ' . $w . 'x' . $h);
@@ -1422,10 +1440,22 @@ test('the memorial scholarships carry their photographs, sized and described', f
     // Both builds must ship every file, or the deployed site shows a broken
     // image where the dev twin shows a photograph.
     foreach ($expected as $slug => $pictures) {
-        foreach ($pictures as [$suffix, , ]) {
+        foreach ($pictures as $picture) {
+            $suffix = $picture[0];
+            $ext = $picture[3] ?? 'jpg';
             foreach (['public/img/scholarships', 'php/public_html/img/scholarships'] as $dir) {
-                $file = $root . '/' . $dir . '/' . $slug . $suffix . '.jpg';
+                $file = $root . '/' . $dir . '/' . $slug . $suffix . '.' . $ext;
                 ok(is_file($file) && filesize($file) > 1024, $file . ' is missing or empty');
+            }
+        }
+    }
+
+    foreach (['data/content.json', 'php/leo-app/data/content.json'] as $store) {
+        $seed = json_decode(file_get_contents($root . '/' . $store), true);
+        foreach ($seed['scholarships'] as $record) {
+            if (in_array($record['slug'], $withoutPhoto, true)) {
+                ok(empty($record['photos']),
+                    $store . ': ' . $record['slug'] . ' has a picture the live site does not publish');
             }
         }
     }
@@ -1489,6 +1519,15 @@ test('the memorial scholarships carry their photographs, sized and described', f
         ok(
             preg_match('/\.split \{[^}]*align-items: stretch;/s', $css) === 1,
             $sheet . ': the right column does not stretch, so there is no bottom to reach'
+        );
+        // A lone picture does not shrink: shrinking only earns its keep when it
+        // achieves the fit, and the SKW page has 406px of copy against a 399px
+        // card, so the tile was squeezed to the floor and still overhung by
+        // 122px. `min-height: 0` with it, because the floor otherwise puts a
+        // 110px box around a 71px logo and the column ends below the picture.
+        ok(
+            preg_match('/\.scholarship-photo:only-child \{[^}]*flex-shrink: 0;[^}]*min-height: 0;/s', $css) === 1,
+            $sheet . ': a lone picture shrinks, which squeezes it without ever fitting'
         );
         // The copy's last paragraph carries a bottom margin, so without this the
         // pictures finish a measured 18px below the last line of text.

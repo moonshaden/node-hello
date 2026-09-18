@@ -279,6 +279,14 @@
       "name": "GCU Guild Continuing Student Scholarship",
       "amount": "$1,000",
       "summary": "An endowed award from the GCU Guild for a continuing Grand Canyon University undergraduate active on campus.",
+      "photos": [
+        {
+          "src": "/img/scholarships/gcu-guild-continuing-student-scholarship.png",
+          "alt": "The GCU Guild logo: “Serving students since 1994”.",
+          "width": 142,
+          "height": 80
+        }
+      ],
       "criteria": "- Student must meet university admissions requirements\n- Applicant must be enrolled full-time as a traditional ground student (12 credit hours per semester)\n- Applicant must maintain a 2.75 GPA and be a university freshman applying for their sophomore, junior or senior year of study\n- Applicant must be involved in campus activities\n- Scholarships will be awarded in spring 2026 for the 2026/2027 academic year\n- Scholarship recipients must acknowledge their award in the form of an email thank you within three weeks of notification to [mwinney@leofoundationusa.org](mailto:mwinney@leofoundationusa.org)",
       "details": "The Grand Canyon University Guild established a scholarship fund through the gifts and fundraising efforts of the members while they were an active Club serving the GCU Campus students from 1994 until they retired from serving on campus in 2016. An Endowed Scholarship Fund was established in 1997 to provide GCU student scholarships each year, this endowed fund is managed by the Grand Canyon University Scholarship Foundation (GCUSF). The intent of this scholarship is to help offset the costs of education for a Grand Canyon University (GCU) traditional undergraduate student.",
       "essayPrompts": [],
@@ -359,6 +367,14 @@
       "name": "LEO Foundation Christian Studies Scholarship",
       "amount": "Varies depending on available funds",
       "summary": "For full-time students pursuing Christian studies, awarded annually.",
+      "photos": [
+        {
+          "src": "/img/scholarships/leo-foundation-christian-studies-scholarship.png",
+          "alt": "The LEO Foundation wordmark, over the line “Leadership · Education · Opportunity”.",
+          "width": 700,
+          "height": 144
+        }
+      ],
       "criteria": "- Applicant must meet university admissions requirements\n- Applicant must pursue being a full-time student\n- The applicant shall demonstrate documented financial need as defined by their university’s office of financial aid\n- Applicant must possess a cumulative 2.5 GPA or higher\n- Applicant must demonstrate they have Christian and conservative values, representative of the University’s Mission and Vision\n- Applicant must submit a 300-word document on what Christian character and integrity mean to them",
       "details": "",
       "essayPrompts": [],
@@ -421,6 +437,14 @@
       "name": "SKW Play It Forward Music Scholarship",
       "amount": "$1,000",
       "summary": "For a full-time student pursuing an academic degree in music.",
+      "photos": [
+        {
+          "src": "/img/scholarships/skw-play-it-forward-music-scholarship.png",
+          "alt": "The SKW Play it Forward Music Scholarship mark: musical notes on a stave.",
+          "width": 608,
+          "height": 500
+        }
+      ],
       "criteria": "- Applicant must meet university admissions requirements\n- Applicant must be a full-time student\n- Applicant must be pursuing an academic degree in music\n- Applicant shall demonstrate documented financial need as defined by the college or university office of financial aid\n- Applicant must have a minimum GPA of 3.50\n- Applicant must submit a one-page essay on why they are pursuing a degree in music and on one of the following: how it will benefit their community and the world of music; how they demonstrate the value of service in their everyday life, or within clubs and organizations in which they have participated",
       "details": "",
       "essayPrompts": [],
@@ -513,6 +537,14 @@
       "name": "BHHS Legacy Nursing & Health Related Scholarship",
       "amount": "Varies",
       "summary": "Funded by BHHS Legacy Foundation, for students in nursing or a health-related field.",
+      "photos": [
+        {
+          "src": "/img/scholarships/bhhs-legacy-nursing-health-related-scholarship.png",
+          "alt": "The BHHS Legacy Foundation logo.",
+          "width": 482,
+          "height": 134
+        }
+      ],
       "criteria": "- Candidate must be pursuing a degree in nursing or a health-related field\n- Candidate must meet university or college admissions requirements\n- Candidate must pursue being a full time student\n- Candidate shall demonstrate documented financial need as defined by the university or college Office of Financial Aid\n- Candidate must have a minimum of 3.0 GPA\n- Candidate must submit a one-page personal narrative\n- Candidate must submit a 300-word document on what Community Service mean to them and show how they have demonstrated the value of “service” in their lives through everyday life as well as within organizations, clubs, and services in which they have participated\n- Candidate must prepare and mail an acknowledgement/thank you to the LEO Foundation on behalf of BHHS Legacy Foundation Board of Directors expressing appreciation for the scholarship funding",
       "details": "",
       "essayPrompts": [],

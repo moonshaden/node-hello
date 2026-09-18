@@ -1040,6 +1040,17 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
      stack simply runs on rather than becoming unreadable. */
   flex: 0 1 auto;
   min-height: 110px;
+  /* A LONE picture does not shrink. Shrinking only earns its keep when it
+     achieves the fit, and for one picture it often cannot: the SKW page carries
+     406px of copy against a 399px card, so there are seven pixels of room and
+     the tile was squeezed to the floor and STILL overhung by 122px -- small and
+     overflowing, the worst of both. It now renders at its own size and the
+     column simply ends past the copy on that page, which is what a page with
+     almost no copy looks like. A stack of two or more is the case the shrink was
+     asked for, and there it fits exactly.
+
+     `min-height: 0` with it: the floor above is what put a 110px box around a
+     71px-tall logo, so the column ended 39px below the picture. */
   display: flex;
   justify-content: center;
   /* Centre, not the default stretch: a flex item is stretched on the cross axis,
@@ -1049,6 +1060,11 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   align-items: center;
   width: 100%;
 }
+.scholarship-photo:only-child {
+  flex-shrink: 0;
+  min-height: 0;
+}
+
 /* `max-width`, never `width: 100%`. The column is 344px and the smallest of
    these photographs is 227px wide, so stretching them to fill would upscale --
    measured earlier on a 463px composite, which a `width: 100%` drew at 688px.
