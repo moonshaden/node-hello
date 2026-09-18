@@ -1428,7 +1428,7 @@ test('the memorial scholarships carry their photographs, sized and described', f
         // JPEG rings around.
         'gcu-guild-continuing-student-scholarship' => [['', 700, 386, 'png']],
         'skw-play-it-forward-music-scholarship' => [['', 608, 500, 'png']],
-        'bhhs-legacy-nursing-health-related-scholarship' => [['', 482, 134, 'png']],
+        'bhhs-legacy-nursing-health-related-scholarship' => [['', 700, 190, 'png']],
     ];
 
     // The three LEO-branded awards carry no sponsor's logo of their own, so they
