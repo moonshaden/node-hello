@@ -1338,18 +1338,21 @@ test('the footer menus start on one line as each other', function () {
     $root = dirname(__DIR__, 2);
     foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
         $css = file_get_contents($root . '/' . $sheet);
-        // Every column after the first -- both menus, and any third one added
-        // later -- ranges to the start of the row rather than centring by its
-        // own height.
+        // Every column ranges to the start of the row rather than centring by
+        // its own height -- the menus so they line up with each other, and the
+        // sign-off so the 100px below does not drift it down when the taller
+        // menu outgrows it.
         ok(
-            preg_match('/\.foot-grid > div \+ div \{[^}]*align-self: start;/s', $css) === 1,
-            $sheet . ': the footer menus centre by their own height again, so they do not line up'
+            preg_match('/\.foot-grid > div \{[^}]*align-self: start;/s', $css) === 1,
+            $sheet . ': the footer columns centre by their own height again, so they do not line up'
         );
-        // The grid keeps `center` for the sign-off: a no-op while it is the
-        // tallest thing in the row, and the right behaviour if it ever is not.
+        // The drop is on the menus only, and only where the three sit side by
+        // side: below that the grid wraps them into a column, where the same
+        // margin is 100px between every stacked block rather than a drop down
+        // the row.
         ok(
-            preg_match('/\.foot-grid \{[^}]*align-items: center;/s', $css) === 1,
-            $sheet . ': the sign-off lost its own alignment'
+            preg_match('/@media \(min-width: 861px\) \{[^}]*\.foot-grid > div \+ div \{[^}]*margin-top: 100px;/s', $css) === 1,
+            $sheet . ': the menus have lost their drop, or it is no longer scoped to the side-by-side layout'
         );
         ok(
             str_contains($css, '.foot-grid > div > :last-child { margin-bottom: 0; }'),

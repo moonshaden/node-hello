@@ -1426,9 +1426,19 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
    number that has to be maintained -- an offset would be right once and wrong
    after the next link is added in /admin.
 
-   The sign-off keeps its own `center`, which is a no-op while it is the tallest
-   thing in the row and the right behaviour if it ever is not. */
-.foot-grid > div + div { align-self: start; }
+   The 100px is the client's, and it drops both menus down the row together --
+   which is why the sign-off is ranged to the start as well rather than left on
+   `center`. The margin makes the taller menu 378px against the sign-off's 350,
+   so the row grows by 28 and a centred sign-off would drift 14px down with it;
+   ranged to the start it stays exactly where it was. The footer itself is 28px
+   taller, which is the honest cost of the margin. */
+.foot-grid > div { align-self: start; }
+@media (min-width: 861px) {
+  /* Only where the three sit side by side. Below this the grid wraps them into
+     a column, and a 100px top margin there is not a drop down the row -- it is
+     100px of space between every stacked block, on top of the 32px gap. */
+  .foot-grid > div + div { margin-top: 100px; }
+}
 
 /* Three equal 1fr tracks are even by the ruler and not to the eye: the brand
    column fills its track, the two menus do not, so the link lists sat in the
