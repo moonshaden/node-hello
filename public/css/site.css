@@ -1189,76 +1189,88 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   .page-flow > .sidebar-card { float: none; width: auto; margin: 0 0 24px; }
 }
 
-/* page quote — a quotation over a photograph, closing the copy on an editable
-   page. The picture and the words are two children of one grid cell rather than
-   the photograph being a `background-image`: an `img` src goes through
-   asset_url() and carries a content hash, which a url() in this sheet would
-   not, and the words stay real text rather than a raster.
+/* page picture — a photograph closing the copy on an editable page, ending
+   level with the bottom of the aside card.
 
-   The image is the only thing sizing the row -- it is `height: auto` and the
-   caption is centred inside it -- so the band is the photograph's own height at
-   whatever width the page has. The caption is the shorter of the two at every
-   width this site renders; `min-height` on the figure is the floor if a longer
-   quotation is ever stored. */
-.page-quote {
+   It is an `img` in the flow rather than a `background-image`, so the src goes
+   through asset_url() and carries a content hash; a url() in this sheet would
+   not, and images are served with a year's cache.
+
+   It briefly carried a quotation over it, from the live site's own testimonial
+   band. The client asked for the picture without the words. */
+.page-picture {
   /* 50px under the last line of copy, the same gap the inline logo strip
-     leaves. No `clear`: `overflow: hidden` is already a block formatting
-     context, so it sits beside the floated card instead of running under it --
-     clearing it would drop it below the card and open the gap this is meant to
-     close, which is the note the inline strip carries too. */
-  display: grid; margin: 50px 0 0; min-height: 200px;
+     leaves. No `clear`: it sits beside the card by design, and clearing it
+     would drop it below the card -- the note the inline strip carries too. */
+  display: block; margin: 50px 0 0;
   border-radius: 16px; overflow: hidden; background: var(--ink);
 }
-
-/* This renders inside `.prose`, which hands it every rule `.prose` has --
-   `.prose blockquote` is a gold left bar, 18px of indent and a soft ink colour,
-   which would push the centred quotation off-centre. The override needs two
-   classes (0,2,1) to outrank it (0,1,1). Same trap as the gold dot the prose
-   list rule painted on all 26 strip logos. */
-.prose .page-quote blockquote {
-  border-left: 0; padding-left: 0; margin: 0; color: inherit;
-}
-.page-quote > * { grid-area: 1 / 1; }
-.page-quote img {
+.page-picture img {
+  /* `height: 100%` is what makes the picture take the height the column hands
+     it, cropping rather than letterboxing. Where the column is not sized for it
+     -- stacked, below 861px -- the percentage resolves against an auto height,
+     which is `auto`, and the picture draws at its own ratio. */
   display: block; width: 100%; height: 100%; min-height: 0;
   object-fit: cover;
 }
 
-/* A scrim, because the photograph is not uniformly dark and the crop moves.
-   `object-fit: cover` on a 1280x400 picture in a 342px band shows the middle
-   of it, which is the bright sunset -- white type over that was legible and
-   weak. Rendered and looked at rather than trusted to a contrast number.
+@media (min-width: 861px) {
+  /* The picture has to END level with the bottom of the card, and a float's
+     bottom is not something the flow below it can be told about: both edges are
+     content-driven and only a shared layout structure can reconcile them. So a
+     page carrying a picture puts the card in a grid column instead of floating
+     it, and the copy column becomes a flex column whose last item takes up the
+     slack.
 
-   It is a grid child of its own so it covers the whole picture; the caption
-   takes a z-index because grid items paint in DOM order and a generated
-   ::after is the last of them. */
-.page-quote::after {
-  content: ''; grid-area: 1 / 1;
-  background: rgba(16, 38, 61, .38);
-}
-.page-quote figcaption {
-  position: relative; z-index: 1;
-  align-self: center; text-align: center;
-  padding: 32px clamp(20px, 7%, 90px);
-}
-.page-quote blockquote { margin: 0; }
-.page-quote blockquote p {
-  /* The cap is on the paragraph, not on the blockquote, because `em` resolves
-     against the element's own font and the serif quote is what it should
-     measure. Two or three centred lines, the way the live page sets it, rather
-     than one line running the full width of the band. */
-  max-width: 26em; margin: 0 auto; color: #fff;
-  font-family: var(--serif); font-style: italic; font-weight: 700;
-  font-size: clamp(1.15rem, 2.1vw, 1.75rem); line-height: 1.34;
-  /* Three lines with one word alone on the last is what this wraps to in the
-     copy column at several widths. Balancing evens them out where the browser
-     supports it and changes nothing where it does not. */
-  text-wrap: balance;
-}
-.page-quote cite {
-  display: block; margin-top: 20px; font-style: normal; font-weight: 700;
-  font-size: .78rem; letter-spacing: .14em; text-transform: uppercase;
-  color: #fff;
+     Nothing about the copy moves. A float shortens the LINE boxes beside it, so
+     the copy already wraps at this same width; the difference would only show on
+     a page whose copy runs past the bottom of the card, and such a page gets the
+     picture at its floor instead. */
+  .page-flow.has-picture {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    column-gap: 44px;
+    align-items: stretch;
+  }
+  /* The clearfix would otherwise become a third grid item and take a row of its
+     own. There is no float left here to clear. */
+  .page-flow.has-picture::after { content: none; }
+  .page-flow.has-picture > .sidebar-card {
+    float: none; width: auto; margin: 0;
+    grid-column: 2; grid-row: 1;
+    align-self: start;   /* the card is its own height, never stretched */
+  }
+  .page-flow.has-picture > .prose {
+    grid-column: 1; grid-row: 1;
+    display: flex; flex-direction: column;
+  }
+  /* Margins do not collapse in a flex column, so the copy's last paragraph adds
+     its own 18px on top of the picture's 50 and the gap reads 68 -- against the
+     50 the inline logo strip gets, where ordinary block margins DO collapse.
+     Zeroing it puts the two components on the same gap. The picture is always
+     the last child here, so this is always the copy's last block. */
+  .page-flow.has-picture > .prose > :nth-last-child(2) { margin-bottom: 0; }
+  /* The row is as tall as the card, the copy takes what it needs, and this takes
+     the rest -- so its bottom edge IS the row's bottom edge, which is the card's.
+     When the copy is the taller of the two it falls back to its own floor and
+     ends below the card, which is the honest outcome rather than a stretch.
+
+     `flex-basis: 0`, not `auto`, is what makes that work, and `auto` was tried
+     first: a flex item's base size counts toward its container's intrinsic
+     height, so with `auto` the picture's own 728x228 sized the row, the row
+     outgrew the card, and the picture ended 73px BELOW it -- measured. At zero
+     it contributes only the floor below, the card wins the row, and the growth
+     is exactly the space left. Same shape as the scholarship column, where
+     letting the pictures vote on the row height was also the bug.
+
+     The floor lives here rather than on the component because below this width
+     there is no row to fill: the picture is a plain block at its own ratio, and
+     a floor there would show as a strip of the navy backing under it -- it did,
+     33px of it at 390px wide. 100px is under the least room this page ever
+     leaves -- swept every 13px from 861 to 1500, the room runs 117 to 173 -- so
+     the floor never decides the height here. It is there for the page whose copy
+     outgrows the card, to stop the picture being ground to a sliver. */
+  .page-flow.has-picture .page-picture { flex: 1 1 0; min-height: 100px; }
 }
 
 .empty {

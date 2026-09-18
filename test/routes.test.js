@@ -440,43 +440,40 @@ test('the slides survive in the store even though nothing renders them', async (
   assert.equal(seed.slides.length, 3, 'all three slides are still seeded');
 });
 
-// The quotation on /programs is the one the live site publishes, over the
-// photograph it publishes it on. Two halves that fail differently: the words
-// have to come from the store rather than the template (or an admin edit stops
-// reaching the page), and the picture has to be an <img> with a content hash
-// rather than a raster of the whole band or a CSS background.
-test('the programs page renders its quotation as text over a versioned photograph', async () => {
+// The photograph closing /programs. Two halves that fail differently: the
+// picture has to be an <img> with a content hash rather than a CSS background,
+// and it has to render inside the copy column -- outside it, it cannot end
+// level with the card, which is the whole point of it.
+test('the programs page renders its photograph inside the copy column', async () => {
   const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
   const page = seed.pages.find((p) => p.slug === 'programs');
-  assert.ok(page.quote && page.quote.src, 'the programs page carries no quote');
+  assert.ok(page.picture && page.picture.src, 'the programs page carries no picture');
 
   await withServer(async (base) => {
     const body = await (await fetch(`${base}/programs`)).text();
-    assert.match(body, /<figure class="page-quote">/, 'the quote band is not rendered');
-    // The words, verbatim from the store and as real text.
-    assert.ok(body.includes(`<blockquote><p>${page.quote.text}</p></blockquote>`),
-      'the quotation does not come through as text from the store');
-    assert.ok(body.includes(`<cite>${page.quote.cite}</cite>`), 'the attribution is missing');
-    // The picture, versioned -- an unversioned src sits in a browser cache for a
-    // year, which is how a deleted plate survived a deploy once already.
-    const src = body.match(/<figure class="page-quote">[\s\S]*?<img src="([^"]+)"/);
-    assert.ok(src, 'the quote band has no image');
-    assert.ok(src[1].startsWith(page.quote.src + '?v='),
-      `the quote photograph is not content-hashed: ${src[1]}`);
+    assert.match(body, /<figure class="page-picture">/, 'the picture is not rendered');
+    // Versioned -- an unversioned src sits in a browser cache for a year, which
+    // is how a deleted plate survived a deploy once already.
+    const src = body.match(/<figure class="page-picture">[\s\S]*?<img src="([^"]+)"/);
+    assert.ok(src, 'the figure has no image');
+    assert.ok(src[1].startsWith(page.picture.src + '?v='),
+      `the photograph is not content-hashed: ${src[1]}`);
     // And it must not have become a background on the way past: a url() in the
     // stylesheet carries no hash and this sheet would be the wrong place for it.
     const css = await (await fetch(`${base}/css/site.css`)).text();
     assert.doesNotMatch(css, /url\([^)]*quote-mlk/, 'the photograph is a CSS background');
 
-    // It belongs INSIDE the prose column, directly under the last line of copy,
-    // the way the community page's inline logo strip does -- not as a
-    // full-width block of its own below the section. Checked structurally
-    // rather than by indentation: nothing that closes the column or opens a new
-    // one may stand between the column and the figure.
-    const between = body.slice(body.indexOf('class="prose"'), body.indexOf('<figure class="page-quote">'));
-    assert.ok(between.length > 0, 'the quote is rendered before the prose column');
-    assert.doesNotMatch(between, /<div class="wrap"/, 'the quote sits in a wrap of its own, not in the copy');
-    assert.doesNotMatch(between, /<\/section>/, 'the quote has left the copy section');
+    // It belongs INSIDE the copy column, under the last line of copy, the way
+    // the community page's inline logo strip does -- not as a full-width block
+    // of its own below the section. Checked structurally rather than by
+    // indentation: nothing that closes the column or opens a new one may stand
+    // between the column and the figure.
+    const between = body.slice(body.indexOf('class="prose"'), body.indexOf('<figure class="page-picture">'));
+    assert.ok(between.length > 0, 'the picture is rendered before the copy column');
+    assert.doesNotMatch(between, /<div class="wrap"/, 'the picture sits in a wrap of its own, not in the copy');
+    assert.doesNotMatch(between, /<\/section>/, 'the picture has left the copy section');
+    // And the column it sits in has to be the one the picture can fill.
+    assert.match(body, /class="wrap page-flow has-picture"/, 'the copy column is not laid out for the picture');
   });
 });
 

@@ -14,6 +14,14 @@ $indexFrom = 6;
 $article = md_sections($page['body'] ?? '');
 $index = count($article['headings']) >= $indexFrom ? $article['headings'] : [];
 ?>
+<?php
+// A page can close its copy with a photograph that ends level with the bottom of
+// the aside card. The two have to END together, and a float's bottom is not
+// something the flow below it can be told about -- so such a page puts the card
+// in a grid column instead of floating it. The class is what switches the
+// layout; see the stylesheet. Mirrored in page.ejs.
+$hasPicture = !empty($page['picture']['src']);
+?>
 <section class="band">
   <?php /* The aside floats rather than taking a grid column, so the answers wrap
       beside it and then run the full width of the page once past it, instead of
@@ -21,7 +29,7 @@ $index = count($article['headings']) >= $indexFrom ? $article['headings'] : [];
       source for a float to work, which does mean a screen reader meets the card
       before the copy -- it is four short lines, so that is the cheaper of the
       two costs. */ ?>
-  <div class="wrap page-flow">
+  <div class="wrap page-flow<?= $hasPicture ? ' has-picture' : '' ?>">
     <?php $app->partial('page-aside'); ?>
     <div class="prose">
       <?php if ($index !== []): ?>
@@ -43,14 +51,13 @@ $index = count($article['headings']) >= $indexFrom ? $article['headings'] : [];
         <?php $app->partial('logo-strip', ['logos' => $logos, 'stripSize' => 'large', 'stripInline' => true]); ?>
       <?php endif; ?>
 
-      <?php /* A page can close its copy with a quotation over a photograph. It
-          sits INSIDE the prose column, directly under the last line of copy,
-          the way the inline logo strip does -- and for the same reason it needs
-          no `clear`: its own `overflow: hidden` already makes it a block
-          formatting context, so it sits beside the floated card rather than
-          running under it. Mirrored in page.ejs. */ ?>
-      <?php if (!empty($page['quote']['src'])): ?>
-        <?php $app->partial('page-quote', ['quote' => $page['quote']]); ?>
+      <?php /* A page can close its copy with a photograph. It sits INSIDE the
+          prose column, directly under the last line of copy, the way the inline
+          logo strip does -- and it ends level with the bottom of the aside card,
+          which is why `.page-flow` takes `has-picture` above. Mirrored in
+          page.ejs. */ ?>
+      <?php if ($hasPicture): ?>
+        <?php $app->partial('page-picture', ['picture' => $page['picture']]); ?>
       <?php endif; ?>
     </div>
   </div>

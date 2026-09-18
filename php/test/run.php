@@ -1782,26 +1782,30 @@ test('both page forms offer the legal checkbox', function () {
     }
 });
 
-// The programs page closes its copy with a quotation over a photograph, and the
-// three program rows run their picture the full height of the text beside it.
-// Both are CSS that measures right and fails silently, so both are pinned here.
-test('the page quote and the program rows are built the way they measure', function () {
+// The programs page closes its copy with a photograph that ends level with the
+// bottom of the aside card, and the three program rows run their picture the
+// full height of the text beside it. Both are CSS that measures right and fails
+// silently, so both are pinned here.
+test('the page picture and the program rows are built the way they measure', function () {
     $root = dirname(__DIR__, 2);
 
-    // The quotation is real text over a real <img>, not a raster and not a CSS
-    // background: an img src goes through asset_url() and carries a content
-    // hash, which a url() in the stylesheet would not.
+    // A real <img>, not a CSS background: the src then goes through asset_url()
+    // and carries a content hash, which a url() in the stylesheet would not.
     foreach ([
-        ['views/partials/page-quote.ejs', 'assetUrl(quote.src)'],
-        ['php/leo-app/views/partials/page-quote.php', 'asset_url($quote[\'src\']'],
+        ['views/partials/page-picture.ejs', 'assetUrl(picture.src)'],
+        ['php/leo-app/views/partials/page-picture.php', 'asset_url($picture[\'src\']'],
     ] as [$partial, $call]) {
         $src = file_get_contents($root . '/' . $partial);
-        ok(str_contains($src, '<blockquote>'), $partial . ' does not render the quotation as text');
+        ok(str_contains($src, '<figure class="page-picture">'), $partial . ' does not render the figure');
         ok(str_contains($src, $call), $partial . ' builds the photograph src without a content hash');
     }
+    // The class on `.page-flow` is what swaps the float for the grid, so a page
+    // that renders a picture must set it -- without it the picture keeps its own
+    // ratio and stops short of the card.
     foreach (['views/page.ejs', 'php/leo-app/views/page.php'] as $view) {
         $src = file_get_contents($root . '/' . $view);
-        ok(str_contains($src, 'page-quote'), $view . ' never renders the quote');
+        ok(str_contains($src, 'page-picture'), $view . ' never renders the picture');
+        ok(str_contains($src, 'has-picture'), $view . ' never asks for the layout the picture needs');
     }
 
     foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
@@ -1841,32 +1845,55 @@ test('the page quote and the program rows are built the way they measure', funct
             $sheet . ': the stacked program photo has no ratio of its own'
         );
 
-        // In the prose column it inherits `.prose blockquote`: a gold left bar
-        // and 18px of indent, which pushes the centred quotation off-centre.
-        // The override needs two classes (0,2,1) to outrank it (0,1,1).
+        // The picture ends where the card does, and that needs all three of
+        // these. The copy column has to be a flex column, the picture has to
+        // take the slack in it, and the card has to be a grid item that does
+        // NOT stretch -- a stretched card ends level by growing, which is the
+        // mistake the scholarship column already made once.
         ok(
-            preg_match('/\\.prose \\.page-quote blockquote \\{[^}]*border-left: 0;/s', $css) === 1,
-            $sheet . ': the prose blockquote bar is back on the quotation'
+            preg_match('/\\.page-flow\\.has-picture > \\.prose \\{[^}]*flex-direction: column;/s', $css) === 1,
+            $sheet . ': the copy column is not a flex column, so nothing can take the slack'
+        );
+        // `flex-basis: 0`, not `auto`. A flex item's base size counts toward its
+        // container's intrinsic height, so with `auto` the picture sized the
+        // row, the row outgrew the card, and the picture ended 73px below it.
+        ok(
+            preg_match('/\\.page-flow\\.has-picture \\.page-picture \\{[^}]*flex: 1 1 0;/s', $css) === 1,
+            $sheet . ': the picture sizes the row it is meant to fill, so it cannot end on the card'
+        );
+        // Margins do not collapse in a flex column, so without this the copy's
+        // last paragraph adds its 18px to the picture's 50 and the gap reads 68
+        // against the inline strip's 50.
+        ok(
+            preg_match('/\\.page-flow\\.has-picture > \\.prose > :nth-last-child\\(2\\) \\{[^}]*margin-bottom: 0;/s', $css) === 1,
+            $sheet . ': the gap under the copy is the strip\'s 50px plus an uncollapsed paragraph margin'
         );
         ok(
-            preg_match('/\\.prose \\.page-quote blockquote \\{[^}]*padding-left: 0;/s', $css) === 1,
-            $sheet . ': the prose blockquote indent is back on the quotation'
+            preg_match('/\\.page-flow\\.has-picture > \\.sidebar-card \\{[^}]*align-self: start;/s', $css) === 1,
+            $sheet . ': the card stretches, so it ends level by growing rather than the picture filling'
         );
-        // And it must NOT clear the float -- `overflow: hidden` already makes it
-        // a formatting context, so it sits beside the card and therefore
-        // directly under the copy. Clearing it drops it below the card and
-        // opens the gap the move was meant to close. Same note as the strip.
+        // `.page-flow::after` is a clearfix for the float. In the grid it would
+        // be a third grid item and take a row of its own.
         ok(
-            preg_match('/^\\.page-quote \\{[^}]*clear:/ms', $css) !== 1,
-            $sheet . ': the quote clears the card, which puts it back below it'
+            preg_match('/\\.page-flow\\.has-picture::after \\{[^}]*content: none;/s', $css) === 1,
+            $sheet . ': the clearfix is still a grid item on a page with a picture'
         );
-
-        // The caption sits above the scrim, and grid items paint in DOM order --
-        // a generated ::after is the last of them, so without this the tint
-        // covers the words.
+        // `height: 100%` is what makes the picture take the height it is handed
+        // rather than drawing at its own ratio inside a taller box -- the same
+        // pair the recipient rows and the program photos need.
         ok(
-            preg_match('/\\.page-quote figcaption \\{[^}]*z-index: 1;/s', $css) === 1,
-            $sheet . ': the quote scrim paints over the quotation'
+            preg_match('/\\.page-picture img \\{[^}]*height: 100%;/s', $css) === 1,
+            $sheet . ': the picture will letterbox instead of filling its box'
+        );
+        ok(
+            preg_match('/\\.page-picture img \\{[^}]*object-fit: cover;/s', $css) === 1,
+            $sheet . ': the picture will distort when it is cropped'
+        );
+        // And it must NOT clear the float -- it sits beside the card by design,
+        // and clearing it drops it below the card. Same note as the strip.
+        ok(
+            preg_match('/^\\.page-picture \\{[^}]*clear:/ms', $css) !== 1,
+            $sheet . ': the picture clears the card, which puts it back below it'
         );
     }
 });
