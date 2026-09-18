@@ -1419,6 +1419,16 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   align-items: center;
 }
+/* The two menus start on one line as each other. Centred individually they do
+   not: the row is the sign-off's height and each menu centres by its OWN, so a
+   278px column of links and a 217px column of contact details sat 30px apart at
+   the top. Ranging both to the start of the row is what lines them up without a
+   number that has to be maintained -- an offset would be right once and wrong
+   after the next link is added in /admin.
+
+   The sign-off keeps its own `center`, which is a no-op while it is the tallest
+   thing in the row and the right behaviour if it ever is not. */
+.foot-grid > div + div { align-self: start; }
 
 /* Three equal 1fr tracks are even by the ruler and not to the eye: the brand
    column fills its track, the two menus do not, so the link lists sat in the

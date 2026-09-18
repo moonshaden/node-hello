@@ -1327,17 +1327,29 @@ test('the footer spreads its columns rather than sharing equal tracks', function
     }
 });
 
-// The menus sit on the brand column's middle. Three declarations do it and the
-// two margin resets look like tidying rather than layout, so they are the ones a
-// later pass would drop -- and dropping either leaves the menus a few pixels
-// high with nothing failing.
-test('the footer menus centre against the brand column', function () {
+// The two menus start on one line as each other, at the top of the row. They
+// used to centre individually against the brand column, which put a 278px
+// column of links and a 217px column of contact details 30px apart at the top --
+// the client asked for them level. The margin resets keep each column's box
+// tight to its ink, which is what stops the alignment being a few pixels out;
+// they look like tidying rather than layout, so they are the ones a later pass
+// would drop.
+test('the footer menus start on one line as each other', function () {
     $root = dirname(__DIR__, 2);
     foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
         $css = file_get_contents($root . '/' . $sheet);
+        // Every column after the first -- both menus, and any third one added
+        // later -- ranges to the start of the row rather than centring by its
+        // own height.
+        ok(
+            preg_match('/\.foot-grid > div \+ div \{[^}]*align-self: start;/s', $css) === 1,
+            $sheet . ': the footer menus centre by their own height again, so they do not line up'
+        );
+        // The grid keeps `center` for the sign-off: a no-op while it is the
+        // tallest thing in the row, and the right behaviour if it ever is not.
         ok(
             preg_match('/\.foot-grid \{[^}]*align-items: center;/s', $css) === 1,
-            $sheet . ': the footer columns are not centred against each other'
+            $sheet . ': the sign-off lost its own alignment'
         );
         ok(
             str_contains($css, '.foot-grid > div > :last-child { margin-bottom: 0; }'),
@@ -1345,7 +1357,7 @@ test('the footer menus centre against the brand column', function () {
         );
         ok(
             str_contains($css, '.foot li:last-child { margin-bottom: 0; }'),
-            $sheet . ': the last list item keeps its margin, which lifts the menus off centre'
+            $sheet . ': the last list item keeps its margin, which pads the menu column past its ink'
         );
     }
 });
