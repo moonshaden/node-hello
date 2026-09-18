@@ -1978,6 +1978,9 @@ test('a page can open its copy with a callout', function () {
     foreach (['views/page.ejs', 'php/leo-app/views/page.php'] as $view) {
         $src = file_get_contents($root . '/' . $view);
         ok(str_contains($src, 'page-notice'), $view . ' never renders the callout');
+        // Two halves: the bold line is an h3, the way the scholarships panel
+        // sets it, and the sentence under it is a paragraph.
+        ok(str_contains($src, '<h3>'), $view . ' renders the callout without its bold line');
     }
     foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
         $css = file_get_contents($root . '/' . $sheet);
@@ -2004,11 +2007,14 @@ test('a page can open its copy with a callout', function () {
                 $giving = $page;
             }
         }
-        ok(!empty($giving['notice']), $store . ': the giving page carries no callout');
-        ok(
-            !str_contains($giving['body'], $giving['notice']),
-            $store . ': the callout sentence is in the body as well, so the page says it twice'
-        );
+        ok(!empty($giving['notice']['heading']), $store . ': the giving callout has no bold line');
+        ok(!empty($giving['notice']['body']), $store . ': the giving callout has no body');
+        foreach ([$giving['notice']['heading'], $giving['notice']['body']] as $line) {
+            ok(
+                !str_contains($giving['body'], $line),
+                $store . ': a callout line is in the body as well, so the page says it twice'
+            );
+        }
     }
 });
 

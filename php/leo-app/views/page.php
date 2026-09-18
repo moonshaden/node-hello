@@ -41,13 +41,18 @@ $hasPicture = !empty($page['picture']['src']);
       </nav>
       <?php endif; ?>
 
-      <?php /* A page can open its copy with a callout -- a `notice` string on
-          the record, in the same panel the scholarships page uses for its
-          enrolment instructions. It sits under the jump index, or at the top of
-          the copy on a page that has no index. Mirrored in page.ejs. */ ?>
-      <?php if (!empty($page['notice'])): ?>
+      <?php /* A page can open its copy with a callout -- a `notice` object on
+          the record, `{ heading, body }`, in the same panel the scholarships
+          page uses for its enrolment instructions: the heading in bold with the
+          body under it. Either half may be empty. It sits under the jump index,
+          or at the top of the copy on a page that has no index.
+          Mirrored in page.ejs. */ ?>
+      <?php if (!empty($page['notice']['heading']) || !empty($page['notice']['body'])): ?>
         <div class="notice page-notice">
-          <div><p><?= e($page['notice']) ?></p></div>
+          <div>
+            <?php if (!empty($page['notice']['heading'])): ?><h3><?= e($page['notice']['heading']) ?></h3><?php endif; ?>
+            <?php if (!empty($page['notice']['body'])): ?><p><?= e($page['notice']['body']) ?></p><?php endif; ?>
+          </div>
         </div>
       <?php endif; ?>
 
