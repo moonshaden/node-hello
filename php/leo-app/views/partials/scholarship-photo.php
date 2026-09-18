@@ -1,33 +1,29 @@
 <?php
-// The memorial photograph at the top of a scholarship's copy column.
+// A scholarship's photographs, stacked in the right column under the award card.
 //
-// The five published images are not one shape and the live site does not give
-// them one treatment. Three carry Avada's `alignleft` (the copy wraps beside
-// them) and two carry `img-responsive` (they fill the width). The split is by
-// the image's own width, not by its shape:
+// `photos` is an array on the scholarship record, each `{ src, alt, width,
+// height }`. Several of these awards publish more than one picture, so the
+// component stacks: one column, same width each, in the order the record gives
+// them.
 //
-//   463, 543 and 250px wide  -> alignleft
-//   924 and 980px wide       -> img-responsive
+// `width` and `height` are the stored pixel size, and they become the attributes
+// so the column reserves the space before the picture loads. They also cap it:
+// the smallest of these is 227px wide against a 344px column, and stretching a
+// 227px photograph to fill would upscale it. Nothing here is ever drawn past its
+// own pixels -- see the `max-width` note in the stylesheet.
 //
-// So that is the rule here: under INSET_MAX the figure sits inside the copy and
-// the text wraps; at or above it, it fills the column. Reproducing the live
-// split rather than inventing one, and it happens to be the rule that avoids
-// the two things that actually go wrong -- a picture upscaled past its own
-// pixels, and a narrow picture leaving half a column blank.
-//
-// `photoWidth` and `photoHeight` are the stored pixel size. They decide the
-// branch and they become the `width`/`height` attributes, so the column
-// reserves the space before the image loads. Without them the figure falls back
-// to the full-width treatment, which is the safe default: it never floats, so
-// it cannot drag a boxed element underneath itself.
+// The array lives on the record rather than being its own content type, the same
+// way the board roster and the programs list do, and it survives an admin save
+// for the same reason: `applyFields()` spreads the existing record first.
+// Nothing in the scholarship form edits it.
 //
 // Mirrored in scholarship-photo.ejs.
-const INSET_MAX = 560;
-$pw = (int) ($scholarship['photoWidth'] ?? 0);
-$ph = (int) ($scholarship['photoHeight'] ?? 0);
-$inset = $pw > 0 && $pw < INSET_MAX;
 ?>
-<figure class="scholarship-photo<?= $inset ? ' is-inset' : '' ?>">
-  <img src="<?= e(link_url($scholarship['photoUrl'] ?? '', $basePath)) ?>" alt="<?= e($scholarship['photoAlt'] ?? '') ?>"
-       <?= $pw && $ph ? 'width="' . $pw . '" height="' . $ph . '"' : '' ?> loading="lazy">
-</figure>
+<div class="scholarship-photos">
+  <?php foreach ($photos as $photo): ?>
+    <figure class="scholarship-photo">
+      <img src="<?= e(link_url($photo['src'] ?? '', $basePath)) ?>" alt="<?= e($photo['alt'] ?? '') ?>"
+           <?= !empty($photo['width']) && !empty($photo['height']) ? 'width="' . (int) $photo['width'] . '" height="' . (int) $photo['height'] . '"' : '' ?> loading="lazy">
+    </figure>
+  <?php endforeach; ?>
+</div>

@@ -11,10 +11,6 @@
 <section class="band">
   <div class="wrap split">
     <div>
-      <?php if (!empty($scholarship['photoUrl'])): ?>
-        <?php $app->partial('scholarship-photo', ['scholarship' => $scholarship]); ?>
-      <?php endif; ?>
-
       <?php if (!empty($scholarship['criteria'])): ?>
         <div class="criteria">
           <h3>Who can apply</h3>
@@ -43,6 +39,11 @@
       <?php endif; ?>
     </div>
 
+    <?php // The award card and the photographs share the right column: the card
+          // on top, the pictures stacked beneath it. They need one wrapper
+          // because `.split` is a two-track grid, and a third child would wrap
+          // onto a new row under the copy instead of under the card. ?>
+    <div class="split-side">
     <aside class="sidebar-card">
       <span class="pill pill-<?= e($scholarship['window']['state']) ?>"><?= $scholarship['isOpen'] ? 'Accepting applications' : 'Not accepting applications' ?></span>
       <dl style="margin-top:20px">
@@ -68,6 +69,11 @@
         <p class="small muted" style="margin-top:16px;margin-bottom:0"><?= e($enrollmentSettings['awardedNote']) ?></p>
       <?php endif; ?>
     </aside>
+
+    <?php if (!empty($scholarship['photos'])): ?>
+      <?php $app->partial('scholarship-photo', ['photos' => $scholarship['photos']]); ?>
+    <?php endif; ?>
+    </div>
   </div>
 </section>
 

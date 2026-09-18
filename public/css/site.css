@@ -981,64 +981,36 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .sidebar-card dd.wrapany { overflow-wrap: anywhere; }
 .sidebar-card dl { margin: 0 0 4px; }
 .sidebar-card .eyebrow { color: var(--gold); }
-/* The memorial photograph at the top of a scholarship's copy column. See
-   views/partials/scholarship-photo.ejs for why this branches, and why the
-   branch is by the image's own width.
+/* A scholarship's photographs, stacked in the right column under the award card.
 
-   `max-width` and never `width: 100%`: the smallest of these is 250px wide and
-   the column is 688px, so a plain `width: 100%` upscaled it half as big again --
-   measured, it rendered 688x446 from a 463x300 original. An image is never
-   drawn past its own pixels here. `height: auto` is what lets the img's
-   width/height attributes cooperate with that rather than fight it; without it
-   a 980x363 banner keeps a literal 363px height whatever the width does. */
-.scholarship-photo {
-  margin: 0 0 28px;
+   `.split` is a two-track grid, so the card and the pictures share one wrapper:
+   a third grid child would wrap onto a new row and land under the COPY, not
+   under the card. */
+.split-side {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
+.scholarship-photos {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.scholarship-photo {
+  margin: 0;
+}
+/* `max-width`, never `width: 100%`. The column is 344px and the smallest of
+   these photographs is 227px wide, so stretching them to fill would upscale --
+   measured earlier on a 463px composite, which a `width: 100%` drew at 688px.
+   `height: auto` is what lets the img's own width/height attributes cooperate
+   with a responsive width instead of fighting it; without it a 924x300 picture
+   keeps a literal 300px height whatever the width does. */
 .scholarship-photo img {
   display: block;
   width: auto;
   max-width: 100%;
   height: auto;
   border-radius: 14px;
-}
-
-/* Under 560px the picture sits inside the copy and the text wraps, which is the
-   `alignleft` treatment the live site gives these three. The cap is a share of
-   the column rather than a pixel width: at 45% the widest of them (543px) comes
-   down to 310px at desktop and still leaves the copy beside it a fair measure. */
-.scholarship-photo.is-inset {
-  float: left;
-  max-width: 45%;
-  margin: 0 28px 20px 0;
-}
-
-/* A float shortens line boxes, never block boxes, so the gold criteria panel and
-   any headed section would otherwise run their background straight under the
-   picture. Own formatting context each, and they sit beside it instead -- the
-   same fix the page template's jump index needed. */
-.split > div > .criteria,
-.split > div > h2 { display: flow-root; }
-
-/* Unfloating has to be asked of the COLUMN, not the viewport, because this
-   column's width does not track the viewport's. Measured down the sweep it goes
-   688, 624, 581, 532, 493, 432 as the split narrows -- and then back up to 652
-   the moment the split collapses to one column at 860px. So a viewport query
-   unfloats the picture at exactly the widths where there is most room for it.
-   Named, because `.recipient-rows` further down this column is a container too
-   and an unnamed query binds to the nearest one. */
-.split > div {
-  container-type: inline-size;
-  container-name: schol-col;
-}
-@container schol-col (max-width: 600px) {
-  /* Under 600px the copy beside a 45% picture is down to about 45 characters,
-     which is where a wrapped measure stops reading; the inset one becomes a
-     block like the full-width ones. */
-  .scholarship-photo.is-inset {
-    float: none;
-    max-width: 100%;
-    margin: 0 0 24px;
-  }
 }
 
 .split { display: grid; gap: 40px; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); align-items: start; }
