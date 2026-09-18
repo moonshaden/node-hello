@@ -38,7 +38,7 @@ reaches real students and real donors. So:
   you did. Report the failure with the evidence, not a reassuring summary.
 
 
-## Where this left off — 2026-09-18, head `689dbfa`
+## Where this left off — 2026-09-18, head `df4647c`
 
 Several sessions work this branch at once. Pull before starting, and expect the
 head to have moved mid-task. PR #3 is **merged**; the open one is **PR #4**
@@ -48,12 +48,12 @@ head.
 `docs/sessions/` holds a log per working session — what was asked, what was tried
 and rejected, and what went wrong. This file is the state; those are the reasons.
 The most recent is
-`docs/sessions/2026-09-18-scholarship-photographs.md`.
+`docs/sessions/2026-09-18-scholarship-pictures-and-logos.md`.
 
 **Landed and verified** (90 node / 93 PHP tests, PHP lint clean, cross-build
-render diff zero on **nineteen** paths — the eleven public pages plus eight
-scholarship detail pages — and every change byte-compared against the deployed
-build subdomain):
+render diff zero on **twenty-four** paths — the eleven public pages plus **all
+thirteen** scholarship detail pages — and every change byte-compared against the
+deployed build subdomain):
 
 - `/board`, `/programs`, `/community` — all three transcribed pages, shipped in
   #3. See *Content accuracy*.
@@ -125,14 +125,17 @@ build subdomain):
   `height: 100%` plus `object-fit: cover`, measured at 0px difference on all
   four cards. Stacking is keyed to the **list's own width**, not the viewport:
   `@container (max-width: 600px)` on `.recipient-rows`. See *Gotchas* for both.
-- **The five memorial scholarships carry their photographs**, in the right
-  column under the award card, centred and stacked. `photos` is an array on the
-  scholarship record, so an award with several pictures stacks them; two of the
-  five publish a composite that was split into its own files, because a three-up
-  composite in a 344px column draws each face about 40px across. The stack ends
-  level with the bottom of the copy — it shrinks to fit and never grows. See
-  *Content accuracy* for where the files came from and *Gotchas* for the two
-  traps that cost the most time.
+- **Twelve of the thirteen scholarships carry a picture**, in the right column
+  under the award card, centred and stacked. `photos` is an array on the record,
+  so an award with several pictures stacks them; two of the five memorial awards
+  publish a composite that was split into its own files, because a three-up
+  composite in a 344px column draws each face about 40px across. Nine pictures
+  come from the live site; the three LEO-branded awards carry the foundation's
+  own lion instead. Only Foundation Theatre and Foster Youth have none. A stack
+  ends level with the bottom of the copy — it shrinks to fit and never grows, and
+  a column that carries pictures reserves room so nothing can paint over the
+  footer. See *Content accuracy* for where the files came from and *Gotchas* for
+  the traps that cost the most time.
 
 **The debt this branch carries, stated plainly:** *nothing in either suite covers
 the hero rail or the logo strip.* The rotation, the one-at-a-time slot logic, the
@@ -493,6 +496,35 @@ the stretched box.
 - A `min-height` floor stops a short copy column grinding three pictures into
   slivers.
 
+**Taking a column out of flow means its band can no longer grow for it, and the
+overflow lands on whatever is below.** `.split-side` holds no in-flow content so
+that the copy alone sizes the grid row — that is what makes the pictures end level
+with the text. The cost is that `section.band` cannot grow to contain them either.
+On the SKW page, which carries 406px of copy against a 399px card, that is minus
+thirteen pixels of room: the tile ran 231px past the band and painted **on top of
+the footer**.
+
+- **An element screenshot will not show you this.** It clips at the container, so
+  the overflowing part simply is not in the picture and the page looks fine. What
+  caught it was `document.elementFromPoint` at the picture's own centre, which
+  returned `.foot-grid`.
+- **The fix is a reserve, not a squeeze.** `.split-side.has-photos` has
+  `min-height: 619px` — card (399) plus gap (20) plus 200px of picture — so the
+  row is `max(copy, reserve)` and a column that carries pictures always has room.
+  It changes nothing on the pages whose copy is already taller. Shrinking instead
+  does not work: with the shrink on, the tile squeezed to the floor and *still*
+  overhung by 122px, so it was small AND overflowing.
+- The class comes from the template rather than `:has()`, so it does not depend
+  on selector support.
+
+**A contrast metric cannot see line work.** The lion mark was matted on navy
+because a white-and-gold mark looked like it would disappear on the `#fdfcfa`
+band, and a pixel count backed it up: 42% of the mark composites to within 18/255
+of the background. That 42% is the lion's white *body*, which is drawn by its grey
+shading and bounded by the gold mane and arc — on the band it reads perfectly
+well. The client asked for the plate to go and was right. Rendering it and looking
+took ten seconds and would have settled it first.
+
 **A flex item stretches on the cross axis, including a picture you sized
 yourself.** `.scholarship-photo` is a flex row, so its `img` was stretched to the
 figure's `min-height` floor while `object-fit: contain` kept the picture its own
@@ -709,11 +741,52 @@ eighth header item.
   are not named anywhere. They are carried as published; worth asking the client
   whether they want them kept.
 
-**The five memorial scholarships publish a photograph each**, taken from the live
-site on 2026-09-18 and rehosted under `public/img/scholarships/` and
-`php/public_html/img/scholarships/` — 1.5 MB of originals down to 280 KB for all
-eight files. They reach the server through a `seed_content` run, like every other
-content change.
+**Nine scholarship pictures come from the live site**, taken on 2026-09-18 and
+rehosted under `public/img/scholarships/` and `php/public_html/img/scholarships/`.
+They reach the server through a `seed_content` run, like every other content
+change. All thirteen published scholarship pages were swept, not just the five
+memorial ones:
+
+| pictures | pages |
+| --- | --- |
+| a photograph, or several | McCurdy (2), Baker (3), Smith, Mealman, Gary |
+| a logo or award artwork | GCU Guild, SKW Play it Forward, BHHS Legacy |
+| the foundation's own lion | LEO Foundation, Entrepreneurial, Christian Studies |
+| none published, none invented | Foundation Theatre, Foster Youth |
+
+The four logos are **PNG, not JPEG** — flat colour and sharp type, which JPEG
+rings around — and each is cropped to its own ink bounding box, so the column
+width is the width of the mark and not of a box with the mark inside it (the LEO
+wordmark carried 24px of margin, BHHS 10px). They are matted on **`#fdfcfa`, the
+band's own colour, not white**: three carry an alpha channel and a white matte
+shows as a faint box on the page.
+
+**The three LEO-branded awards carry the foundation's lion**, the same mark the
+footer and the masthead use, cropped to its ink and transparent, one shared file
+at `/img/scholarships/leo-lion-mark.png`. It replaced the LEO *wordmark* that
+Christian Studies had been given, which duplicated the header and the footer.
+
+- It was first matted on the brand navy, on the reasoning that a white-and-gold
+  mark would vanish on the pale band — and a pixel count agreed, 42% of it
+  composites to within 18/255 of the background. **The count was measuring the
+  wrong thing.** That 42% is the lion's white *body*, which is drawn by its grey
+  shading and bounded by the gold mane and arc; on the band it reads perfectly
+  well. The client asked for the plate to go and was right. A contrast metric
+  cannot see line work — render it and look.
+
+**One picture is deliberately drawn past its own pixels.** The GCU Guild logo is
+146x91 on the live site and nothing larger exists — checked against the media
+API's registered sizes (`full` is 146x91, one 66x41 thumbnail) and a search of
+the whole library for "guild" and "gcu". At its own size it sat much smaller than
+every other mark, so the client asked for it larger; filling the column is a 2.4x
+upscale and it is **visibly soft**. It is an opt-in `fill` on that one photo
+record, not a change to the default, and two tests hold it to exactly one record.
+A better file from the Guild is the only thing that fixes it properly.
+
+The record holds a **`photos` array**, each entry `{ src, alt, width, height }`
+plus an optional `fill`.
+
+Sizes: 1.5 MB of originals down to about 450 KB for all twelve files.
 
 The record holds a **`photos` array**, each entry `{ src, alt, width, height }`.
 An array because two of the five publish a *composite* rather than a single
@@ -931,6 +1004,15 @@ is an empty string on all three. Do not compose one.
 13. **The Smith photograph is one composite that could not be split**, so it
     renders small in the column while the others fill it. Only the client can
     close this, by supplying the three originals. See *Content accuracy*.
+14. **The GCU Guild logo is upscaled 2.4x and visibly soft**, because 146x91 is
+    the largest file the live site holds. A better file from the Guild is the
+    only real fix; the `fill` opt-in is a knowing compromise, not a solution.
+15. **Foundation Theatre and Foster Youth carry no picture.** The live site
+    publishes none and none was invented. They are the other two LEO awards
+    without a sponsor's logo, so the lion is the obvious candidate — the client's
+    call, and offered.
+16. **The Baker banner crop drops the award's name** from the artwork, because
+    the page already renders it as the `h1`. Worth confirming with the client.
 
 ## Deploying
 
