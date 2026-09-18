@@ -12,12 +12,19 @@
 // count cuts one in half. Both builds split the same way -- a test asserts the
 // rendered pages agree.
 $isFlipped = !empty($flip);
+// Hiding has to earn its keep: the three programs keep 541, 1,346 and 731
+// characters behind the toggle, while the one partner on /community -- which
+// shares this partial -- had only 116, which is more friction than the text it
+// saves. Under this and the whole body just renders. Mirrored in the ejs.
+$discloseFrom = 240;
 $paragraphs = array_values(array_filter(
     preg_split('/\n{2,}/', (string) ($program['body'] ?? '')),
     static fn ($p) => trim($p) !== ''
 ));
-$lead = $paragraphs[0] ?? '';
-$rest = implode("\n\n", array_slice($paragraphs, 1));
+$remainder = implode("\n\n", array_slice($paragraphs, 1));
+$disclose = strlen($remainder) >= $discloseFrom;
+$lead = $disclose ? ($paragraphs[0] ?? '') : (string) ($program['body'] ?? '');
+$rest = $disclose ? $remainder : '';
 ?>
 <article class="card program<?= $isFlipped ? ' program-flip' : '' ?>">
   <?php if (!empty($program['photoUrl'])): ?>

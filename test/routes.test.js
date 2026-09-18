@@ -567,7 +567,12 @@ test('the programs show a lead paragraph and open the rest, links intact', async
       // The lead is on the page as rendered markdown, outside the disclosure.
       assert.ok(body.includes(plainRun(paragraphs[0])),
         `${program.name}: the lead paragraph is not on the page`);
-      if (paragraphs.length > 1) {
+      // Hiding earns its keep or it does not happen: a short remainder renders
+      // in full rather than behind a toggle. The one partner on /community --
+      // which shares this partial -- had 116 characters hidden, which was more
+      // friction than the text it saved.
+      const remainder = paragraphs.slice(1).join('\n\n');
+      if (remainder.length >= 240) {
         assert.ok(body.includes('class="story-rest"'), `${program.name}: the rest is not disclosed`);
         // Every paragraph after the first is still there.
         for (const rest of paragraphs.slice(1)) {
@@ -580,6 +585,13 @@ test('the programs show a lead paragraph and open the rest, links intact', async
         assert.ok(body.includes(`href="${href}"`), `${program.name}: a link was broken by the split: ${href}`);
       }
     }
+    // And the page that shares this partial for its one partner keeps its copy
+    // in the open, because only 116 characters would have been behind the
+    // toggle there.
+    const community = await (await fetch(`${base}/community`)).text();
+    assert.doesNotMatch(community, /story-toggle/,
+      'the community partner hides a paragraph behind a toggle that saves nothing');
+
     // The toggle is real text, not an icon, and says both states.
     assert.match(body, /class="when-shut">Read more</, 'the read-more label is missing');
     assert.match(body, /class="when-open">Show less</, 'the show-less label is missing');
