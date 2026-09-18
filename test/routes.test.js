@@ -83,6 +83,35 @@ test('the stylesheet and the script are requested with a version of their conten
   });
 });
 
+// Versioned asset URLs only work if the browser re-reads the HTML to see them.
+// The host sends no Cache-Control on PHP output at all -- measured on the live
+// subdomain, where the same `Header always set` block puts X-Frame-Options on
+// /css/site.css and nothing on / -- so a held page goes on asking for the old
+// hashes, which is how a replaced picture kept showing its previous version
+// after a correct deploy. The header is therefore set by the app, not the
+// server config, in both builds.
+test('the generated HTML tells the browser to revalidate, and carries its own security headers', async () => {
+  await withServer(async (base) => {
+    for (const route of ['/', '/scholarships', '/scholarships/leo-foundation-scholarship']) {
+      const res = await fetch(`${base}${route}`);
+      assert.match(
+        res.headers.get('cache-control') || '',
+        /no-cache/,
+        `${route}: the page may be held, so new asset hashes never reach a returning visitor`,
+      );
+      assert.equal(res.headers.get('x-frame-options'), 'SAMEORIGIN', route);
+      assert.equal(res.headers.get('x-content-type-options'), 'nosniff', route);
+      assert.equal(res.headers.get('referrer-policy'), 'strict-origin-when-cross-origin', route);
+    }
+
+    // The assets themselves must NOT be no-cache -- the whole point of hashing
+    // their URLs is that they can be held for a long time.
+    const css = await fetch(`${base}/css/site.css`);
+    assert.doesNotMatch(css.headers.get('cache-control') || '', /no-cache/,
+      'the stylesheet should be cacheable; its URL carries a hash');
+  });
+});
+
 // The stylesheet and the script carry a content hash; images did not, and it
 // reached the client. The lion mark was replaced in place -- same filename, navy
 // plate swapped for a transparent one -- and they still saw the navy version,

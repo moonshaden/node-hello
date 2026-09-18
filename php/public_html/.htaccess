@@ -46,14 +46,21 @@ RewriteRule ^ index.php [L]
     Header always set Cache-Control "public, max-age=31536000"
   </FilesMatch>
 
-  # Images are NOT versioned -- their URLs are plain /img/... paths -- so they
-  # get a week. Long enough to matter, short enough that a replaced portrait
-  # reaches a returning visitor without anyone clearing a cache.
+  # Images carry a hash of their own bytes now, the same as the css and the js,
+  # so a changed file is a different URL and a year is safe. Before that they
+  # were plain /img/... paths on a seven-day max-age, which is how a replaced
+  # picture went on showing its previous version to anyone who had already
+  # loaded the page.
   <FilesMatch "\.(jpg|jpeg|png|ico|svg|webp)$">
-    Header always set Cache-Control "public, max-age=604800"
+    Header always set Cache-Control "public, max-age=31536000"
   </FilesMatch>
 </IfModule>
 
+# These reach the STATIC files only. Measured on the live subdomain: the same
+# `Header always set` block puts X-Frame-Options on /css/site.css and not on /,
+# so on this host the directives do not apply to PHP output. The generated HTML
+# sets its own in App::sendHeaders(), where nothing can drop them -- including
+# the Cache-Control that makes the hashed URLs above actually work.
 <IfModule mod_headers.c>
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "SAMEORIGIN"

@@ -59,6 +59,23 @@ function createApp({ store = new Store() } = {}) {
   app.locals.assetUrl = assetUrl;
 
   app.use(express.static(path.join(__dirname, '..', 'public'), { maxAge: '1h' }));
+
+  // Response headers for the generated HTML, mirroring App::sendHeaders(). This
+  // sits after the static middleware so it only touches rendered pages.
+  //
+  // `no-cache` is the important one. Every stylesheet, script and image URL now
+  // carries a hash of its own bytes, so those can be cached hard -- but only if
+  // the browser re-reads the HTML to see the new URLs. Hold the page and a
+  // returning visitor goes on asking for the old hashes, which is exactly how a
+  // replaced picture kept showing its previous version after a correct deploy.
+  // `no-cache` means revalidate, not "do not store".
+  app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-cache, must-revalidate');
+    res.set('X-Content-Type-Options', 'nosniff');
+    res.set('X-Frame-Options', 'SAMEORIGIN');
+    res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    next();
+  });
   app.use(express.urlencoded({ extended: false, limit: '256kb' }));
   app.use(auth.session);
 

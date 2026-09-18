@@ -45,8 +45,39 @@ final class App
         );
     }
 
+    /**
+     * Response headers for the generated HTML.
+     *
+     * These are set here rather than in `.htaccess` because on this host they do
+     * not reach PHP output from there. Measured on the live subdomain:
+     * `X-Frame-Options` is present on /css/site.css and absent on /, from the
+     * same `Header always set` block. The static files keep their directives in
+     * `.htaccess`; the HTML gets them here, where nothing can drop them.
+     *
+     * `no-cache` is the important one and it is not paranoia. Every stylesheet,
+     * script and image URL now carries a hash of its own bytes, so those can be
+     * cached for a year -- but that only works if the browser re-reads the HTML
+     * to see the new URLs. Without this header the page itself could be held,
+     * and a returning visitor would go on asking for the old hashes. That is
+     * exactly how a replaced picture kept showing its previous version after a
+     * correct deploy. `no-cache` means revalidate, not "do not store".
+     */
+    private function sendHeaders(): void
+    {
+        if (PHP_SAPI === 'cli' || headers_sent()) {
+            return;
+        }
+
+        header('Cache-Control: no-cache, must-revalidate');
+        header('X-Content-Type-Options: nosniff');
+        header('X-Frame-Options: SAMEORIGIN');
+        header('Referrer-Policy: strict-origin-when-cross-origin');
+    }
+
     public function run(): void
     {
+        $this->sendHeaders();
+
         $path = $this->path();
         $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
