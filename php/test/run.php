@@ -2043,6 +2043,43 @@ test('a page can open its copy with a callout', function () {
     }
 });
 
+// Every image ships twice -- once to the dev twin, once to the build that is
+// actually deployed -- and they are copied by hand. A slip leaves the deployed
+// site with the old file while the twin shows the new one, which no suite, no
+// lint and no cross-build render diff would notice: the diff compares MARKUP,
+// and both builds reference `/img/<same path>`. Same class as the content store
+// drifting, which is already pinned.
+test('every image is byte-identical in both builds', function () {
+    $root = dirname(__DIR__, 2);
+    $scan = function (string $base): array {
+        $out = [];
+        $dir = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($base, FilesystemIterator::SKIP_DOTS));
+        foreach ($dir as $file) {
+            if ($file->isFile()) {
+                $out[substr($file->getPathname(), strlen($base) + 1)] = md5_file($file->getPathname());
+            }
+        }
+        ksort($out);
+        return $out;
+    };
+    $node = $scan($root . '/public/img');
+    $php = $scan($root . '/php/public_html/img');
+
+    $onlyNode = array_diff_key($node, $php);
+    $onlyPhp = array_diff_key($php, $node);
+    ok($onlyNode === [], 'images only in the dev twin: ' . implode(', ', array_keys($onlyNode)));
+    ok($onlyPhp === [], 'images only in the deployed build: ' . implode(', ', array_keys($onlyPhp)));
+
+    $differ = [];
+    foreach (array_intersect_key($node, $php) as $path => $sum) {
+        if ($php[$path] !== $sum) {
+            $differ[] = $path;
+        }
+    }
+    ok($differ === [], 'these images differ between the builds: ' . implode(', ', $differ));
+    ok(count($node) > 50, 'the image scan found almost nothing, so it is not checking anything');
+});
+
 echo "\n" . str_repeat('-', 46) . "\n";
 echo ($failed === 0 ? "ALL PASSED" : "FAILURES") . ": $passed passed, $failed failed\n\n";
 exit($failed === 0 ? 0 : 1);
