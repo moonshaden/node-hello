@@ -1563,7 +1563,7 @@ test('the memorial scholarships carry their photographs, sized and described', f
         // third child, which wraps to a new row and lands under the COPY rather
         // than under the award card.
         ok(
-            preg_match('/\.split-side \{[^}]*flex-direction: column;/s', $css) === 1,
+            preg_match('/\.split-side \{[^}]*display: grid;/s', $css) === 1,
             $sheet . ': the card and the photographs do not share the right column'
         );
         ok(
@@ -1584,14 +1584,22 @@ test('the memorial scholarships carry their photographs, sized and described', f
             $sheet . ': a short photograph is stretched to its box rather than centred in it'
         );
         // The stack ends level with the copy only if the COPY is the thing that
-        // sizes the grid row. `align-items: stretch` on its own makes the row as
-        // tall as its tallest item, so a long stack grows the row and the copy's
-        // box grows with it -- the boxes end level while the text still ends
-        // hundreds of pixels early. Taking the inner out of flow is what stops
-        // the pictures voting on the row's height.
+        // sizes the grid row. `minmax(0, 1fr)` is what does it: the pictures'
+        // track contributes nothing to the column's intrinsic height, so they do
+        // not get a vote, while the card sits in `auto` and does.
+        //
+        // That second half matters as much as the first. The column used to take
+        // its whole contents out of flow, which stopped the pictures voting but
+        // took the CARD with them -- and on the Foster Youth page, 240px of copy
+        // against a 376px card, the card ran 71px past the band and was drawn
+        // over the footer.
         ok(
-            preg_match('/\.split-side-inner \{[^}]*position: absolute;[^}]*inset: 0;/s', $css) === 1,
-            $sheet . ': the photographs size the row, so the copy never ends level with them'
+            preg_match('/\.split-side \{[^}]*grid-template-rows: auto minmax\(0, 1fr\);/s', $css) === 1,
+            $sheet . ': the side column does not size its row from the card alone, so a short page clips it'
+        );
+        ok(
+            strpos($css, '.split-side-inner') === false,
+            $sheet . ': the out-of-flow inner is back, which is how the card got clipped'
         );
         ok(
             preg_match('/\.split \{[^}]*align-items: stretch;/s', $css) === 1,

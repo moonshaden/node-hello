@@ -45,7 +45,6 @@
         under the copy instead of under the card. %>
     <% const hasPhotos = scholarship.photos && scholarship.photos.length; %>
     <div class="split-side<%= hasPhotos ? ' has-photos' : '' %>">
-    <div class="split-side-inner">
     <aside class="sidebar-card">
       <span class="pill pill-<%= scholarship.window.state %>"><%= scholarship.isOpen ? 'Accepting applications' : 'Not accepting applications' %></span>
       <dl style="margin-top:20px">
@@ -75,7 +74,6 @@
     <% if (hasPhotos) { %>
       <%- include('partials/scholarship-photo', { photos: scholarship.photos }) %>
     <% } %>
-    </div>
     </div>
   </div>
 </section>

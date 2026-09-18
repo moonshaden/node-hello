@@ -1008,23 +1008,42 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
    upscaling a photograph of a real person to fill a gap. Those two stay at their
    own size and their column ends early. */
 .split-side {
-  display: flex;
-  flex-direction: column;
+  /* A grid, not a flex column, and the row sizing is the whole point.
+     `minmax(0, 1fr)` makes the pictures' track contribute NOTHING to this
+     column's intrinsic height, so the pictures still do not get a vote on how
+     tall the grid row is -- which is what lets them end level with the copy.
+     The card sits in `auto` and DOES count, which is the fix: the band grows for
+     it, so it can never be clipped.
+
+     It used to be a flex column whose inner was `position: absolute; inset: 0`.
+     That also stopped the pictures voting, but it took the card out of flow with
+     them -- and on the Foster Youth page, which carries 240px of copy against a
+     376px card, the card ran 71px past the band and was drawn over the footer.
+     Measured with `elementFromPoint` at the card's own bottom edge, which
+     returned `.foot-grid`. Anything out of flow here has that failure mode; keep
+     the card in flow. */
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
   gap: 50px;
+  position: relative;   /* the containing block for the pictures below */
 }
-.split-side-inner {
-  display: flex;
-  flex-direction: column;
-  /* The space between the award card and the first picture, at the client's
-     word. It is also a term in the reserve below -- card + THIS + 200px -- so
-     the two move together. */
-  gap: 50px;
-  min-height: 0;
-}
-.split-side-inner > .sidebar-card {
-  flex: 0 0 auto;   /* the card is never the thing that shrinks */
+.split-side > .sidebar-card {
+  align-self: start;   /* the card is its own height, never stretched */
 }
 .scholarship-photos {
+  /* Out of flow, and ONLY this -- not the card with it.
+     `minmax(0, 1fr)` alone does not keep the pictures from sizing the row:
+     an `fr` track sizes to its CONTENT whenever the container's own height is
+     indefinite, and this column's height is indefinite until the grid row is
+     resolved. Measured: with the pictures in flow the Baker copy column went
+     994px to 1,640px, the row grown by the pictures it was supposed to ignore.
+     Taking them out of flow is what actually stops it.
+     An absolutely positioned grid child with a row placement gets its GRID AREA
+     as the containing block, so `inset: 0` here means exactly the space left
+     under the card -- no measuring, no magic numbers. */
+  position: absolute;
+  grid-row: 2;
+  inset: 0;
   display: flex;
   flex-direction: column;
   /* Centred: the photographs are not all as wide as the column -- the McCurdy
@@ -1097,25 +1116,21 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .split > div > :last-child { margin-bottom: 0; }
 
 @media (min-width: 861px) {
-  /* Only where `.split` actually has two columns. Below this it collapses to one
-     and there is no second column to end level with, so the inner goes back into
-     the flow and everything stacks as normal. */
-  .split-side { position: relative; display: block; }
-  .split-side-inner { position: absolute; inset: 0; }
+  /* The reserve, and it is not cosmetic. The pictures sit in a track that
+     contributes nothing to this column's height, so if the copy is shorter than
+     the card plus a picture there is simply no room and the pictures overflow --
+     and because the track does not count, the band does not grow to contain
+     them. On the SKW page that happened: 406px of copy against a 376px card, and
+     the tile ran past the band onto the footer.
 
-  /* The reserve, and it is not cosmetic: the inner is out of flow, so the band
-     CANNOT grow to contain it, and anything that does not fit paints straight
-     over whatever is below. On the SKW page it did exactly that -- 406px of copy
-     against a 399px card is minus thirteen pixels of room, and the tile ran
-     231px past the band and landed on top of the footer. Measured with
-     `elementFromPoint`, which returned `.foot-grid` at the picture's own centre.
+     So a column that carries pictures reserves room for them: the card plus the
+     gap (50) plus 200px of picture. The row is `max(copy, this)`, so it changes
+     nothing on the pages whose copy is already taller. Keep it in step with the
+     gap above. The class comes from the template rather than `:has()`, so it
+     does not depend on selector support.
 
-     So a column that carries pictures reserves room for them: the card (399) plus
-     the gap (50) plus 200px of picture. The row is `max(copy, this)`, so it
-     changes nothing on the pages whose copy is already taller -- only SKW, where
-     the band grows and the picture sits inside it instead of over the footer.
-     The class comes from the template rather than `:has()`, so it does not
-     depend on selector support. Keep this in step with the gap above. */
+     Below 861px `.split` collapses to one column, there is nothing to end level
+     with, and everything stacks -- so none of this applies. */
   .split-side.has-photos { min-height: 649px; }
 }
 
