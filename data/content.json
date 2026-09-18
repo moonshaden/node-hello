@@ -956,6 +956,14 @@
       "navLabel": "Programs",
       "summary": "The LEO Foundation is dedicated to connecting youth in our community to programs and services that foster growth, self-confidence, and teamwork. Through collaborative partnerships, we provide leadership and life-changing coaching and mentorship opportunities.",
       "body": "LEO Foundation welcomes you to become a part of a growing, Christ-centered group of learners whose lives are making a perpetual effect on the world.\n\nIf one of these programs fits a student you know, [the available scholarships](/scholarships) list what is open and when, and we are glad to [talk it through](/contact).\n\nWe also partner with organizations already doing this work in the Valley — see our [community partnerships](/community).",
+      "quote": {
+        "src": "/img/programs/quote-mlk.jpg",
+        "alt": "Three crosses on a hillside at sunrise",
+        "width": 1280,
+        "height": 400,
+        "text": "Darkness cannot drive out darkness; only light can do that. Hate cannot drive out hate; only love can do that.",
+        "cite": "Martin Luther King, Jr"
+      },
       "programs": [
         {
           "slug": "foster-youth-programs",

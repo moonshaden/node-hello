@@ -44,6 +44,16 @@ $index = count($article['headings']) >= $indexFrom ? $article['headings'] : [];
       <?php endif; ?>
     </div>
   </div>
+
+  <?php /* A page can close its copy with a quotation over a photograph. It sits
+      outside `.page-flow`, whose `::after` clears the floated card, so it is a
+      full-width block under the copy rather than something wrapping beside the
+      card. Mirrored in page.ejs. */ ?>
+  <?php if (!empty($page['quote']['src'])): ?>
+  <div class="wrap">
+    <?php $app->partial('page-quote', ['quote' => $page['quote']]); ?>
+  </div>
+  <?php endif; ?>
 </section>
 
 <?php

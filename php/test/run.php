@@ -1782,6 +1782,75 @@ test('both page forms offer the legal checkbox', function () {
     }
 });
 
+// The programs page closes its copy with a quotation over a photograph, and the
+// three program rows run their picture the full height of the text beside it.
+// Both are CSS that measures right and fails silently, so both are pinned here.
+test('the page quote and the program rows are built the way they measure', function () {
+    $root = dirname(__DIR__, 2);
+
+    // The quotation is real text over a real <img>, not a raster and not a CSS
+    // background: an img src goes through asset_url() and carries a content
+    // hash, which a url() in the stylesheet would not.
+    foreach ([
+        ['views/partials/page-quote.ejs', 'assetUrl(quote.src)'],
+        ['php/leo-app/views/partials/page-quote.php', 'asset_url($quote[\'src\']'],
+    ] as [$partial, $call]) {
+        $src = file_get_contents($root . '/' . $partial);
+        ok(str_contains($src, '<blockquote>'), $partial . ' does not render the quotation as text');
+        ok(str_contains($src, $call), $partial . ' builds the photograph src without a content hash');
+    }
+    foreach (['views/page.ejs', 'php/leo-app/views/page.php'] as $view) {
+        $src = file_get_contents($root . '/' . $view);
+        ok(str_contains($src, 'page-quote'), $view . ' never renders the quote');
+    }
+
+    foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
+        $css = file_get_contents($root . '/' . $sheet);
+
+        // The photograph runs the full height of the text. That needs the grid
+        // item stretched AND a real height on the image -- stretching alone
+        // gives the box the height and leaves the picture drawing at its own
+        // ratio inside it. Same trio as the recipient rows.
+        ok(
+            preg_match('/\\.program > \\.program-photo \\{[^}]*align-self: stretch;/s', $css) === 1,
+            $sheet . ': the program photo does not stretch to the text'
+        );
+        ok(
+            preg_match('/^\\.program-photo \\{[^}]*height: 100%;/ms', $css) === 1,
+            $sheet . ': the program photo has no height, so it will not match the text'
+        );
+        ok(
+            preg_match('/^\\.program-photo \\{[^}]*object-fit: cover;/ms', $css) === 1,
+            $sheet . ': the stretched program photo will distort'
+        );
+        // A grid item's automatic minimum size transfers through the intrinsic
+        // ratio, so a square photo in a 300px column floors every row at 300px
+        // whatever the text does.
+        ok(
+            preg_match('/^\\.program-photo \\{[^}]*min-height: 0;/ms', $css) === 1,
+            $sheet . ': the program photo can floor a short row at its own width'
+        );
+        // A fixed ratio in the two-column rule is what this replaced; it belongs
+        // only in the stacked query, where there is no row to fill.
+        ok(
+            preg_match('/^\\.program-photo \\{[^}]*aspect-ratio:/ms', $css) !== 1,
+            $sheet . ': the program photo is back on a fixed ratio, so it cannot match the text'
+        );
+        ok(
+            preg_match('/\\.program-flip > \\.program-photo \\{[^}]*aspect-ratio: 1 \\/ 1;/s', $css) === 1,
+            $sheet . ': the stacked program photo has no ratio of its own'
+        );
+
+        // The caption sits above the scrim, and grid items paint in DOM order --
+        // a generated ::after is the last of them, so without this the tint
+        // covers the words.
+        ok(
+            preg_match('/\\.page-quote figcaption \\{[^}]*z-index: 1;/s', $css) === 1,
+            $sheet . ': the quote scrim paints over the quotation'
+        );
+    }
+});
+
 echo "\n" . str_repeat('-', 46) . "\n";
 echo ($failed === 0 ? "ALL PASSED" : "FAILURES") . ": $passed passed, $failed failed\n\n";
 exit($failed === 0 ? 0 : 1);
