@@ -38,7 +38,7 @@ reaches real students and real donors. So:
   you did. Report the failure with the evidence, not a reassuring summary.
 
 
-## Where this left off — 2026-09-18, head `ae732e2`
+## Where this left off — 2026-09-18, head `c5944a9`
 
 Several sessions work this branch at once. Pull before starting, and expect the
 head to have moved mid-task. PR #3 is **merged**; the open one is **PR #4**
@@ -48,11 +48,11 @@ head.
 `docs/sessions/` holds a log per working session — what was asked, what was tried
 and rejected, and what went wrong. This file is the state; those are the reasons.
 The most recent is
-`docs/sessions/2026-09-18-giving-callout.md`, and
-`docs/sessions/2026-09-18-programs-picture-and-program-rows.md` is the thread
-before it in the same session.
+`docs/sessions/2026-09-18-programs-cards-and-verse.md`; the two threads before
+it in the same session are `2026-09-18-giving-callout.md` and
+`2026-09-18-programs-picture-and-program-rows.md`.
 
-**Landed and verified** (95 node / 97 PHP tests, PHP lint clean, cross-build
+**Landed and verified** (96 node / 97 PHP tests, PHP lint clean, cross-build
 render diff zero on **twenty-four** paths — the eleven public pages plus **all
 thirteen** scholarship detail pages — and every change byte-compared against the
 deployed build subdomain):
@@ -148,19 +148,33 @@ deployed build subdomain):
   and heading. Both read the same `site.impact`, so the numbers cannot drift the
   way the live WordPress site's do between its own pages. **Every rule in the
   `.impact-inline` variant carries two classes on purpose**; see *Gotchas*.
-- **`/programs` closes its copy with a photograph, and its three rows run
-  their picture the full height of the text.** The picture is a `picture`
-  object on the page record, rendered inside the copy column 50px under the
-  last line -- the placement the inline logo strip has on `/community` -- and
-  it ends **level with the bottom of the aside card**, cropping to whatever
-  height that leaves. Getting two content-driven edges to meet took the card
-  out of the float and into a grid column on that page only
-  (`.page-flow.has-picture`); see *Gotchas*, and note `flex-basis: 0` is the
-  load-bearing part. The three program photographs use the recipient-row trio
-  (`align-self: stretch` + `height: 100%` + `object-fit: cover`), measured at
-  0px top and bottom on all three. It carried a transcribed quotation over the
-  photograph for two commits; the client asked for the picture without the
-  words.
+- **`/programs` closes its copy with a photograph carrying a verse.** The
+  `picture` object on the page record holds `{ src, alt, width, height, text,
+  cite }`, rendered inside the copy column 50px under the last line -- the
+  placement the inline logo strip has on `/community`. The words are real text
+  in a grid cell over the picture with a scrim between, never baked into the
+  raster. It is **181px tall, which is the height of the impact panel block on
+  `/board`** at the widths where those four panels sit on one row; the client
+  asked for the two to match, so the number is measured from the thing it
+  matches. It briefly ended level with the bottom of the aside card instead --
+  `flex: 1 1 0` in the grid variant -- and that is one line away in the history
+  of that rule if it is ever wanted back. The card is in a grid column rather
+  than a float on a page with a picture (`.page-flow.has-picture`), which is
+  what guarantees the copy column's width.
+- **Each program shows enough copy to fill its card, then opens the rest behind
+  "Read more".** Same `details` disclosure the recipient stories and board bios
+  use. Two rules in the partial, both with a reason: the split is on PARAGRAPH
+  boundaries, never a character count, because these bodies carry markdown links
+  and a count cuts one in half; and paragraphs are added until the fill budget is
+  PASSED rather than approached, or the Impact Leadership card stops at its
+  174-character opener. Under 240 characters left over the whole body renders
+  instead -- `/community` shares this partial for its one partner and had 116
+  characters behind a toggle, which is more friction than the text it saves.
+- **The three program photographs are square, which is the whole picture.** The
+  live site publishes all three at 1200x1200. They ran the full height of their
+  text for a few hours, and the crop cut the word LEADERSHIP -- set into the
+  Impact Leadership artwork -- to "ADERSH". Two asks that cannot both hold; the
+  later one won.
 - **Twelve of the thirteen scholarships carry a picture**, in the right column
   under the award card, centred and stacked. `photos` is an array on the record,
   so an award with several pictures stacks them; two of the five memorial awards
@@ -276,7 +290,7 @@ once in `php/leo-app/views` + `php/public_html/css`, once in `views/` +
 ## Commands
 
 ```bash
-npm test                                    # 95 tests
+npm test                                    # 96 tests
 php php/test/run.php                        # 97 tests
 find php -name '*.php' -exec php -l {} \;   # lint
 
@@ -424,6 +438,12 @@ Two further faces of the same thing, both cost a session each:
   change, not only after a route change. Gate on the hash: compare
   `sha256sum public/css/site.css` against what each build renders before
   believing a diff.
+- **A stale `python3 -m http.server` does the same thing to a mirror.** One left
+  holding the port meant a fresh one could not bind, every page under test was
+  the 404 page, and the measurements were of nothing -- `.band` simply missing.
+  And a mirror of a deployed page must be served AT THE ROOT: the pages use
+  root-absolute `src`s, so mirroring two pages into `p/` and `b/` 404s every
+  asset and renders both unstyled, with numbers that look real (`[1184, 18]`).
 - **A `/proc` kill loop can kill its own shell.** Matching `server.js` anywhere
   in a command line matches the invoking bash command, which contains the loop's
   own text — the `pkill -f` trap in a new guise. Match on the executable
@@ -634,6 +654,14 @@ Baker copy column went 994px to 1,640px — grown by the pictures it was suppose
 to ignore — and every stack reverted to natural size. Out of flow is what
 actually stops it.
 
+**A closed `details` still reports a non-zero `getBoundingClientRect`.** Its
+content is laid out and hidden with `content-visibility`, so measuring the rect
+height of something inside a shut disclosure says it is visible when it is not --
+the opposite of the truth. `checkVisibility()` is the honest signal (false shut,
+true open), and the container's own height is the other one: the program cards
+measure 342 shut and 564 open. Exercise the control and compare the two states;
+do not ask the hidden element how tall it is.
+
 **An element screenshot cannot show you an overflow.** It clips at the container,
 so the overflowing part is simply absent and the page looks fine.
 `document.elementFromPoint(x, y)` at the element's own edge is what catches it —
@@ -727,6 +755,13 @@ what found it. Pinning `margin: 0 0 30px` then earned its keep one commit later,
 going red on a deliberate change instead of letting it through: a pinned
 declaration is a change detector, not a correctness proof, and that is the point
 of it.
+
+**An exact class-attribute match in a test is a formatting assertion in
+behavioural clothes.** Two assertions matched `class="page-picture"` and broke
+the moment that figure gained `has-caption` -- on nothing being wrong. Match the
+class prefix (`class="page-picture`), or a regex that tolerates more classes.
+Same family as matching a CSS rule's exact one-line text, which turns red on
+adding a property.
 
 **A computed count is not a rendered count.** Sizing the logo strip by arithmetic
 — cap plus gap divides into the strip width — was wrong twice, because the marks
@@ -900,10 +935,18 @@ shipped; the photograph was, rehosted as `/img/programs/quote-mlk.jpg`. The
 filename records where it came from — the picture no longer carries a quotation.
 
 - It rendered the live MLK quotation over the photograph for two commits, as
-  real text on the page record rather than a raster. **The client asked for the
-  picture without the words** and the text came out of the store; it is in
-  `page-picture.ejs`'s history if it is ever wanted back. The other two quotes
-  that band rotates were never carried.
+  real text on the page record rather than a raster. The client asked for the
+  picture without the words, and then for a different overlay entirely.
+- **It now carries Deuteronomy 32:2, and that copy is the client's own**, not the
+  live site's: *"Let my teaching fall like rain and my words descend like dew,
+  like showers on new grass, like abundant rain on tender plants."* It is the
+  first line of copy on this site that is not transcribed from the live
+  WordPress pages. That is the supported case and not an exception to the rule
+  above — **nothing is composed here**; the client writing their own copy is the
+  point. Transcribed exactly as supplied, stored on the record, editable in
+  `/admin`. The MLK text is in the history of `page-picture.ejs` if it is ever
+  wanted back, and the other two quotes that live band rotates were never
+  carried.
 - No alt text is published for it, so the alt was written here from the
   photograph, the same as every other rehosted image.
 
@@ -1227,13 +1270,18 @@ is an empty string on all three. Do not compose one.
     publishes none and none was invented. They are the other two LEO awards
     without a sponsor's logo, so the lion is the obvious candidate — the client's
     call, and offered.
-16. **The Impact Leadership photograph's own word is cropped.** The programs
-    rows run each picture the full height of its text, and a 300x590 window over
-    that 1200x1200 square cuts the LEADERSHIP set into the artwork to "ADERSH".
-    The live site publishes all three program photos as squares, so there is no
-    wider source: it is the direct price of equal heights. Keep it, widen the
-    column, or swap the picture — offered, the client's call.
-17. **The Baker banner crop drops the award's name** from the artwork, because
+16. ~~The Impact Leadership photograph's own word is cropped~~ — **done.** The
+    three program photographs are square again, which is the whole picture, so
+    "ADERSH" reads as LEADERSHIP. It cost the equal-height treatment those rows
+    had for a few hours; the client asked for the full picture and the two
+    cannot both hold.
+17. **"Programs & Partnerships" carries no partnerships.** The one partner the
+    site publishes — Alice Cooper's Solid Rock Teen Center — is on `/community`,
+    reachable from a sentence of body copy. The live WordPress site splits them
+    the same way, so this is not a transcription error; the title simply
+    promises something the page does not deliver. Raised with the client, not
+    yet answered.
+18. **The Baker banner crop drops the award's name** from the artwork, because
     the page already renders it as the `h1`. Worth confirming with the client.
 
 ## Deploying
@@ -1273,7 +1321,12 @@ catches it. Wait for the first run to finish before dispatching the second.
 
 **Gate on something the change actually moves.** The byte check below hashes
 `site.css`, which is useless for a commit that does not touch the stylesheet: a
-views-and-content change had the gate green before the deploy started. Pick the
+views-and-content change had the gate green before the deploy started. The
+subtler version of the same mistake: gating on text that the OLD build also
+shipped. A commit that moved a paragraph from the hidden half of a disclosure to
+the shown half was gated on "is the paragraph on the live page" -- it was, all
+along. The signal has to distinguish the two builds, here the paragraph's
+position relative to `class="story-rest"`. Pick the
 signal from the diff -- for that one it was the callout vanishing from the live
 page (the new template reading a field the not-yet-seeded store did not have) and
 coming back after the `seed_content` run. Note that a store whose SHAPE changed
