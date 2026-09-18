@@ -38,7 +38,7 @@ reaches real students and real donors. So:
   you did. Report the failure with the evidence, not a reassuring summary.
 
 
-## Where this left off — 2026-09-17, head `bc5219e`
+## Where this left off — 2026-09-18, head `06e990e`
 
 Several sessions work this branch at once. Pull before starting, and expect the
 head to have moved mid-task. PR #3 is **merged**; the open one is **PR #4**
@@ -47,11 +47,13 @@ head.
 
 `docs/sessions/` holds a log per working session — what was asked, what was tried
 and rejected, and what went wrong. This file is the state; those are the reasons.
-The most recent is `docs/sessions/2026-09-16-privacy-footer-about.md`.
+The most recent is
+`docs/sessions/2026-09-18-strip-placement-and-recipient-rows.md`.
 
-**Landed and verified** (90 node / 91 PHP tests, PHP lint clean, cross-build
-render diff zero on all **eleven** public pages — `/privacy` is the eleventh —
-and every change byte-compared against the deployed build subdomain):
+**Landed and verified** (90 node / 92 PHP tests, PHP lint clean, cross-build
+render diff zero on **twelve** paths — the eleven public pages plus a
+scholarship's own detail page — and every change byte-compared against the
+deployed build subdomain):
 
 - `/board`, `/programs`, `/community` — all three transcribed pages, shipped in
   #3. See *Content accuracy*.
@@ -109,9 +111,16 @@ and every change byte-compared against the deployed build subdomain):
   middle. Every number in there was measured; see *Gotchas* before changing one.
 - **The contact cards are sized from the email address**, which is the widest
   thing in them and has no space to break on.
-- **The donor strip is one shared partial**, used by the homepage at 58px and by
-  any page with `logoStrip: true` at up to 118px. `/community` uses the large
-  variant to fill the gap its short body left.
+- **The donor strip is one shared partial** with two variants. The homepage
+  carries the full-bleed band at 58px; a page with `logoStrip: true` gets the
+  large *inline* variant, which sits in the prose column 50px under the last line
+  of copy at 128px, three marks on screen and half the band's scroll speed.
+  `/community` is the one that uses it. See *Gotchas* — the inline one must NOT
+  clear the floated card.
+- **A scholarship's past recipients are horizontal rows.** The card is shared
+  with `/recipients` and only the scholarship page passes `cardLayout: 'row'`,
+  which drops the portrait from filling the column (646x808) to 140x175 beside
+  the text. The four-card block went 4,663px to 1,540px. Below 560px it stacks.
 
 **The debt this branch carries, stated plainly:** *nothing in either suite covers
 the hero rail or the logo strip.* The rotation, the one-at-a-time slot logic, the
@@ -211,7 +220,7 @@ once in `php/leo-app/views` + `php/public_html/css`, once in `views/` +
 
 ```bash
 npm test                                    # 90 tests
-php php/test/run.php                        # 91 tests
+php php/test/run.php                        # 92 tests
 find php -name '*.php' -exec php -l {} \;   # lint
 
 ADMIN_PASSWORD='...' npm start              # Node build, :3000
@@ -381,13 +390,20 @@ list already work — `271c13a` ("Carry the What We Do photograph onto the About
 page") did exactly that, and the commit after it took it out again — a commit
 cannot name its own hash, so look for the pair by message rather than by SHA.
 
-**A block box in the prose runs under the floated card.** The same float rule
-that bit the jump index bites anything boxed. Worth knowing before adding a
-figure, a table or a panel to a page body: the index wants to sit *beside* the
-card, so it gets `display: flow-root`; something like a photograph does not, and
-wants `clear: right` so it keeps one width instead of shrinking whenever it
-lands level with the card. Measured on a 720px figure, where the overlap showed
-at 1024px only.
+**A block box in the prose runs under the floated card, and the right answer is
+not always the same.** The float rule that bit the jump index bites anything
+boxed, but what you want differs per element and all three cases are now in the
+sheet:
+
+- the **jump index** wants to sit beside the card → `display: flow-root`;
+- a **photograph** wants one consistent width rather than shrinking whenever it
+  lands level with the card → `clear: right`, measured on a 720px figure where
+  the overlap showed at 1024px only;
+- the **inline logo strip** wants to be directly under the last line of copy →
+  nothing at all. Its own `overflow: hidden` already makes it a formatting
+  context, so it sits beside the card by itself. Adding `clear` there put it
+  below the card and opened a 352px gap — the gap the move was meant to close.
+  A test asserts that rule has no `clear`.
 
 **Piping a test suite throws away its exit code.** `php php/test/run.php | tail -2
 && git commit` commits whatever the suite did, because `tail` exits 0. A commit
@@ -401,6 +417,14 @@ with its declaration deleted. Use `[^}]*?`, match the declaration rather than th
 rule's exact one-line text (adding a property reformats the rule and turns an
 exact match red on formatting, not behaviour), and watch every new assertion fail
 before trusting it.
+
+**A computed count is not a rendered count.** Sizing the logo strip by arithmetic
+— cap plus gap divides into the strip width — was wrong twice, because the marks
+are not all as wide as their cap and where they land decides how many fit whole.
+`100/135/30` computes to 3.08 marks in a 508px strip and renders two. Measure the
+rendered boxes. The same applies to scroll speed: two strips with different track
+widths move at different speeds on the same `animation-duration`, so sample the
+track's transform over a few seconds rather than reading the duration.
 
 ## Design system
 
