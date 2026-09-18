@@ -1010,12 +1010,15 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .split-side {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 50px;
 }
 .split-side-inner {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  /* The space between the award card and the first picture, at the client's
+     word. It is also a term in the reserve below -- card + THIS + 200px -- so
+     the two move together. */
+  gap: 50px;
   min-height: 0;
 }
 .split-side-inner > .sidebar-card {
@@ -1108,12 +1111,12 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
      `elementFromPoint`, which returned `.foot-grid` at the picture's own centre.
 
      So a column that carries pictures reserves room for them: the card (399) plus
-     the gap (20) plus 200px of picture. The row is `max(copy, this)`, so it
-     changes nothing on the eight pages whose copy is already taller -- only SKW,
-     where the band now grows by 213px and the picture sits inside it instead of
-     over the footer. The class comes from the template rather than `:has()`, so
-     it does not depend on selector support. */
-  .split-side.has-photos { min-height: 619px; }
+     the gap (50) plus 200px of picture. The row is `max(copy, this)`, so it
+     changes nothing on the pages whose copy is already taller -- only SKW, where
+     the band grows and the picture sits inside it instead of over the footer.
+     The class comes from the template rather than `:has()`, so it does not
+     depend on selector support. Keep this in step with the gap above. */
+  .split-side.has-photos { min-height: 649px; }
 }
 
 /* The row stretches so the photographs have a bottom to reach. `.split-side` has

@@ -1587,7 +1587,7 @@ test('the memorial scholarships carry their photographs, sized and described', f
         // `.foot-grid` at the picture's own centre. Reserving card + gap +
         // 200px means a column that carries pictures always has room for them.
         ok(
-            preg_match('/\.split-side\.has-photos \{[^}]*min-height: 619px;/s', $css) === 1,
+            preg_match('/\.split-side\.has-photos \{[^}]*min-height: 649px;/s', $css) === 1,
             $sheet . ': a column with pictures reserves no room, so they can paint over the footer'
         );
         // The copy's last paragraph carries a bottom margin, so without this the
