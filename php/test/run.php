@@ -1429,6 +1429,20 @@ test('the donor strip is one shared partial, opted into by the page record', fun
             preg_match('/\\.logo-strip\\.is-inline \\.logo-run img \\{[^}]*max-width: 205px;/s', $css) === 1,
             $sheet . ': the inline marks are not sized for the column'
         );
+        // The inline strip renders inside `.prose`, where `.prose ul li::before`
+        // paints a 6px gold dot in front of every list item and indents it 22px.
+        // The logos are list items, so each mark arrived with a gold dot beside
+        // it. `list-style: none` on `.logo-run` does not stop it -- the dot is a
+        // generated pseudo-element, not a list marker -- and the override needs
+        // two classes (0,2,2) to outrank `.prose ul li::before` (0,1,3).
+        ok(
+            preg_match('/\\.prose \\.logo-run li::before \\{[^}]*content: none;/s', $css) === 1,
+            $sheet . ': the prose bullet is back on the inline strip logos'
+        );
+        ok(
+            preg_match('/\\.prose \\.logo-run li \\{[^}]*padding-left: 0;/s', $css) === 1,
+            $sheet . ': the prose list indent is back on the inline strip logos'
+        );
     }
 });
 

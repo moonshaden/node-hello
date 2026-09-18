@@ -1397,6 +1397,14 @@ section.band.logo-strip.is-large { padding: 40px 0; }
    cap to hold three of them. Still well above the homepage's 58px row, which is
    the point of the large variant. Measured across 48 combinations of height,
    cap and gap. */
+/* The inline strip renders INSIDE `.prose`, so `.prose ul li::before` was
+   giving every logo a 6px gold dot and 22px of indent -- measured, not
+   guessed. `list-style: none` on `.logo-run` does not stop it: the dot is a
+   generated pseudo-element, not a list marker. Two classes here (0,2,2) to
+   outrank `.prose ul li::before` (0,1,3). */
+.prose .logo-run li { padding-left: 0; margin-bottom: 0; }
+.prose .logo-run li::before { content: none; }
+
 .logo-strip.is-inline .logo-run { gap: 44px; padding: 0 22px; }
 .logo-strip.is-inline .logo-run img { height: 128px; max-width: 205px; }
 /* Slower than the homepage band, at the client's word. 170s puts it at about
