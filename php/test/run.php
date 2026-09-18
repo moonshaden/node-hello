@@ -1392,7 +1392,7 @@ test('the memorial scholarships carry their photographs, sized and described', f
         // The other four published images are logos and award artwork rather
         // than photographs, and they are .png: flat colour and sharp type, which
         // JPEG rings around.
-        'gcu-guild-continuing-student-scholarship' => [['', 142, 80, 'png']],
+        'gcu-guild-continuing-student-scholarship' => [['', 700, 386, 'png']],
         'skw-play-it-forward-music-scholarship' => [['', 608, 500, 'png']],
         'bhhs-legacy-nursing-health-related-scholarship' => [['', 482, 134, 'png']],
     ];
@@ -1485,9 +1485,9 @@ test('the memorial scholarships carry their photographs, sized and described', f
         ok(is_file($file) && filesize($file) > 1024, $file . ' is missing or empty');
     }
 
-    // Only one picture on the whole site is allowed past its own pixels. If this
-    // count ever grows, someone has reached for `fill` to tidy a ragged column
-    // rather than to carry a deliberate decision, and the softness is real.
+    // No picture anywhere is drawn past its own pixels. The `fill` opt-in that
+    // briefly carried the GCU Guild logo is gone, because the client supplied a
+    // 1672x941 original in place of the 146x91 one the live site publishes.
     foreach (['data/content.json', 'php/leo-app/data/content.json'] as $store) {
         $seed = json_decode(file_get_contents($root . '/' . $store), true);
         $filled = [];
@@ -1498,9 +1498,10 @@ test('the memorial scholarships carry their photographs, sized and described', f
                 }
             }
         }
-        ok($filled === ['gcu-guild-continuing-student-scholarship'],
-            $store . ': the fill opt-in is on ' . (count($filled) ?: 'no') . ' picture(s), expected only the GCU Guild logo');
+        ok($filled === [],
+            $store . ': ' . implode(', ', $filled) . ' asks to be drawn past its own pixels');
     }
+
 
     // .cpanel.yml has no --delete and creates each image directory by hand, so a
     // new one that is not listed simply never arrives on the server.
@@ -1568,14 +1569,14 @@ test('the memorial scholarships carry their photographs, sized and described', f
             preg_match('/\.scholarship-photo:only-child \{[^}]*min-height: 0;/s', $css) === 1,
             $sheet . ': a lone short picture gets a box taller than itself'
         );
-        // `fill` is the single deliberate exception to "never draw a picture past
-        // its own pixels", and it must stay an opt-in on one record rather than
-        // a default -- the GCU Guild logo is 146x91 with nothing larger anywhere
-        // in the live media library, so filling the column is a 2.4x upscale and
-        // it is visibly soft.
+        // There is no longer ANY exception to "never draw a picture past its own
+        // pixels". The one that existed was for a logo whose only published file
+        // was 146x91; the client supplied a 1672x941 original and the opt-in went
+        // with it. If this rule comes back, someone is papering over a small
+        // source file instead of asking for a bigger one.
         ok(
-            preg_match('/\.scholarship-photo\.is-fill img \{[^}]*width: 100%;/s', $css) === 1,
-            $sheet . ': the fill opt-in does not actually enlarge the picture'
+            strpos($css, '.scholarship-photo.is-fill') === false,
+            $sheet . ': the fill opt-in is back, which upscales a picture past its own pixels'
         );
         // The reserve, and it is the one rule here that prevents a visible
         // defect rather than an untidy one. The inner is out of flow, so the

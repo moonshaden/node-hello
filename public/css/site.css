@@ -1060,17 +1060,6 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   align-items: center;
   width: 100%;
 }
-/* The one picture the site draws past its own pixels, opted into by the record
-   rather than applied by default. The GCU Guild logo is 146x91 on the live site
-   and nothing larger exists in its media library -- checked, including the
-   media API's registered sizes and a search of the whole library -- so at its
-   own size it sat much smaller than every other mark here. Filling the column is
-   a 2.4x upscale and it is visibly soft. The fix that would not be soft is a
-   better file from the client. */
-.scholarship-photo.is-fill img {
-  width: 100%;
-}
-
 .scholarship-photo:only-child {
   /* No floor for a lone picture: the floor is what put a 110px box around a
      71px-tall logo, so the column ended 39px below the picture. It shrinks like
