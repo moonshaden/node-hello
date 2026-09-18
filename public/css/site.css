@@ -1061,7 +1061,10 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   width: 100%;
 }
 .scholarship-photo:only-child {
-  flex-shrink: 0;
+  /* No floor for a lone picture: the floor is what put a 110px box around a
+     71px-tall logo, so the column ended 39px below the picture. It shrinks like
+     any other -- the reserve on `.has-photos` below is what stops it being
+     crushed on a page with no room. */
   min-height: 0;
 }
 
@@ -1096,6 +1099,21 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
      the flow and everything stacks as normal. */
   .split-side { position: relative; display: block; }
   .split-side-inner { position: absolute; inset: 0; }
+
+  /* The reserve, and it is not cosmetic: the inner is out of flow, so the band
+     CANNOT grow to contain it, and anything that does not fit paints straight
+     over whatever is below. On the SKW page it did exactly that -- 406px of copy
+     against a 399px card is minus thirteen pixels of room, and the tile ran
+     231px past the band and landed on top of the footer. Measured with
+     `elementFromPoint`, which returned `.foot-grid` at the picture's own centre.
+
+     So a column that carries pictures reserves room for them: the card (399) plus
+     the gap (20) plus 200px of picture. The row is `max(copy, this)`, so it
+     changes nothing on the eight pages whose copy is already taller -- only SKW,
+     where the band now grows by 213px and the picture sits inside it instead of
+     over the footer. The class comes from the template rather than `:has()`, so
+     it does not depend on selector support. */
+  .split-side.has-photos { min-height: 619px; }
 }
 
 /* The row stretches so the photographs have a bottom to reach. `.split-side` has

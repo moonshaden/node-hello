@@ -43,7 +43,8 @@
           // on top, the pictures stacked beneath it. They need one wrapper
           // because `.split` is a two-track grid, and a third child would wrap
           // onto a new row under the copy instead of under the card. ?>
-    <div class="split-side">
+    <?php $hasPhotos = !empty($scholarship['photos']); ?>
+    <div class="split-side<?= $hasPhotos ? ' has-photos' : '' ?>">
     <div class="split-side-inner">
     <aside class="sidebar-card">
       <span class="pill pill-<?= e($scholarship['window']['state']) ?>"><?= $scholarship['isOpen'] ? 'Accepting applications' : 'Not accepting applications' ?></span>
@@ -71,7 +72,7 @@
       <?php endif; ?>
     </aside>
 
-    <?php if (!empty($scholarship['photos'])): ?>
+    <?php if ($hasPhotos): ?>
       <?php $app->partial('scholarship-photo', ['photos' => $scholarship['photos']]); ?>
     <?php endif; ?>
     </div>

@@ -1520,14 +1520,23 @@ test('the memorial scholarships carry their photographs, sized and described', f
             preg_match('/\.split \{[^}]*align-items: stretch;/s', $css) === 1,
             $sheet . ': the right column does not stretch, so there is no bottom to reach'
         );
-        // A lone picture does not shrink: shrinking only earns its keep when it
-        // achieves the fit, and the SKW page has 406px of copy against a 399px
-        // card, so the tile was squeezed to the floor and still overhung by
-        // 122px. `min-height: 0` with it, because the floor otherwise puts a
-        // 110px box around a 71px logo and the column ends below the picture.
+        // A lone picture takes no floor: the floor otherwise puts a 110px box
+        // around a 71px-tall logo and the column ends 39px below the picture.
         ok(
-            preg_match('/\.scholarship-photo:only-child \{[^}]*flex-shrink: 0;[^}]*min-height: 0;/s', $css) === 1,
-            $sheet . ': a lone picture shrinks, which squeezes it without ever fitting'
+            preg_match('/\.scholarship-photo:only-child \{[^}]*min-height: 0;/s', $css) === 1,
+            $sheet . ': a lone short picture gets a box taller than itself'
+        );
+        // The reserve, and it is the one rule here that prevents a visible
+        // defect rather than an untidy one. The inner is out of flow, so the
+        // band CANNOT grow to contain it and anything that does not fit paints
+        // over what is below. On the SKW page it did: 406px of copy against a
+        // 399px card is minus thirteen pixels of room, and the tile ran 231px
+        // past the band and landed on the footer -- `elementFromPoint` returned
+        // `.foot-grid` at the picture's own centre. Reserving card + gap +
+        // 200px means a column that carries pictures always has room for them.
+        ok(
+            preg_match('/\.split-side\.has-photos \{[^}]*min-height: 619px;/s', $css) === 1,
+            $sheet . ': a column with pictures reserves no room, so they can paint over the footer'
         );
         // The copy's last paragraph carries a bottom margin, so without this the
         // pictures finish a measured 18px below the last line of text.

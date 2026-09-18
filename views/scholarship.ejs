@@ -43,7 +43,8 @@
         top, the pictures stacked beneath it. They need one wrapper because
         `.split` is a two-track grid, and a third child would wrap onto a new row
         under the copy instead of under the card. %>
-    <div class="split-side">
+    <% const hasPhotos = scholarship.photos && scholarship.photos.length; %>
+    <div class="split-side<%= hasPhotos ? ' has-photos' : '' %>">
     <div class="split-side-inner">
     <aside class="sidebar-card">
       <span class="pill pill-<%= scholarship.window.state %>"><%= scholarship.isOpen ? 'Accepting applications' : 'Not accepting applications' %></span>
@@ -71,7 +72,7 @@
       <% } %>
     </aside>
 
-    <% if (scholarship.photos && scholarship.photos.length) { %>
+    <% if (hasPhotos) { %>
       <%- include('partials/scholarship-photo', { photos: scholarship.photos }) %>
     <% } %>
     </div>
