@@ -1260,8 +1260,44 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   /* 50px under the last line of copy, the same gap the inline logo strip
      leaves. No `clear`: it sits beside the card by design, and clearing it
      would drop it below the card -- the note the inline strip carries too. */
-  display: block; margin: 50px 0 0;
+  display: grid; margin: 50px 0 0;
   border-radius: 16px; overflow: hidden; background: var(--ink);
+}
+.page-picture > * { grid-area: 1 / 1; }
+
+/* A caption over the photograph, when the record carries one. Real text in a
+   grid cell on top of the picture, never baked into the raster.
+
+   The scrim is its own grid child so it covers the whole picture. The caption
+   takes a z-index because grid items paint in DOM order and a generated
+   `::after` is the last of them -- without it the tint covers the words. The
+   value was settled by rendering and looking: `object-fit: cover` puts the
+   bright sunset under the text at narrow widths, where white type read as
+   legible-but-weak. */
+.page-picture::after { content: ''; }
+.page-picture.has-caption::after { background: rgba(16, 38, 61, .42); }
+.page-picture figcaption {
+  position: relative; z-index: 1;
+  align-self: center; text-align: center;
+  padding: 26px clamp(20px, 6%, 70px);
+}
+.page-picture blockquote { margin: 0; }
+/* Two classes, or `.prose blockquote` -- a gold left bar and 18px of indent --
+   pushes the centred verse off centre. It is (0,1,1) and so is a single-class
+   selector here, which loses on source order. */
+.prose .page-picture blockquote { border-left: 0; padding-left: 0; margin: 0; }
+.page-picture blockquote p {
+  /* The measure cap is on the paragraph, because `em` resolves against the
+     element's own font and the serif verse is what it should measure. */
+  max-width: 30em; margin: 0 auto; color: #fff;
+  font-family: var(--serif); font-style: italic; font-weight: 700;
+  font-size: clamp(1rem, 1.7vw, 1.35rem); line-height: 1.38;
+  text-wrap: balance;
+}
+.page-picture cite {
+  display: block; margin-top: 12px; font-style: normal; font-weight: 700;
+  font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+  color: #fff;
 }
 .page-picture img {
   /* `height: 100%` is what makes the picture take the height the column hands

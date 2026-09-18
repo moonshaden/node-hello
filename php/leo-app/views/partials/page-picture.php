@@ -12,13 +12,21 @@
 // admin save (`applyFields()` spreads the existing record first) without the
 // page form editing it.
 //
-// It briefly carried a quotation over the photograph, transcribed from the live
-// site's own testimonial band. The client asked for the picture without the
-// words; the text is in this file's history if it is ever wanted back.
+// `text` and `cite` are optional. When they are set the picture carries them as
+// REAL TEXT over it -- selectable, resizable, readable to a screen reader --
+// rather than as words baked into the raster. They are stacked in one grid cell
+// with a scrim between, because the photograph is not uniformly dark and the
+// crop moves with the width.
 //
 // Mirrored in page-picture.ejs.
 ?>
-<figure class="page-picture">
+<figure class="page-picture<?= !empty($picture['text']) ? ' has-caption' : '' ?>">
   <img src="<?= e(asset_url($picture['src'] ?? '', $basePath)) ?>" alt="<?= e($picture['alt'] ?? '') ?>"
        <?= !empty($picture['width']) && !empty($picture['height']) ? 'width="' . (int) $picture['width'] . '" height="' . (int) $picture['height'] . '"' : '' ?> loading="lazy">
+  <?php if (!empty($picture['text'])): ?>
+    <figcaption>
+      <blockquote><p><?= e($picture['text']) ?></p></blockquote>
+      <?php if (!empty($picture['cite'])): ?><cite><?= e($picture['cite']) ?></cite><?php endif; ?>
+    </figcaption>
+  <?php endif; ?>
 </figure>

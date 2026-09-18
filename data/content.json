@@ -960,7 +960,9 @@
         "src": "/img/programs/quote-mlk.jpg",
         "alt": "Three crosses on a hillside at sunrise",
         "width": 1280,
-        "height": 400
+        "height": 400,
+        "text": "Let my teaching fall like rain and my words descend like dew, like showers on new grass, like abundant rain on tender plants.",
+        "cite": "Deuteronomy 32:2"
       },
       "programs": [
         {

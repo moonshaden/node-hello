@@ -1796,7 +1796,9 @@ test('the page picture and the program rows are built the way they measure', fun
         ['php/leo-app/views/partials/page-picture.php', 'asset_url($picture[\'src\']'],
     ] as [$partial, $call]) {
         $src = file_get_contents($root . '/' . $partial);
-        ok(str_contains($src, '<figure class="page-picture">'), $partial . ' does not render the figure');
+        // The class prefix, not the whole attribute: the figure gains
+        // `has-caption` when the record carries a verse.
+        ok(str_contains($src, 'class="page-picture'), $partial . ' does not render the figure');
         ok(str_contains($src, $call), $partial . ' builds the photograph src without a content hash');
     }
     // The class on `.page-flow` is what swaps the float for the grid, so a page
@@ -1829,6 +1831,25 @@ test('the page picture and the program rows are built the way they measure', fun
         ok(
             preg_match('/^\\.program-photo \\{[^}]*height: auto;/ms', $css) === 1,
             $sheet . ': the width/height attributes will beat the ratio'
+        );
+
+        // The caption sits above the scrim: grid items paint in DOM order and a
+        // generated ::after is the last of them, so without the z-index the
+        // tint covers the verse.
+        ok(
+            preg_match('/\\.page-picture figcaption \\{[^}]*z-index: 1;/s', $css) === 1,
+            $sheet . ': the scrim paints over the verse'
+        );
+        ok(
+            preg_match('/\\.page-picture\\.has-caption::after \\{[^}]*background:/s', $css) === 1,
+            $sheet . ': the verse has no scrim under it'
+        );
+        // Inside `.prose` the verse inherits `.prose blockquote` -- a gold left
+        // bar and 18px of indent -- which pushes a centred line off centre. Two
+        // classes to outrank it; one only ties and loses on source order.
+        ok(
+            preg_match('/\\.prose \\.page-picture blockquote \\{[^}]*border-left: 0;/s', $css) === 1,
+            $sheet . ': the prose blockquote bar is back on the verse'
         );
 
         // The picture ends where the card does, and that needs all three of

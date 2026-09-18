@@ -451,10 +451,19 @@ test('the programs page renders its photograph inside the copy column', async ()
 
   await withServer(async (base) => {
     const body = await (await fetch(`${base}/programs`)).text();
-    assert.match(body, /<figure class="page-picture">/, 'the picture is not rendered');
+    assert.match(body, /<figure class="page-picture[^"]*has-caption[^"]*">/, 'the picture is not rendered with its caption');
+    // The verse is REAL TEXT over the photograph, from the store -- not baked
+    // into the raster, and not hard-coded in the template, or an admin edit
+    // stops reaching the page.
+    assert.ok(body.includes(`<p>${page.picture.text}</p>`), 'the verse does not come through from the store');
+    assert.ok(body.includes(`<cite>${page.picture.cite}</cite>`), 'the citation is missing');
+    assert.equal(body.split(page.picture.text).length - 1, 1, 'the verse is on the page more than once');
     // Versioned -- an unversioned src sits in a browser cache for a year, which
     // is how a deleted plate survived a deploy once already.
-    const src = body.match(/<figure class="page-picture">[\s\S]*?<img src="([^"]+)"/);
+    // Matched on the class PREFIX, not the whole attribute: the figure gains
+    // `has-caption` when the record carries a verse, and an exact match broke
+    // on that rather than on anything being wrong.
+    const src = body.match(/<figure class="page-picture[^"]*">[\s\S]*?<img src="([^"]+)"/);
     assert.ok(src, 'the figure has no image');
     assert.ok(src[1].startsWith(page.picture.src + '?v='),
       `the photograph is not content-hashed: ${src[1]}`);
@@ -468,7 +477,7 @@ test('the programs page renders its photograph inside the copy column', async ()
     // of its own below the section. Checked structurally rather than by
     // indentation: nothing that closes the column or opens a new one may stand
     // between the column and the figure.
-    const between = body.slice(body.indexOf('class="prose"'), body.indexOf('<figure class="page-picture">'));
+    const between = body.slice(body.indexOf('class="prose"'), body.search(/<figure class="page-picture[^"]*">/));
     assert.ok(between.length > 0, 'the picture is rendered before the copy column');
     assert.doesNotMatch(between, /<div class="wrap"/, 'the picture sits in a wrap of its own, not in the copy');
     assert.doesNotMatch(between, /<\/section>/, 'the picture has left the copy section');
