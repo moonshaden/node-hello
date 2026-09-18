@@ -38,7 +38,7 @@ reaches real students and real donors. So:
   you did. Report the failure with the evidence, not a reassuring summary.
 
 
-## Where this left off — 2026-09-18, head `df4647c`
+## Where this left off — 2026-09-18, head `63a9f3a`
 
 Several sessions work this branch at once. Pull before starting, and expect the
 head to have moved mid-task. PR #3 is **merged**; the open one is **PR #4**
@@ -50,7 +50,7 @@ and rejected, and what went wrong. This file is the state; those are the reasons
 The most recent is
 `docs/sessions/2026-09-18-scholarship-pictures-and-logos.md`.
 
-**Landed and verified** (90 node / 93 PHP tests, PHP lint clean, cross-build
+**Landed and verified** (92 node / 94 PHP tests, PHP lint clean, cross-build
 render diff zero on **twenty-four** paths — the eleven public pages plus **all
 thirteen** scholarship detail pages — and every change byte-compared against the
 deployed build subdomain):
@@ -77,10 +77,14 @@ deployed build subdomain):
   (`.is-deep` / `.is-risen`) and `body.is-staged` — were removed at the client's
   request, 1,070 lines out against 52 in. If you are reading an older note that
   says to check the staged sections reveal, they no longer exist.
-- **Stylesheet and script URLs carry a content hash** (`asset_url()` /
-  `assetUrl()`, first ten hex of SHA-256). Before this, a correct deploy could
-  land and a returning visitor still be served the old CSS out of cache — which
-  looks exactly like a deploy that failed.
+- **Every stylesheet, script AND image URL carries a content hash**
+  (`asset_url()` / `assetUrl()`, first ten hex of SHA-256), and **the HTML is
+  served `no-cache, must-revalidate` by the app itself**. Both halves are needed
+  and both were learned the hard way — see *Gotchas*. Without the first, a
+  correct deploy lands and a returning visitor is still served the old file;
+  without the second, the browser holds the page and goes on asking for the old
+  hashes. The client reported "still showing old" twice while the server bytes
+  were provably correct.
 - **The ribbon and the masthead each hold one line** at every width, by dropping
   elements rather than wrapping. See *Gotchas*.
 - **Page copy runs the full width** on the editable-page template, with the card
@@ -129,13 +133,16 @@ deployed build subdomain):
   under the award card, centred and stacked. `photos` is an array on the record,
   so an award with several pictures stacks them; two of the five memorial awards
   publish a composite that was split into its own files, because a three-up
-  composite in a 344px column draws each face about 40px across. Nine pictures
+  composite in this narrow a column draws each face about 40px across. Nine pictures
   come from the live site; the three LEO-branded awards carry the foundation's
   own lion instead. Only Foundation Theatre and Foster Youth have none. A stack
-  ends level with the bottom of the copy — it shrinks to fit and never grows, and
-  a column that carries pictures reserves room so nothing can paint over the
-  footer. See *Content accuracy* for where the files came from and *Gotchas* for
-  the traps that cost the most time.
+  ends level with the bottom of the copy — it shrinks to fit and never grows.
+  The column is **413px** (the right grid track is `1.5fr`, widened from `2fr`
+  because that track is what caps every picture) with a **50px** gap under the
+  card. **Nothing on the site is drawn past its own pixels**; two logos that were
+  are now client-supplied originals. See *Content accuracy* for where the files
+  came from and *Gotchas* for the traps — the side column has put something on
+  top of the footer twice.
 
 **The debt this branch carries, stated plainly:** *nothing in either suite covers
 the hero rail or the logo strip.* The rotation, the one-at-a-time slot logic, the
@@ -171,8 +178,11 @@ need the client, it is this.
    `robots.txt` to `php/public_html/` — that ships to production and would
    deindex the real site — so it needs to be host-conditional or placed on the
    subdomain by hand. See *Deploying*.
-8. The security headers reach static assets but not the PHP-generated HTML, which
-   is the wrong way round. `mod_headers` is loaded, so that is not the cause.
+8. ~~The security headers reach static assets but not the PHP-generated HTML~~ —
+   **done.** `.htaccess` `Header always set` does not reach PHP output on this
+   host (measured: 1 header on `/css/site.css`, 0 on `/`), so the HTML now sends
+   its own from `App::sendHeaders()`, along with the `no-cache` that makes the
+   hashed asset URLs work. See *Gotchas*.
 
 (The three FTP secrets and the first `seed_content` run were items 2 and 3 here
 until 2026-08-31. Both are done — the secrets are set and the store has been
@@ -234,8 +244,8 @@ once in `php/leo-app/views` + `php/public_html/css`, once in `views/` +
 ## Commands
 
 ```bash
-npm test                                    # 90 tests
-php php/test/run.php                        # 93 tests
+npm test                                    # 92 tests
+php php/test/run.php                        # 94 tests
 find php -name '*.php' -exec php -l {} \;   # lint
 
 ADMIN_PASSWORD='...' npm start              # Node build, :3000
@@ -484,11 +494,9 @@ the stretched box.
   is the box; `Math.max(...[...copy.children].map(e => e.getBoundingClientRect().bottom))`
   is the text. They are the same number until something stretches, which is
   exactly when you need them not to be.
-- **The fix is to stop the pictures voting on the row's height.** `.split-side`
-  holds no in-flow content — its inner is `position: absolute; inset: 0` — so the
-  copy is the only thing that sizes the row, and the inner is handed exactly that
-  height to divide between the card and the pictures. Gated to the width where
-  `.split` actually has two columns.
+- **The fix is to stop the pictures voting on the row's height** — but only the
+  pictures. See the next note; taking the whole column out of flow took the award
+  card with it and put that on the footer instead.
 - **Shrink, never grow.** Flex shrink brings a too-tall stack down in proportion.
   Growing a short one means upscaling: Smith would need 2.5x and Gary 1.64x, on
   photographs of real people. Those columns end early instead, and that is the
@@ -496,26 +504,76 @@ the stretched box.
 - A `min-height` floor stops a short copy column grinding three pictures into
   slivers.
 
-**Taking a column out of flow means its band can no longer grow for it, and the
-overflow lands on whatever is below.** `.split-side` holds no in-flow content so
-that the copy alone sizes the grid row — that is what makes the pictures end level
-with the text. The cost is that `section.band` cannot grow to contain them either.
-On the SKW page, which carries 406px of copy against a 399px card, that is minus
-thirteen pixels of room: the tile ran 231px past the band and painted **on top of
-the footer**.
+**Anything out of flow in the scholarship side column will land on the footer,
+and it has happened twice.** That column must not let the pictures size the grid
+row (or they never end level with the copy), and the first two attempts bought
+that by taking things out of flow — which means `section.band` cannot grow for
+them, so whatever does not fit paints over what is below.
 
-- **An element screenshot will not show you this.** It clips at the container, so
-  the overflowing part simply is not in the picture and the page looks fine. What
-  caught it was `document.elementFromPoint` at the picture's own centre, which
-  returned `.foot-grid`.
-- **The fix is a reserve, not a squeeze.** `.split-side.has-photos` has
-  `min-height: 619px` — card (399) plus gap (20) plus 200px of picture — so the
-  row is `max(copy, reserve)` and a column that carries pictures always has room.
-  It changes nothing on the pages whose copy is already taller. Shrinking instead
-  does not work: with the shrink on, the tile squeezed to the floor and *still*
-  overhung by 122px, so it was small AND overflowing.
-- The class comes from the template rather than `:has()`, so it does not depend
-  on selector support.
+- **First it was a picture.** The SKW page carries 406px of copy against a 376px
+  card, so there is no room: the tile ran 231px past the band onto `.foot-grid`.
+- **Then it was the award card**, because the fix for the first one was a reserve
+  that only applied to pages *with* pictures. Foster Youth has none and 240px of
+  copy, so the card itself ran 71px past the band. Same footer.
+
+**The shape that works** keeps the card in flow and takes out only the pictures:
+
+    .split-side { display: grid; grid-template-rows: auto minmax(0, 1fr);
+                  position: relative; }
+    .scholarship-photos { position: absolute; grid-row: 2; inset: 0; }
+
+An absolutely positioned grid child with a row placement gets that **grid area**
+as its containing block, so `inset: 0` is exactly the space left under the card —
+no measuring and no magic number. The card sits in `auto`, counts toward the row,
+and the band always grows for it.
+
+**`minmax(0, 1fr)` alone does NOT stop content sizing the row.** That was the
+first version of this fix and it looked right: an `fr` track sizes to its
+*content* whenever the container's own height is indefinite, which this column's
+is until the grid row resolves. With the pictures merely in a `1fr` track the
+Baker copy column went 994px to 1,640px — grown by the pictures it was supposed
+to ignore — and every stack reverted to natural size. Out of flow is what
+actually stops it.
+
+**An element screenshot cannot show you an overflow.** It clips at the container,
+so the overflowing part is simply absent and the page looks fine.
+`document.elementFromPoint(x, y)` at the element's own edge is what catches it —
+it returned `.foot-grid` both times.
+
+A `min-height` reserve on the column (`.split-side.has-photos`) is still needed
+for the case where the copy is shorter than the card plus a picture, because the
+pictures' track contributes nothing: card + gap + 200px.
+
+**Hashing an asset URL is only half of a cache fix; the HTML has to revalidate
+too.** The css and js had carried a content hash for weeks and the client still
+reported "still showing old" — twice, while the server bytes were provably
+correct both times. Two separate holes:
+
+- **Images were not versioned at all.** Every `<img src>` used `link_url()`,
+  which only prefixes the base path. A picture replaced in place under the same
+  filename is the same URL, and `.htaccess` gave images `max-age=604800`, so a
+  browser that had the page held the old picture for a week. That is exactly how
+  a navy plate survived being deleted. All fourteen image srcs in each build now
+  go through `asset_url()` / `assetUrl()`, and images moved to a year.
+- **The HTML carried no `Cache-Control` at all** — read from the live subdomain,
+  the page sent nothing but `vary: Accept-Encoding`. A held page goes on asking
+  for the *old* hashes however good the hashing is.
+
+**`.htaccess` `Header always set` does not reach PHP output on this host.** Not a
+guess: the same block puts `X-Frame-Options` on `/css/site.css` and gives `/`
+none — 1 against 0, measured live. So the HTML's headers are sent from
+`App::sendHeaders()` and a matching express middleware
+(`no-cache, must-revalidate` plus the three security headers), where nothing can
+drop them. That is also what finally put the security headers on the pages rather
+than only on the static files.
+
+Two guards, because the halves fail differently: the node suite reads the
+**rendered** pages and asserts every `/img/` src carries `?v=` (a template can be
+right while a route hands it an unversioned value) and that the response headers
+are there; the PHP suite asserts no view builds an image src with `link_url`.
+
+None of this reaches back into a browser that already holds the old page — one
+reload does that. Say so, rather than letting someone conclude the deploy failed.
 
 **A contrast metric cannot see line work.** The lion mark was matted on navy
 because a white-and-gold mark looked like it would disappear on the `#fdfcfa`
@@ -774,25 +832,32 @@ Christian Studies had been given, which duplicated the header and the footer.
   well. The client asked for the plate to go and was right. A contrast metric
   cannot see line work — render it and look.
 
-**One picture is deliberately drawn past its own pixels.** The GCU Guild logo is
-146x91 on the live site and nothing larger exists — checked against the media
-API's registered sizes (`full` is 146x91, one 66x41 thumbnail) and a search of
-the whole library for "guild" and "gcu". At its own size it sat much smaller than
-every other mark, so the client asked for it larger; filling the column is a 2.4x
-upscale and it is **visibly soft**. It is an opt-in `fill` on that one photo
-record, not a change to the default, and two tests hold it to exactly one record.
-A better file from the Guild is the only thing that fixes it properly.
+**Two logos come from the client, not the live site.** The live site publishes
+the GCU Guild mark at 146x91 and BHHS Legacy at 482x134 — nothing larger exists
+in its media library, checked against the media API's registered sizes and a
+search of the whole library. At those sizes they sat much smaller than every
+other mark, and drawing one 2.4x past its own pixels (a `fill` opt-in that
+existed for exactly one commit) was visibly soft. **The client supplied
+1672x941 and 2000x668 originals**, which is the fix that is not soft, and the
+exception went with them. If a picture ever looks too small here again, ask for
+a bigger file rather than reinstating the flag.
 
-The record holds a **`photos` array**, each entry `{ src, alt, width, height }`
-plus an optional `fill`.
+**No pngquant, optipng or PIL in this sandbox**, and a straight canvas PNG of a
+two-colour logo is enormous — the GCU one came out at 199KB against 20–67KB for
+the others. Snapping each channel onto a **24-step ramp** takes it to 78KB with
+no visible change: the artwork is flat colour plus antialiasing, so most of those
+distinct values were noise the encoder had to store. Compare the two by eye
+before shipping one.
 
-Sizes: 1.5 MB of originals down to about 450 KB for all twelve files.
+**Nothing on the site is drawn past its own pixels.** A test asserts the absence
+of the opt-in rather than policing a single allowed case.
 
 The record holds a **`photos` array**, each entry `{ src, alt, width, height }`.
 An array because two of the five publish a *composite* rather than a single
-picture, and a composite is useless at this size: the pictures sit in a 344px
-column, where a three-up composite draws each face about 40px across. Split into
-their own files they stack one per row at the column's full width.
+picture, and a composite is useless at this size: the pictures sit in a narrow
+column — 344px when they were first cut, 413px now — where a three-up composite
+draws each face about 40px across. Split into their own files they stack one per
+row at the column's full width.
 
 - **McCurdy** splits into 2, **Baker** into 3. The split lines are *measured*, not
   guessed — the gap columns between the photographs carry no ink at all, so each
@@ -815,7 +880,9 @@ their own files they stack one per row at the column's full width.
   source for anything more, the same as the 26 strip logos.
 - **`width` and `height` are stored** because they become the attributes that
   reserve the space before the picture loads, and because nothing here is ever
-  drawn past its own pixels. The narrowest is 227px against a 344px column.
+  drawn past its own pixels. The narrowest is 227px against a 413px column, so
+  several render short of the column rather than filling it — that is the honest
+  size of the source, not a layout bug.
 - **The array is not editable in `/admin`.** It follows the board roster and the
   programs list — it lives on the record and survives a save because
   `applyFields()` spreads the existing record first, but nothing in the
@@ -1004,9 +1071,9 @@ is an empty string on all three. Do not compose one.
 13. **The Smith photograph is one composite that could not be split**, so it
     renders small in the column while the others fill it. Only the client can
     close this, by supplying the three originals. See *Content accuracy*.
-14. **The GCU Guild logo is upscaled 2.4x and visibly soft**, because 146x91 is
-    the largest file the live site holds. A better file from the Guild is the
-    only real fix; the `fill` opt-in is a knowing compromise, not a solution.
+14. ~~The GCU Guild logo is upscaled and soft~~ — **done.** The client supplied
+    a 1672x941 original, and a 2000x668 BHHS one with it. Nothing on the site is
+    upscaled now and the `fill` opt-in is gone.
 15. **Foundation Theatre and Foster Youth carry no picture.** The live site
     publishes none and none was invented. They are the other two LEO awards
     without a sponsor's logo, so the lion is the obvious candidate — the client's
@@ -1094,10 +1161,13 @@ empty, `Auth::isConfigured()` is false and every login is refused.
 `X-Robots-Tag`. A public duplicate of the client's site can be crawled and donors
 could land on it. A `robots.txt` cannot simply be added to `php/public_html/`,
 because that ships to production too and would deindex the real site; it needs to
-be host-conditional or dropped on the subdomain by hand. Also, the security
-headers in `.htaccess` reach static assets but **not** the PHP-generated HTML
-(`X-Frame-Options` is on `/css/site.css` and absent on `/`), which is the wrong
-way round — `mod_headers` is loaded, so this is not that.
+be host-conditional or dropped on the subdomain by hand.
+
+(The security-header half of this note is closed. `.htaccess` `Header always set`
+does not reach PHP output on this host — `X-Frame-Options` was on
+`/css/site.css` and absent on `/` from the same block — so the HTML sends its own
+from `App::sendHeaders()`, together with the `Cache-Control: no-cache` that makes
+the hashed asset URLs actually reach a returning visitor.)
 
 Note the account name in the leaked path was `buildleofoundati`, i.e. the
 subdomain has its own cPanel-style account, separate from `leofoundationusa`.

@@ -8,6 +8,12 @@ memorial awards. This one sweeps the rest and then reworks how the pictures sit.
     9524cd5  Let the GCU Guild logo fill its column
     7a1f9f0  Give the three LEO-branded awards the foundation's lion mark
     df4647c  Drop the navy plate behind the lion mark
+    fd19128  Use the supplied GCU Guild original, and drop the upscale exception
+    0d6d1b8  Open the space above the pictures to 50px
+    6d5769e  Version every image URL, and widen the column that caps them
+    b498b0f  Use the supplied BHHS Legacy original
+    20fb69b  Stop the HTML being held, so hashed asset URLs reach people
+    63a9f3a  Stop the award card being clipped on a short page
 
 ## The sweep (`e76443a`)
 
@@ -131,15 +137,115 @@ It is now cropped to its ink and transparent, 391x378, one shared file.
   of the three records, the lion file's existence, a logo removed from the store,
   and a picture added where the live site publishes none.
 
+## The client supplied the originals (`fd19128`, `b498b0f`)
+
+> "use this for gcu guild scholarship" / "use for legacy scholarship"
+
+1672x941 and 2000x668, against the 146x91 and 482x134 the live site publishes.
+That closed the softness properly and let the `fill` opt-in be deleted outright —
+the flag on the record, the branch in both partials, the `.is-fill` rule in both
+sheets. Nothing on the site is drawn past its own pixels again, and the tests now
+assert the *absence* rather than policing one allowed exception.
+
+**A two-colour logo makes an enormous PNG.** The straight canvas encode of the
+GCU file was 199KB, three times the heaviest logo already here, and there is no
+pngquant/optipng/PIL in this sandbox. Snapping each channel onto a 24-step ramp
+takes it to 78KB with no visible change: the artwork is flat colour plus
+antialiasing, so most of those distinct values were noise the encoder had to
+store. Both versions were rendered and compared by eye first.
+
+## "gcu logo is too small" — it was the column, not the file (`6d5769e`)
+
+The logo was already at the full width of its track. `.split` was
+`minmax(0, 2fr) minmax(280px, 1fr)`, so the right column was 344px and a 700px
+source still drew at 344. Changed to `1.5fr` → **413px**: every picture 20%
+bigger, and the copy column 688 → 619, which tightens its measure rather than
+hurting it.
+
+Worth remembering the shape of that mistake: swapping in a sharper file did not
+change the *size*, because the size was never coming from the file.
+
+## The cache bugs — two reports, two real holes (`6d5769e`, `20fb69b`)
+
+> "still see navy behind lion logo" … "site is still showing old"
+
+Both times the deployed bytes were provably correct and the client was still
+right. Two separate holes, and the second only became visible after the first was
+fixed:
+
+1. **Images were not versioned.** Every `<img src>` used `link_url()`, which only
+   prefixes the base path. A picture replaced under the same filename is the same
+   URL, and `.htaccess` gave images `max-age=604800` — a week. That is exactly how
+   a navy plate survived being deleted.
+2. **The HTML carried no `Cache-Control` at all.** Read from the live subdomain,
+   the page sent nothing but `vary: Accept-Encoding`. A held page goes on asking
+   for the old hashes however good the hashing is.
+
+And the reason the header was missing is worth more than the bug: **`.htaccess`
+`Header always set` does not reach PHP output on this host.** Measured, not
+assumed — the same block puts `X-Frame-Options` on `/css/site.css` and gives `/`
+none, 1 against 0. So the HTML's headers now come from `App::sendHeaders()` and a
+matching express middleware. That also closed the security-headers item that had
+been open in `CLAUDE.md` for weeks: they had only ever been reaching static files.
+
+Two guards, because the halves fail differently — the node suite reads the
+rendered pages for `?v=` and for the response headers, the PHP suite asserts no
+view builds an image src with `link_url`.
+
+Neither fix reaches back into a browser that already holds the old page. Saying
+so plainly matters: otherwise the reasonable conclusion is that the deploy failed.
+
+## "fix spacing on foster youth scholarship" (`63a9f3a`)
+
+Not spacing. **The award card was being drawn over the footer** — 240px of copy
+against a 376px card, so it ran 71px past the band. `elementFromPoint` at the
+card's own bottom edge returned `.foot-grid`. Only that page, because it has the
+least copy of the thirteen.
+
+Same root as the SKW tile two commits earlier: the side column's contents were
+out of flow, so `section.band` could not grow for them. The reserve added then
+was conditional on the page having pictures, and this page has none — so it fell
+straight through. That is what a special case does.
+
+Fixed structurally. The card is back in flow in a grid `auto` row, so it counts
+toward the row and the band always grows for it; only the pictures come out, into
+their own grid area, where an abspos child with a row placement gets that area as
+its containing block and `inset: 0` is exactly the space under the card.
+
+**The first attempt at that was wrong and measuring caught it.** `minmax(0, 1fr)`
+alone does not stop content sizing the row — an `fr` track sizes to its content
+whenever the container's height is indefinite, which this column's is until the
+row resolves. With the pictures merely in a `1fr` track the Baker copy column
+went 994px to 1,640px and every stack reverted to natural size.
+
+## Process notes, continued
+
+- **Two live comparisons came back "DIFFERS" and were not.** Both were races with
+  a deploy still settling; re-reading showed byte-identical pages. Chase the
+  actual bytes before reporting a divergence.
+- **One came back 24/24 differing and the local PHP server was simply down** —
+  every page "differed" against an empty string. Check the local end is answering
+  before believing a total mismatch.
+- **A line-based grep on a tag that wraps reads as a broken build.** `grep -o
+  'leo-lion-mark[^>]*'` returned no width/height because the tag spans two lines.
+  Collapse whitespace first.
+- **The stale dev server needed more than one kill pass**, repeatedly. Loop until
+  `/proc` shows nothing left.
+- An assertion written this session was **deleted rather than fudged**: "every
+  picture is at least as wide as the column" failed on McCurdy's second split at
+  226px, which is that photograph's true resolution. The rule was mine, not the
+  data's.
+
 ## Where to pick up
 
 1. **Tests for the hero rail and the logo strip's behaviour** — still the largest
    piece of debt that does not need the client.
 2. **Foundation Theatre and Foster Youth** have no picture. The lion is the
-   obvious candidate; offered, not yet answered.
-3. **A better GCU Guild file**, and **the three Smith originals** — both only the
-   client can supply.
+   obvious candidate; offered twice, not yet answered.
+3. **The three Smith originals** — the last picture the client could improve.
+   Everything else is now either the live site's full published size or an
+   original they supplied.
 4. **A repeating field for `photos` in `/admin`**, so the pictures are editable
    like the rest of a scholarship.
-5. **PR #4's body** is stale — twenty-seven commits behind at this head. Offered
+5. **PR #4's body** is stale — thirty-three commits behind at this head. Offered
    several times, not yet taken up.
