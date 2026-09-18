@@ -38,7 +38,7 @@ reaches real students and real donors. So:
   you did. Report the failure with the evidence, not a reassuring summary.
 
 
-## Where this left off — 2026-09-18, head `c5944a9`
+## Where this left off — 2026-09-18, head `f8e924e`
 
 Several sessions work this branch at once. Pull before starting, and expect the
 head to have moved mid-task. PR #3 is **merged**; the open one is **PR #4**
@@ -48,11 +48,12 @@ head.
 `docs/sessions/` holds a log per working session — what was asked, what was tried
 and rejected, and what went wrong. This file is the state; those are the reasons.
 The most recent is
-`docs/sessions/2026-09-18-programs-cards-and-verse.md`; the two threads before
-it in the same session are `2026-09-18-giving-callout.md` and
+`docs/sessions/2026-09-18-lion-link-and-back-to-top.md`; the four threads before
+it in the same session are `2026-09-18-board-rings-and-footer.md`,
+`2026-09-18-programs-cards-and-verse.md`, `2026-09-18-giving-callout.md` and
 `2026-09-18-programs-picture-and-program-rows.md`.
 
-**Landed and verified** (96 node / 97 PHP tests, PHP lint clean, cross-build
+**Landed and verified** (97 node / 100 PHP tests, PHP lint clean, cross-build
 render diff zero on **twenty-four** paths — the eleven public pages plus **all
 thirteen** scholarship detail pages — and every change byte-compared against the
 deployed build subdomain):
@@ -111,10 +112,21 @@ deployed build subdomain):
   for word against the live page. It is linked from the footer under Contact.
   **There is no terms of service to transcribe**; see *Content accuracy*.
 - **The footer is a stacked sign-off over three spread columns.** The lion
-  (128px) sits centred over the wordmark, the strapline under it is type rather
-  than baked into the raster, and the menus are sized to their content with the
-  leftover width spread between the columns and centred on the brand column's
-  middle. Every number in there was measured; see *Gotchas* before changing one.
+  (128px) sits centred over the wordmark and **is a link home**, the strapline
+  under it is type rather than baked into the raster, and the menus are sized to
+  their content with the leftover width spread between the columns. **Every
+  column ranges to the start of the row** and the two menus then take a **60px**
+  drop together, so their headings line up with each other rather than each
+  centring by its own height — and the sign-off does not drift when the taller
+  menu outgrows it. The legal line reserves **66px** on its right (56 under
+  560px) so the back-to-top control never lands on its sign-in link. Every
+  number in there was measured; see *Gotchas* before changing one.
+- **Every page carries a back-to-top control** on a document taller than the
+  window — a fixed disc bottom-right that appears at whichever comes first of
+  half a screen down or halfway down the page, because a single threshold is
+  wrong at both ends. It ships `hidden` and only the script takes that off, so
+  a page that cannot scroll has none and JavaScript off shows nothing. See
+  *Gotchas* for the three traps in it.
 - **The contact cards are sized from the email address**, which is the widest
   thing in them and has no space to break on.
 - **The donor strip is one shared partial** with two variants. The homepage
@@ -290,8 +302,8 @@ once in `php/leo-app/views` + `php/public_html/css`, once in `views/` +
 ## Commands
 
 ```bash
-npm test                                    # 96 tests
-php php/test/run.php                        # 97 tests
+npm test                                    # 97 tests
+php php/test/run.php                        # 100 tests
 find php -name '*.php' -exec php -l {} \;   # lint
 
 ADMIN_PASSWORD='...' npm start              # Node build, :3000
@@ -402,6 +414,16 @@ none }`, so the rail's hidden cards were all visible and the hero stood 3,107px
 tall. `.hero-rail-card[hidden] { display: none }` is what makes `hidden` mean
 anything here. Any component that sets `display` on a class and then toggles
 `hidden` in script needs the same line.
+
+**That warning has now been collected on.** `.to-top` (the back-to-top control)
+sets `display: grid` and ships with the `hidden` attribute, so without
+`.to-top[hidden] { display: none }` it is on screen on every page from the first
+paint, before the script has judged whether the page even scrolls. Second
+component, same line. Related, and the reason the control does NOT use `display`
+for its own shown/hidden state: `visibility: hidden` takes an element out of the
+tab order and the accessibility tree the way `display: none` does, and unlike
+`display` it can be transitioned — so a fade needs no two-frame dance. The nav
+dropdown is hidden the same way for the same focus reason.
 
 **A float shortens line boxes, never block boxes.** The page card floats right
 and the copy wraps beside it — but a block with a background (the `.page-index`
@@ -748,6 +770,14 @@ rule's exact one-line text (adding a property reformats the rule and turns an
 exact match red on formatting, not behaviour), and watch every new assertion fail
 before trusting it.
 
+**But `[^}]*` cannot reach INTO a media block**, and the failure looks like a
+regression. A declaration inside `@media (max-width: 560px)` sits past the
+closing brace of whatever rule precedes it in that block, so `[^}]*` stops short
+and the assertion goes red against correct CSS. A **bounded** `.{0,400}?` is the
+shape that works: it crosses the one brace it has to and still cannot wander off
+down the sheet. Same technique this suite already uses to step over a PHP
+short-echo tag's closing bracket.
+
 **And pin the VALUE, not just the property.** An assertion that `.page-notice`
 has *a* `margin:` stayed green with the gap flipped from the bottom of the box to
 the top -- the exact regression that rule exists to prevent. The mutation pass is
@@ -762,6 +792,27 @@ the moment that figure gained `has-caption` -- on nothing being wrong. Match the
 class prefix (`class="page-picture`), or a regex that tolerates more classes.
 Same family as matching a CSS rule's exact one-line text, which turns red on
 adding a property.
+
+**A viewport-fixed element and a `.wrap`-bound one converge as the window
+narrows, and they are furthest apart on the screen you are looking at.** The
+back-to-top control is fixed to the viewport's right edge; the footer's "Staff
+sign in" link floats to the right of `.wrap`, which caps at 1120px. At 1280 the
+button's left edge is 1214 against a wrap ending at 1200 — clear, and the width
+the change was designed at. At **1140, 1024, 900, 760, 560 and 390** they
+coincide and the button sat squarely on the link, measured unclickable at every
+one. `.foot-legal` reserves 66px on the right (56 under 560px) which clears it at
+every width, because `.wrap` is itself inset 24px. Two other fixes were
+considered and are wrong: hiding the control when the footer appears removes it
+exactly when someone is at the bottom of a long page, and moving the link takes
+it out of the corner it belongs in.
+
+**A fragment link must NOT be base-path-prefixed.** `href="#top"` resolves
+against the *current* URL, so it is the top of whatever page you are on. Writing
+it the way every other link in the footer is written —
+`href="<?= e($basePath) ?>#top"` — makes it the **homepage** plus a fragment
+under the `/~leofoundationusa` temporary URL: a back-to-top control that
+navigates away. `link_url()` and `asset_url()` are for paths; a bare fragment is
+not a path. A test pins the bare form in both views.
 
 **A computed count is not a rendered count.** Sizing the logo strip by arithmetic
 — cap plus gap divides into the strip width — was wrong twice, because the marks
@@ -1105,6 +1156,41 @@ That crop is what makes the cards frame consistently — scaling the originals
 as-is left one portrait visibly smaller than its neighbour. Greg Sharp's
 published photo is a **group photo, not a headshot**; it is carried as published
 and is the obvious thing to ask the client to replace.
+
+**The rings are recoloured, and that is the one edit to a board photograph.**
+All six published as rgb(224, 208, 112), a pale yellow that matched nothing else
+on the page; they are `--gold`, rgb(184, 134, 43), at the client's ask. The
+photograph inside is untouched — verified numerically, not by eye: inside the
+circle the mean difference is 0.35–1.36 per channel and the worst single pixel
+4–12, which is JPEG re-encode noise, against 5.6–15.6 in the ring band itself.
+
+How it was done matters, because the two obvious ways are both wrong:
+
+- **A colour key alone recolours faces.** "Yellowish" also matches skin and
+  blonde hair; it tinted part of Michele's face and a patch of Madeline's hair.
+- **A radius mask works on four of six.** Jennifer's ring is not concentric with
+  her crop, so her radial profile never exceeds 59% ring at any radius. Fitting
+  the band per portrait then picked 0.203–0.968 on one and -0.002–1.004 on
+  another, because bins near the centre hold a handful of pixels and one stray
+  reads as 100%; requiring a minimum bin population then picked the longest run,
+  which was across the middle of two faces.
+- **What works is connected components.** Match the ring's measured colour, group
+  matching pixels into connected regions, and keep only the region that SPANS
+  the frame — that is the ring by definition, being the only thing that goes all
+  the way round. It spans 0.96–1.00 of the frame on every portrait while the next
+  largest match spans at most 0.20.
+
+The antialiasing survives because the ring is drawn over white: each pixel is
+`alpha*ring + (1-alpha)*white`, and blue carries the most contrast (112 against
+255) so alpha recovers exactly and the edge recomposes in the new colour rather
+than leaving a hard collar.
+
+**Every image ships twice, once to each build, copied by hand — and nothing
+caught a slip.** The suites read the store and the source, the lint reads PHP,
+and the cross-build render diff compares MARKUP: both builds reference the same
+`/img/<path>`, so identical markup proves nothing about the bytes behind it. The
+PHP suite now walks both image trees and asserts every file is byte-identical,
+with neither build holding a file the other lacks.
 
 **Recipient photos are served from this repo.** All 15 are committed under
 `public/img/recipients/` and `php/public_html/img/recipients/`, downscaled to
