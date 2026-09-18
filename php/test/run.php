@@ -1854,12 +1854,17 @@ test('the page picture and the program rows are built the way they measure', fun
             preg_match('/\\.page-flow\\.has-picture > \\.prose \\{[^}]*flex-direction: column;/s', $css) === 1,
             $sheet . ': the copy column is not a flex column, so nothing can take the slack'
         );
-        // `flex-basis: 0`, not `auto`. A flex item's base size counts toward its
-        // container's intrinsic height, so with `auto` the picture sized the
-        // row, the row outgrew the card, and the picture ended 73px below it.
+        // The picture is the height of the impact panel block that closes the
+        // copy on /board -- 181px, measured at the widths where its four panels
+        // sit on one row. `flex: 0 0 auto` so the flex column takes that height
+        // literally instead of growing or shrinking it.
         ok(
-            preg_match('/\\.page-flow\\.has-picture \\.page-picture \\{[^}]*flex: 1 1 0;/s', $css) === 1,
-            $sheet . ': the picture sizes the row it is meant to fill, so it cannot end on the card'
+            preg_match('/\\.page-flow\\.has-picture \\.page-picture \\{[^}]*height: 181px;/s', $css) === 1,
+            $sheet . ': the picture is not the height of the impact block it is meant to match'
+        );
+        ok(
+            preg_match('/\\.page-flow\\.has-picture \\.page-picture \\{[^}]*flex: 0 0 auto;/s', $css) === 1,
+            $sheet . ': the flex column will grow or shrink the picture off its height'
         );
         // Margins do not collapse in a flex column, so without this the copy's
         // last paragraph adds its 18px to the picture's 50 and the gap reads 68
