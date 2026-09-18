@@ -4,8 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><?= e($title) ?><?= $title === ($site['name'] ?? '') ? '' : ' — ' . e($site['name'] ?? '') ?></title>
-<meta name="description" content="<?= e($description ?? ($site['mission'] ?? $site['tagline'] ?? '')) ?>">
-<link rel="stylesheet" href="<?= e($basePath) ?>/css/site.css">
+<?php // ?? falls back on null only, and page.php passes '' for a page with no
+      // summary -- which emitted an empty description here while the EJS twin,
+      // which tests truthiness, fell back to the mission. Match the twin. ?>
+<meta name="description" content="<?= e(($description ?? '') !== '' ? $description : ($site['mission'] ?? $site['tagline'] ?? '')) ?>">
+<link rel="stylesheet" href="<?= e(asset_url('/css/site.css', $basePath)) ?>">
 <link rel="icon" href="<?= e($basePath) ?>/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="<?= e($basePath) ?>/img/brand/favicon-32.png">
 <link rel="icon" type="image/png" sizes="512x512" href="<?= e($basePath) ?>/img/brand/favicon-512.png">
@@ -29,7 +32,13 @@
 </div>
 <?php endif; ?>
 
-<header class="masthead">
+<?php // id="top" is the back-to-top control's destination, and the tabindex
+      // is what lets a keyboard user's focus follow the scroll: without it
+      // the page goes to the top and the next Tab carries on from the
+      // footer. It is -1, so the header never joins the tab order itself.
+      // The preview bar above is admin chrome, so the masthead is the top
+      // of the page proper. ?>
+<header class="masthead" id="top" tabindex="-1">
   <div class="wrap masthead-inner">
     <a class="wordmark" href="<?= e($basePath) ?>/" aria-label="<?= e($site['name'] ?? '') ?> home">
       <?php // The client's own crest, cropped above its LEADERSHIP/EDUCATION/
@@ -39,8 +48,8 @@
             // sits on a light plaque rather than being recoloured: inverting it
             // would put a white lion on a white face and lose the artwork. The
             // name stays set in type so it keeps its own sharpness. ?>
-      <img class="wordmark-crest" src="<?= e(link_url('/img/brand/leo-crest-header.png', $basePath)) ?>"
-           alt="" aria-hidden="true" width="440" height="396">
+      <img class="wordmark-lion" src="<?= e(asset_url('/img/brand/leo-mark-lion.png', $basePath)) ?>"
+           alt="" aria-hidden="true" width="520" height="380">
       <span class="wordmark-type">
         <span class="wordmark-name"><?= e($site['name'] ?? '') ?></span>
         <span class="wordmark-strap">Leadership &middot; Education &middot; Opportunity</span>
@@ -82,6 +91,10 @@
 
 <div class="ribbon">
   <div class="wrap ribbon-inner">
+    <?php /* Who and where. It used to open the homepage hero and cost a line of
+        its own there; in the ribbon it is on every page instead of one, and the
+        hero starts on the student. */ ?>
+    <span class="ribbon-org"><?= e($site['location'] ?? '') ?> · 501(c)(3) nonprofit</span>
     <span class="pill pill-<?= e($enrollment['state']) ?>">
       <?= $enrollment['state'] === 'open' ? 'Applications open' : 'Applications closed' ?>
     </span>

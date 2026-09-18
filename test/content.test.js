@@ -562,3 +562,31 @@ test('both builds ship the same client script and stylesheet', () => {
     );
   }
 });
+
+// About is the live WHO WE ARE and WHAT WE DO pages combined, so it is checked
+// the way the other transcribed pages are: pin the sentences, not a paraphrase.
+//
+// It used to quote the impact band's 5,685 / $6.9M and a test derived that
+// expectation from the band. Neither live page states a figure in its copy --
+// they carry the counters, whose real values sit in data-value attributes and
+// are the same four numbers the band already renders -- so the transcription
+// does not carry figures and there is nothing left to drift. The band is now the
+// only place on the site that states them. The client chose to have them on this
+// page once; if they want that back it is a line of copy they have to supply,
+// not one to compose here.
+test('the About page carries the transcribed copy, and no figures to drift', () => {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  const about = seed.pages.find((p) => p.slug === 'about');
+
+  // WHO WE ARE's own headline is the page's lede.
+  assert.match(about.summary, /^Leo Foundation’s mission is to invest in future generations/);
+  // WHAT WE DO's headline and body.
+  assert.match(about.body, /^For nearly 20 years, the LEO Foundation, \*formerly known as Grand Canyon University Scholarship Foundation\*, has connected/);
+  assert.match(about.body, /Today, college has become out of reach for many aspiring students\./);
+  assert.match(about.body, /LEO Foundation welcomes you to become a part of a growing, Christ-centered group/);
+
+  // The superseded pair must not come back, and nor must the governance sentence
+  // that was never transcribed from the live charter.
+  assert.doesNotMatch(about.body, /3,000|\$5 million/, 'the old figures are back in the About copy');
+  assert.doesNotMatch(about.body, /select each year's recipients/, 'the untranscribed governance claim is back');
+});

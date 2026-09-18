@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title><%= title %><%= title === site.name ? '' : ' — ' + site.name %></title>
 <meta name="description" content="<%= typeof description !== 'undefined' && description ? description : site.mission || site.tagline %>">
-<link rel="stylesheet" href="/css/site.css">
+<link rel="stylesheet" href="<%= assetUrl('/css/site.css') %>">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="32x32" href="/img/brand/favicon-32.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/img/brand/favicon-512.png">
@@ -29,7 +29,12 @@
 </div>
 <% } %>
 
-<header class="masthead">
+<%# `id="top"` is the back-to-top control's destination, and the tabindex is
+    what lets a keyboard user's focus follow the scroll: without it the page
+    goes to the top and the next Tab carries on from the footer. It is -1, so
+    the header never joins the tab order itself. The preview bar above is
+    admin chrome, so the masthead is the top of the page proper. %>
+<header class="masthead" id="top" tabindex="-1">
   <div class="wrap masthead-inner">
     <a class="wordmark" href="/" aria-label="<%= site.name %> home">
       <%# The client's own crest, cropped above its LEADERSHIP/EDUCATION/OPPORTUNITY
@@ -39,8 +44,8 @@
           rather than being recoloured: inverting it would put a white lion on a
           white face and lose the artwork. The name stays set in type so it keeps
           its own sharpness and can be restyled in CSS. %>
-      <img class="wordmark-crest" src="/img/brand/leo-crest-header.png"
-           alt="" aria-hidden="true" width="440" height="396">
+      <img class="wordmark-lion" src="<%= assetUrl('/img/brand/leo-mark-lion.png') %>"
+           alt="" aria-hidden="true" width="520" height="380">
       <span class="wordmark-type">
         <span class="wordmark-name"><%= site.name %></span>
         <span class="wordmark-strap">Leadership &middot; Education &middot; Opportunity</span>
@@ -76,6 +81,10 @@
 
 <div class="ribbon">
   <div class="wrap ribbon-inner">
+    <%# Who and where. It used to open the homepage hero and cost a line of its
+        own there; in the ribbon it is on every page instead of one, and the
+        hero starts on the student. %>
+    <span class="ribbon-org"><%= site.location %> · 501(c)(3) nonprofit</span>
     <span class="pill pill-<%= enrollment.state %>">
       <%= enrollment.state === 'open' ? 'Applications open' : 'Applications closed' %>
     </span>

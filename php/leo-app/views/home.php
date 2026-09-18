@@ -6,7 +6,7 @@
       // slides, their images and their /admin section are all still in place,
       // so this is a change of what the page renders, not a deletion of
       // anything the client can edit. ?>
-<section class="hero<?= $heroStudent !== null ? ' hero-centred' : '' ?>">
+<section class="hero<?= $heroStudent !== null ? ' hero-centred' : '' ?><?= $heroStudent !== null && $heroRail ? ' hero-has-rail' : '' ?>">
   <?php if ($heroStudent !== null): ?>
     <div class="wrap hero-stage">
       <?php // The visible headline is gone -- the student is the headline now.
@@ -14,7 +14,6 @@
             // heading is a page screen readers and search engines cannot
             // outline. Same words as before; only the display changes. ?>
       <h1 class="visually-hidden">Every scholarship is a door someone walks through.</h1>
-      <p class="eyebrow"><?= e($site['location'] ?? '') ?> · 501(c)(3) nonprofit</p>
 
       <?php // One of the awarded students, cut free of their own photograph and
             // stood at the centre of the page. The client asked for the awards
@@ -23,9 +22,10 @@
             // university. Everything shown is their own record -- the name, the
             // award, the school, and a line lifted verbatim out of the bio they
             // published. ?>
+      <div class="hero-split">
       <figure class="hero-student">
         <div class="hero-student-stage">
-          <img class="hero-student-cut" src="<?= e(link_url($heroStudent['cutoutUrl'], $basePath)) ?>"
+          <img class="hero-student-cut" src="<?= e(asset_url($heroStudent['cutoutUrl'], $basePath)) ?>"
                alt="<?= e($heroStudent['name'] ?? '') ?>, holding up a Grand Canyon University pin"
                width="640" height="832">
         </div>
@@ -40,13 +40,50 @@
         </figcaption>
       </figure>
 
+      <?php /* Three more awarded students beside the lead, rotating through every
+          published recipient. Every card is in the document from the start and
+          the first three are simply the ones not hidden, so with no JavaScript
+          this is a static trio rather than an empty box. The rest carry
+          loading="lazy" AND the hidden attribute, which is what keeps fourteen
+          portraits off the wire until they are actually wanted. */ ?>
+      <div class="hero-aside">
+      <?php if ($heroRail): ?>
+        <ul class="hero-rail" data-hero-rail data-hero-interval="5000" data-hero-visible="2">
+          <?php foreach ($heroRail as $index => $person): $line = \Leo\Content::heroLine($person); ?>
+            <li class="hero-rail-card<?= $index < 2 ? ' is-shown' : '' ?>"<?= $index < 2 ? '' : ' hidden' ?>>
+              <img class="hero-rail-photo" src="<?= e(asset_url($person['photoUrl'] ?? '', $basePath)) ?>" alt="<?= e($person['name'] ?? '') ?>"
+                   width="96" height="96"<?= $index < 2 ? '' : ' loading="lazy"' ?>>
+              <div class="hero-rail-text">
+                <?php if ($line['quoted']): ?>
+                  <blockquote class="hero-rail-line">&ldquo;<?= e($line['text']) ?>&rdquo;</blockquote>
+                <?php else: ?>
+                  <p class="hero-rail-line"><?= e($line['text']) ?></p>
+                <?php endif; ?>
+                <p class="hero-rail-who">
+                  <strong><?= e($person['name'] ?? '') ?></strong>
+                  <span><?= e(($person['school'] ?? '') !== '' ? $person['school'] : ($person['scholarship'] ?? '')) ?></span>
+                </p>
+              </div>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+      <?php endif; ?>
+
+      <?php /* The mission sat under the whole hero and cost a band of its own.
+          It now stands where the third student used to, which is the same copy
+          in less of the page. */ ?>
       <p class="hero-mission"><?= e($site['mission'] ?? '') ?></p>
 
+      <?php /* The buttons belong to the copy above them, so they sit under it
+          and range left with it rather than being centred under the whole hero
+          -- which also took a row of its own the page need not spend. */ ?>
       <div class="actions">
         <a class="btn btn-gold" href="<?= e($basePath) ?>/scholarships">
           <?= $enrollment['state'] === 'open' ? 'Apply for a scholarship' : 'See available scholarships' ?>
         </a>
         <a class="btn btn-outline" style="color:#fff" href="<?= e($basePath) ?>/recipients">Meet our recipients</a>
+      </div>
+      </div>
       </div>
 
       <?php // The deadline is still what applicants come here for, so it stays
@@ -68,7 +105,6 @@
   <?php else: ?>
     <div class="wrap hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow"><?= e($site['location'] ?? '') ?> · 501(c)(3) nonprofit</p>
         <h1>Every scholarship is a door someone walks through.</h1>
         <p><?= e($site['mission'] ?? '') ?></p>
         <div class="actions">
@@ -111,23 +147,20 @@
 </section>
 
 <?php if (!empty($site['impact'])): ?>
+<?php /* The donors and partners the live site carries in a carousel on its own
+    homepage, between the student and the figures. How it works is in the
+    partial, which the community page shares. */ ?>
+<?php if ($logos): ?>
+<?php $app->partial('logo-strip', ['logos' => $logos]); ?>
+<?php endif; ?>
+
 <section class="impact">
   <div class="wrap">
     <div class="impact-head">
       <p class="eyebrow">Our impact</p>
       <h2><?= e($site['impactTitle'] ?? 'What the scholarships have added up to.') ?></h2>
     </div>
-    <div class="impact-grid">
-      <?php foreach ($site['impact'] as $item): ?>
-        <div>
-          <div class="value"><?= e($item['value'] ?? '') ?></div>
-          <div class="label"><?= e($item['label'] ?? '') ?></div>
-          <?php if (!empty($item['detail'])): ?>
-            <p class="detail"><?= e($item['detail']) ?></p>
-          <?php endif; ?>
-        </div>
-      <?php endforeach; ?>
-    </div>
+    <?php $app->partial('impact-figures', ['impact' => $site['impact']]); ?>
   </div>
 </section>
 <?php endif; ?>

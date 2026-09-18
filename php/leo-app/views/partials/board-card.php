@@ -12,7 +12,7 @@ $paragraphs = static fn (string $text): array => preg_split('/\n{2,}/', trim($te
 ?>
 <article class="card board-member<?= $isLead ? ' board-lead' : '' ?>">
   <?php if (!empty($member['photoUrl'])): ?>
-    <img class="portrait portrait-round" src="<?= e(link_url($member['photoUrl'], $basePath)) ?>" alt="<?= e($member['name'] ?? '') ?>" loading="lazy" width="800" height="800">
+    <img class="portrait portrait-round" src="<?= e(asset_url($member['photoUrl'], $basePath)) ?>" alt="<?= e($member['name'] ?? '') ?>" loading="lazy" width="800" height="800">
   <?php else: ?>
     <div class="portrait portrait-round portrait-fallback"><?= e(mb_strtoupper(mb_substr(trim((string) ($member['name'] ?? '?')), 0, 1))) ?></div>
   <?php endif; ?>

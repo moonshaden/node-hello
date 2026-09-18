@@ -57,20 +57,19 @@ img { max-width: 100%; display: block; }
    img so the header does not reflow when it loads. */
 /* The lion carries the identity in the masthead; the name is type, so it
    stays crisp at any size and needs no second raster. */
-.wordmark { gap: 14px; text-decoration: none; }
+.wordmark { gap: 11px; text-decoration: none; }
 /* The crest is the client's artwork, drawn navy-on-white. The masthead is navy,
    so it sits on a light plaque rather than being recoloured -- a white-on-navy
    inversion would put a white lion against its own white face. */
-.wordmark-crest {
-  /* Sized so the masthead stays one row. The crest is wider than the line-art
-     lion it replaced, and at 58px it pushed the wordmark past the width the nav
-     needs, wrapping the header onto a second row and taking it from 100px to
-     176px tall. */
-  height: 46px; width: auto; display: block; flex: none;
-  background: #fff;
-  border-radius: 9px;
-  padding: 4px 6px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, .22);
+.wordmark-lion {
+  /* The lion mark alone, white and gold on transparent, sitting straight on the
+     navy. It replaced the full crest because at masthead size the crest's own
+     LEO FOUNDATION was an illegible smudge beside the same words set in type --
+     the name is carried by the type, so the mark only has to be the lion.
+
+     Sized so the masthead stays one row: the wordmark must not push past the
+     width the nav needs, or the header wraps and doubles in height. */
+  height: 42px; width: auto; display: block; flex: none;
 }
 .wordmark-type { display: flex; flex-direction: column; justify-content: center; }
 .wordmark-name {
@@ -81,23 +80,158 @@ img { max-width: 100%; display: block; }
   font-size: .68rem; letter-spacing: .17em; text-transform: uppercase;
   color: var(--gold-bright); margin-top: 5px;
 }
-.foot-mark { height: 62px; width: auto; margin-bottom: 18px; }
+/* The mark and the wordmark are one stacked sign-off, so they share a box the
+   width of the wordmark. The footer column is a 1fr track that grows on wide
+   screens, and centring the mark in *that* would float it away from the name it
+   belongs to. Capping here rather than on each image also means the mark's size
+   is one value below and nothing has to be kept in step with it. */
+.foot-sign {
+  /* 320px against a 336px footer column at desktop. The strapline under the
+     wordmark is 36 characters on one line, and 36 characters will not grow past
+     about 10px inside a 260px box however the tracking is cut -- so a bigger
+     strapline needs a wider block, not a bigger font alone. Everything in here
+     is sized as a share of this width, so widening the block scales the mark,
+     the wordmark and the strapline together and keeps their relationship. */
+  width: min(320px, 100%);
+  /* The strapline below is sized as a share of THIS box rather than in rem, so
+     it keeps filling the wordmark's width when the footer column narrows. At
+     780px the column is 223px, not 260px, and a fixed size overran the wordmark
+     it sits under. */
+  container-type: inline-size;
+}
+
+/* The lion alone, so it carries less width than the wordmark lockup it replaced
+   and needs more height to hold its corner of the footer. The foundation's name
+   and EIN are set in type in the legal line below, so nothing is lost.
+   Centred over the wordmark rather than ranged left with it. The artwork is
+   very nearly symmetrical -- 13.1% transparent padding on the left against
+   11.7% on the right, measured from its alpha channel -- so centring the file
+   box puts the ink within a pixel of centre at this size, and no optical
+   correction is worth a rule. (The old -15px nudge here was for the left
+   alignment this replaces, where the same padding was the whole error.) */
+.foot-mark {
+  display: block; height: 128px; width: auto; margin: 0 auto 14px;
+}
+
+/* The mark is a link home. `width: max-content` keeps the hit area the width of
+   the lion rather than the whole 320px sign-off block -- an anchor is a block
+   here, and a block-width link means the dead space either side of the mark is
+   clickable, which reads as a broken target. `margin: 0 auto` then re-centres
+   the shrunk box, since the image's own auto margins have nothing left to
+   distribute once the box is its width. */
+.foot-mark-link {
+  display: block; width: max-content; margin: 0 auto;
+}
+
+/* The wordmark sits under the mark and reads as the second line of one
+   sign-off, so the gap above it is tighter than the gap below. It fills the
+   wrapper, which is what caps it. `height: auto` is load-bearing: the
+   width/height attributes that reserve its space would otherwise be applied as
+   a real height. */
+.foot-lockup {
+  display: block; width: 100%; height: auto; margin-bottom: 7px;
+}
+
+/* The strapline the artwork used to carry, now set in type -- same words, same
+   gold and the same uppercase tracking as the masthead's. Worth stating why
+   this is type and not part of the raster: at the size the footer renders it,
+   the baked strapline was about eight pixels tall and going soft, which is the
+   same reason the masthead sets it in type beside the lion.
+   The colour is not a guess: the artwork's own strapline is exactly #d9a441,
+   sampled from the file, which is --gold-bright already.
+   The size is set so the line fills the wordmark's width on ONE line -- it is
+   the base of a stacked sign-off and a wrapped strapline breaks the shape. */
+.foot-strap {
+  display: block;
+  /* rem first as the fallback, then the container share for browsers that have
+     container query units. Both land on the same size at the 260px width. */
+  font-size: .74rem;
+  font-size: 3.7cqw;
+  letter-spacing: .133em; text-transform: uppercase;
+  color: var(--gold-bright); white-space: nowrap;
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+/* Back to top.
+ *
+ * Fixed at the foot of the viewport on any page that runs past one full screen.
+ * The script decides that -- the page's height is not something the stylesheet
+ * can ask about -- and the stylesheet decides only what it looks like.
+ *
+ * `.to-top[hidden]` is load-bearing. This rule sets `display`, and a class with
+ * `display` OUTRANKS the browser's own `[hidden] { display: none }`, so without
+ * that line the control would be on screen on every page from the first paint,
+ * before the script has looked at anything. The hero rail learned this the hard
+ * way; any component that sets `display` on a class and toggles `hidden` in
+ * script needs the same line.
+ *
+ * Hiding between scroll positions is `visibility` plus `opacity`, not `display`:
+ * `visibility: hidden` takes it out of the tab order and the accessibility tree
+ * the way `display: none` would, and unlike `display` it can be transitioned --
+ * so there is no two-frame dance to make the fade happen. The nav dropdown is
+ * hidden the same way, for the same focus reason.
+ */
+.to-top {
+  position: fixed; right: 20px; bottom: 20px; z-index: 40;
+  display: grid; place-items: center;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--ink); color: #fff;
+  /* The gold rim is what stops it disappearing into the navy footer, which is
+     the one band it will sit over most often. */
+  border: 1px solid var(--gold);
+  box-shadow: var(--lift-2);
+  text-decoration: none;
+  opacity: 0; visibility: hidden;
+  transition: opacity .18s var(--depth-ease), visibility .18s var(--depth-ease),
+              background-color .18s var(--depth-ease), transform .18s var(--depth-ease);
+}
+.to-top[hidden] { display: none; }
+.to-top.is-shown { opacity: 1; visibility: visible; }
+.to-top:hover { background: var(--gold); border-color: var(--gold-bright); }
+.to-top:hover, .to-top:focus-visible { transform: translateY(-2px); }
+.to-top:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
+
+/* The masthead is the scroll target and takes focus programmatically, so it is
+   never reached by Tab -- and an outline on a full-width header would be a
+   band across the top of the page. This is the standard treatment for a
+   `tabindex="-1"` scroll target, and it removes no keyboard affordance because
+   there was none to remove. */
+.masthead[tabindex]:focus { outline: none; }
+
+@media (max-width: 560px) {
+  /* Out of the way of a thumb reaching the bottom edge, and smaller, because
+     the phone viewport is where a fixed control costs the most screen. */
+  .to-top { right: 14px; bottom: 14px; width: 42px; height: 42px; }
+  /* Matching reserve for the smaller control -- see `.foot-legal`. 66px of a
+     342px line is worth giving back. */
+  .foot-legal { padding-right: 56px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The fade and the lift go; the control itself stays. Asking for stillness is
+     not asking to lose a way back to the top. */
+  .to-top { transition: none; }
+  .to-top:hover, .to-top:focus-visible { transform: none; }
+}
 
 @media (max-width: 780px) {
-  .wordmark-crest { height: 44px; padding: 4px 6px; }
+  .wordmark-lion { height: 44px; }
   .wordmark-strap { display: none; }
 }
 
-/* The lion is a near-white line drawing published as a watermark. Recovered to
-   transparency, it is used the same way here: a trace behind a navy band,
-   never at a size or contrast that competes with the figures in front of it. */
-.impact { position: relative; }
+/* The client's line drawing, used as a trace behind a navy band -- never at a
+   size or contrast that competes with the figures in front of it. Same artwork
+   as the footer trace, recoloured white for these grounds and carried at a
+   lower opacity than the lion it replaced, because it holds far more line work
+   per square inch and the old values read heavier on it. */
+.impact { position: relative; overflow: hidden; }
 .impact::after {
   content: '';
   position: absolute; right: -40px; top: 50%; transform: translateY(-50%);
-  width: min(360px, 34vw); aspect-ratio: 368 / 433;
-  background: url('../img/brand/leo-lion-white.png') no-repeat center / contain;
-  opacity: .16; pointer-events: none;
+  width: min(360px, 34vw); aspect-ratio: 448 / 520;
+  background: url('../img/brand/leo-lion-trace-white.png') no-repeat center / contain;
+  opacity: .1; pointer-events: none;
 }
 .impact > .wrap { position: relative; z-index: 1; }
 
@@ -113,9 +247,9 @@ img { max-width: 100%; display: block; }
 .page-head::after {
   content: '';
   position: absolute; right: -30px; bottom: -60px;
-  width: min(300px, 30vw); aspect-ratio: 368 / 433;
-  background: url('../img/brand/leo-lion-white.png') no-repeat center / contain;
-  opacity: .12; pointer-events: none;
+  width: min(300px, 30vw); aspect-ratio: 448 / 520;
+  background: url('../img/brand/leo-lion-trace-white.png') no-repeat center / contain;
+  opacity: .08; pointer-events: none;
 }
 .page-head > .wrap { position: relative; z-index: 1; }
 
@@ -123,18 +257,41 @@ img { max-width: 100%; display: block; }
 .foot::after {
   content: '';
   position: absolute; right: 2%; top: 50%; transform: translateY(-50%);
-  width: min(240px, 22vw); aspect-ratio: 368 / 433;
-  /* Gold rather than white here: the footer lockup is gold, and the two read
-     as one sign-off. This is the deeper brand gold, not the bright one, so the
-     trace sits down into the navy rather than glinting off it. */
-  background: url('../img/brand/leo-lion-gold-deep.png') no-repeat center / contain;
-  opacity: .5; pointer-events: none;
+  width: min(240px, 22vw); aspect-ratio: 448 / 520;
+  /* Gold rather than white here, so the trace and the gold in the lion mark
+     above it read as one sign-off. The deeper brand gold, not the bright one,
+     so it sits down into the navy rather than glinting off it: flat
+     rgb(150,108,34) at varying alpha, the same treatment the previous trace
+     used, over a line drawing whose ink became that alpha. */
+  background: url('../img/brand/leo-lion-trace.png') no-repeat center / contain;
+  opacity: .14; pointer-events: none;
 }
 .foot > .wrap { position: relative; z-index: 1; }
 
 @media (max-width: 900px) {
   .page-head::after, .foot::after { display: none; }
 }
+
+/* ---------- the trace on the light bands ----------
+   The same drawing again, gold on white, at a fifth of the opacity it carries
+   on navy: on a light ground the same value reads far stronger, and the point
+   here is paper texture rather than a picture. Left rather than right, so the
+   traces do not all stack down one edge of the page, and gone under 900px
+   where a card grid leaves no margin to put it in. */
+section.band.tint { position: relative; overflow: hidden; }
+section.band.tint::after {
+  content: '';
+  position: absolute; left: -60px; top: 50%; transform: translateY(-50%);
+  width: min(300px, 26vw); aspect-ratio: 448 / 520;
+  background: url('../img/brand/leo-lion-trace.png') no-repeat center / contain;
+  opacity: .05; pointer-events: none;
+}
+section.band.tint > .wrap { position: relative; z-index: 1; }
+
+@media (max-width: 900px) {
+  section.band.tint::after { display: none; }
+}
+
 
 /* ---------- header ---------- */
 
@@ -147,6 +304,60 @@ img { max-width: 100%; display: block; }
 .wordmark { display: flex; align-items: center; gap: 12px; }
 .nav { margin-left: auto; display: flex; align-items: center; gap: 24px; flex-wrap: wrap; }
 .nav a { font-size: .95rem; padding: 4px 0; border-bottom: 2px solid transparent; }
+
+/* One row, and enough room to stay one.
+   The masthead measured a comfortable single row here and wrapped the whole nav
+   onto a second one on the client's machine -- the same eight links simply
+   render wider in their fonts than in this environment's, and there were only
+   about 60px of slack in the 1120px column to absorb it.
+
+   So it cannot wrap on a desktop, and it comes in twice on the way down so that
+   "cannot wrap" never turns into "overflows the page" instead. Forcing one row
+   at 901px did exactly that: the row needs about 1000px and the column there is
+   952px. Below 900px it wraps on purpose -- see the phone rules further down. */
+@media (min-width: 1101px) {
+  .masthead-inner { flex-wrap: nowrap; }
+  .nav { flex-wrap: nowrap; gap: 15px; white-space: nowrap; }
+  .nav a { font-size: .86rem; }
+  .nav .btn { padding: 8px 14px; }
+  .wordmark { flex: 0 0 auto; }
+  .wordmark-lion { height: 38px; }
+  .wordmark-name { font-size: 1.28rem; }
+  /* The slack here is the whole point. This row measured as fitting before and
+     still wrapped on the client's machine, so it is sized for the widest
+     plausible rendering of the same eight links rather than for this one. */
+}
+@media (min-width: 901px) and (max-width: 1100px) {
+  /* Same row, less of everything, because the column is 150px narrower here. */
+  .masthead-inner { flex-wrap: nowrap; gap: 18px; }
+  .nav { flex-wrap: nowrap; gap: 11px; white-space: nowrap; }
+  .nav a { font-size: .82rem; }
+  .nav .btn { padding: 7px 12px; }
+  .wordmark { flex: 0 0 auto; gap: 9px; }
+  .wordmark-lion { height: 34px; }
+  .wordmark-name { font-size: 1.15rem; }
+  .wordmark-strap { font-size: .58rem; letter-spacing: .12em; }
+}
+
+/* Phones: the row is going to wrap, so make it wrap into something deliberate
+   -- the mark on its own line, the links centred under it, and the whole
+   masthead shorter than the 264px it used to take at 390px. */
+@media (max-width: 900px) {
+  .masthead-inner {
+    justify-content: center;
+    gap: 12px;
+    padding-top: 14px; padding-bottom: 14px;
+  }
+  .wordmark { margin: 0 auto; }
+  .nav {
+    margin-left: 0;
+    width: 100%;
+    justify-content: center;
+    gap: 10px 14px;
+  }
+  .nav a { font-size: .86rem; }
+  .nav .btn { padding: 7px 14px; }
+}
 .nav a:hover, .nav a.is-current { border-bottom-color: var(--gold-bright); color: #fff; }
 .nav .btn { border-bottom: 0; padding: 8px 18px; }
 
@@ -218,11 +429,57 @@ img { max-width: 100%; display: block; }
 
 .ribbon { background: var(--gold-wash); border-bottom: 1px solid var(--rule); }
 .ribbon-inner {
-  display: flex; align-items: center; gap: 16px 24px;
-  padding-top: 14px; padding-bottom: 14px; flex-wrap: wrap;
+  display: flex; align-items: center; gap: 12px 18px;
+  padding-top: 10px; padding-bottom: 10px; flex-wrap: wrap;
+}
+
+/* One line, always.
+   With `flex-wrap: wrap` the button's `margin-left: auto` claims the leftover
+   space, and the moment that leaves less than the button needs, the button tips
+   onto a row of its own -- which is what doubled the ribbon's height.
+
+   Never wrapping is only half of it. All four pieces at their natural width need
+   1025px, so below that no amount of shrinking fits them: something has to go.
+   They drop in reverse order of how much a visitor needs them -- the standing
+   location first, then the status pill (the date beside it already says the
+   same thing), then the full date, leaving the countdown and the button, which
+   are the two things anyone came to the ribbon for. Whole pieces, never a
+   truncated sentence. */
+.ribbon-inner { flex-wrap: nowrap; }
+.ribbon-inner > .pill,
+.ribbon-inner > .btn { flex: 0 0 auto; }
+.ribbon-inner > span:not(.pill) { min-width: 0; }
+
+@media (max-width: 1040px) { .ribbon-org { display: none; } }
+@media (max-width: 860px)  { .ribbon-inner > .pill { display: none; } }
+@media (max-width: 680px)  {
+  .ribbon strong { display: none; }         /* "Reopens November 1, 2026." */
+  .ribbon-inner { gap: 10px; }
 }
 .ribbon strong { font-family: var(--serif); }
 .ribbon .btn { margin-left: auto; }
+
+/* Who and where, at the head of the ribbon. Set quietly: it is standing
+   information, and the deadline beside it is the thing anyone is actually
+   looking for, so this must not compete with it. The rule to its right does the
+   separating, which keeps the gap tight without a bullet or a dash. */
+.ribbon-org {
+  font-size: .72rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  padding-right: 16px;
+  border-right: 1px solid var(--rule);
+  /* The deadline beside it is the load-bearing text, so if anything has to give
+     up room it is this. Without the shrink the button's auto margin tips the
+     whole row onto a second line -- 66px of ribbon became 113px. */
+  flex: 0 1 auto;
+  min-width: 0;
+}
+.ribbon-inner > span:not(.pill) { min-width: 0; }
+
+
 
 .pill {
   display: inline-flex; align-items: center; gap: 7px;
@@ -331,7 +588,7 @@ a.slide:hover .slide-cta { color: #fff; border-bottom-color: #fff; }
 .hero-grid { display: grid; gap: 48px; grid-template-columns: minmax(0, 1.35fr) minmax(300px, 1fr); align-items: center; }
 .deadline {
   background: rgba(255, 255, 255, .06); border: 1px solid #2c4f70;
-  border-radius: 16px; padding: 28px;
+  border-radius: 16px; padding: 20px;
 }
 .deadline .count { font-family: var(--serif); font-size: 3.4rem; line-height: 1; color: var(--gold-bright); }
 .deadline .count small { font-family: var(--sans); font-size: .95rem; color: #c6d5e2; display: block; margin-top: 6px; }
@@ -360,7 +617,42 @@ a.slide:hover .slide-cta { color: #fff; border-bottom-color: #fff; }
   border: 1px solid #2c4f70; border-radius: 16px; overflow: hidden;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
-.impact-grid > div { background: #16304a; padding: 30px 28px 32px; }
+.impact-grid > div { background: #16304a; padding: 20px; }
+
+/* The same figures inside a page's copy column rather than in the homepage's
+   full-bleed band. `.impact` has to stay on an ancestor -- the gold numerals and
+   the white labels are scoped to it -- so this variant only undoes what the band
+   itself contributes. The column is about two thirds the width of the homepage's
+   `.wrap`, so the panels are told to fit four across at a smaller minimum and
+   the numerals come down to suit; left at the band's size, `$6.9M` overflowed
+   its panel. */
+/* Every one of these carries both classes. A single `.impact-inline` is (0,1,0)
+   -- the same weight as the `.impact` rules it is undoing, including the one in
+   the narrow-screen query at the foot of this block, which therefore won on
+   source order and put the band's 44px of padding back above the panels below
+   861px. */
+.impact.impact-inline {
+  background: none; border-top: 0; padding: 0; margin: 50px 0 0;
+  border-radius: 16px;
+}
+.impact.impact-inline::after { display: none; }   /* no room behind the panels here */
+.impact.impact-inline .impact-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+.impact.impact-inline .impact-grid > div { padding: 16px; container-type: inline-size; }
+/* Two classes here as well, and for the same reason: `.impact-inline .value` is
+   (0,1,1), the same as `.impact .value` below it, which therefore won on source
+   order and left the numerals at the band's 51px in a 157px panel -- `$6.9M`
+   ran 6px past its own box. Counting specificity matters more than it looks. */
+.impact.impact-inline .value {
+  /* The panel is the container, not the viewport: this sits in a `.page-flow`
+     column, where the two diverge -- the panel is 181px at a 1280 viewport and
+     155px at 862, because the layout changes what the column gets before the
+     viewport gets narrow. The plain size is first so a browser without
+     container units still gets something that fits; `cqi` then only ever takes
+     it down. */
+  font-size: 2.1rem;
+  font-size: min(2.1rem, 26cqi);
+}
+.impact.impact-inline .detail { margin-bottom: 0; }
 
 .impact .value {
   font-family: var(--serif);
@@ -379,7 +671,6 @@ a.slide:hover .slide-cta { color: #fff; border-bottom-color: #fff; }
 
 @media (max-width: 780px) {
   .impact { padding: 44px 0 48px; }
-  .impact-grid > div { padding: 26px 24px 28px; }
 }
 
 section.band { padding: 64px 0; }
@@ -395,7 +686,7 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 
 .card {
   background: var(--card); border: 1px solid var(--rule); border-radius: 14px;
-  padding: 26px; box-shadow: var(--shadow); display: flex; flex-direction: column;
+  padding: 20px; box-shadow: var(--shadow); display: flex; flex-direction: column;
 }
 .card h3 { margin-bottom: .35em; }
 .card h3 a { text-decoration: none; }
@@ -443,6 +734,57 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .recipient .story[open] .when-shut { display: none; }
 .recipient .story[open] .when-open { display: inline; }
 .recipient .story[open] .story-excerpt { display: none; }
+
+/* The horizontal variant, for a scholarship's own page. The column there is
+   ~690px wide and the card fills it, so a portrait at `width: 100%` in a 4:5
+   crop stood 808px tall and the four cards ran to 4,663px of page. A small
+   portrait beside the text instead.
+
+   Same arrangement as .board-lead: the portrait spans the left column across
+   however many rows the text produces, and everything else is pinned to column
+   two and auto-places down it. The span number just has to exceed the rows a
+   card can produce. */
+.recipient-rows { gap: 18px; }
+.recipient-row {
+  display: grid;
+  grid-template-columns: 265px minmax(0, 1fr);
+  column-gap: 22px;
+  align-items: start;
+}
+/* `stretch`, not `start`: the portrait spans every row the text produces, so
+   stretching it makes its height the height of the text beside it. That needs a
+   real height as well -- a grid item stretches its box, and without height:100%
+   the image inside would still draw at its own ratio and leave the box empty
+   below. Setting both width and height also takes the 4:5 aspect-ratio out of
+   play, which is the point: the crop follows the text now, so `object-fit:
+   cover` is what keeps the face from stretching with it. */
+.recipient-row > .portrait { grid-column: 1; grid-row: 1 / span 30; align-self: stretch; }
+.recipient-row > :not(.portrait) { grid-column: 2; }
+.recipient-row .portrait {
+  width: 265px; height: 100%; min-height: 175px;
+  object-fit: cover; margin-bottom: 0;
+}
+.recipient-row .portrait-fallback { font-size: 2.2rem; }
+.recipient-row .name { font-size: 1.15rem; }
+.recipient-row blockquote { margin-top: 12px; }
+.recipient-row .story { margin-top: 12px; }
+
+/* Keyed off the list's own width, not the viewport: this column is a `.split`
+   track, so the card is 532px at a 900px viewport and 732px at 780px once the
+   sidebar drops out. A viewport query gets that backwards. Below 600px of card
+   there is not enough left beside a 265px portrait for the text to read -- it
+   wrapped hard enough to make the matched-height portrait 753px tall, a 0.35
+   crop -- so it stacks instead. */
+.recipient-rows { container-type: inline-size; }
+@container (max-width: 600px) {
+  .recipient-row { grid-template-columns: 1fr; }
+  .recipient-row > .portrait { grid-column: 1; grid-row: auto; align-self: start; }
+  .recipient-row > :not(.portrait) { grid-column: 1; }
+  .recipient-row .portrait {
+    width: 190px; height: auto; min-height: 0;
+    aspect-ratio: 4 / 5; margin-bottom: 14px;
+  }
+}
 
 /* board members — the same card as a recipient, but the published portraits
    are circular badges already matted on white, so they sit square and centred
@@ -497,7 +839,7 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   grid-template-columns: 240px minmax(0, 1fr);
   column-gap: 36px;
   align-items: start;
-  padding: 34px 36px 36px;
+  padding: 20px;
   border-color: #dcd3c2;
 }
 .board-lead > .portrait { grid-column: 1; grid-row: 1 / span 30; align-self: start; }
@@ -516,7 +858,7 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .board-lead .story-full p { color: var(--ink-soft); }
 
 @media (max-width: 720px) {
-  .board-lead { grid-template-columns: 1fr; padding: 26px 24px 28px; row-gap: 18px; }
+  .board-lead { grid-template-columns: 1fr; row-gap: 18px; }
   .board-lead > .portrait { grid-column: 1; grid-row: auto; justify-self: center; }
   .board-lead > :not(.portrait) { grid-column: 1; }
   .board-lead .name { text-align: center; }
@@ -551,15 +893,23 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   grid-template-columns: 300px minmax(0, 1fr);
   column-gap: 36px;
   align-items: start;
-  padding: 30px 34px 32px;
+  padding: 20px;
   border-color: #dcd3c2;
 }
 .program > .program-photo { grid-column: 1; grid-row: 1 / span 30; align-self: start; }
 .program > :not(.program-photo) { grid-column: 2; }
 .program-photo {
-  /* height:auto is load-bearing: the width/height attributes reserve space
-     before the photo loads, and without it they apply as a real height and
-     beat aspect-ratio. */
+  /* A square, which is the WHOLE picture: the live site publishes all three of
+     these at 1200x1200 and they are stored at 800x800, so a square frame crops
+     none of them. That matters for the Impact Leadership one, which has the word
+     LEADERSHIP set into the artwork -- it ran the full height of its text for a
+     few hours and the tall crop cut the word to "ADERSH".
+
+     `height: auto` is load-bearing: the width/height attributes reserve space
+     before the photo loads, and without it they apply as a real height and beat
+     aspect-ratio. `object-fit: cover` does nothing to a square source in a
+     square frame; it is there so a future non-square file crops rather than
+     distorts. */
   width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover;
   border-radius: 12px; background: var(--gold-wash);
 }
@@ -570,6 +920,29 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .program-body p { color: var(--ink-soft); margin: 0 0 .9em; }
 .program-body p:last-child { margin-bottom: 0; }
 
+/* The lead paragraph shows and the rest opens, so three programs of 900-1,500
+   characters do not each run a screen deep. The lead sits OUTSIDE the disclosure
+   -- it stays visible when the rest opens, because it is the first paragraph of
+   the same copy rather than a summary of it, and a `summary` element may only
+   carry phrasing content anyway.
+
+   Third copy of this disclosure's rules, after the recipient story and the board
+   bio. They are the same three declarations each time and would lift into one
+   `.story` block; not done here because that changes specificity for two
+   components on two other pages and neither was measured today. */
+.program .story { margin-top: 4px; }
+.program .story > summary { list-style: none; cursor: pointer; display: block; }
+.program .story > summary::-webkit-details-marker { display: none; }
+.program .story-toggle {
+  display: inline-block;
+  color: var(--gold); font-size: .85rem; font-weight: 600;
+}
+.program .story > summary:hover .story-toggle { text-decoration: underline; }
+.program .story .when-open,
+.program .story[open] .when-shut { display: none; }
+.program .story[open] .when-open { display: inline; }
+.program .story-rest > :first-child { margin-top: .9em; }
+
 /* Mirrored so the photo sits on the right for every other program. */
 .program-flip { grid-template-columns: minmax(0, 1fr) 300px; }
 .program-flip > .program-photo { grid-column: 2; }
@@ -577,7 +950,7 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 
 @media (max-width: 720px) {
   .program,
-  .program-flip { grid-template-columns: 1fr; padding: 24px 22px 26px; row-gap: 18px; }
+  .program-flip { grid-template-columns: 1fr; row-gap: 18px; }
   .program > .program-photo,
   .program-flip > .program-photo { grid-column: 1; grid-row: auto; }
   .program > :not(.program-photo),
@@ -649,9 +1022,14 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
    Thirteen FAQ questions in one prose column read as a wall, so the page opens
    on a table of contents and each question carries an anchor to link to. */
 
+/* 50px under it, the gap the callout, the inline logo strip and the programs
+   picture all sit on. It used to be 6px, which read as the index and the copy
+   touching. This is the shared component, so it moves the FAQ and the privacy
+   policy as well as the giving page -- those are the three pages with enough
+   headings to get an index. */
 .page-index {
   background: var(--gold-wash); border: 1px solid var(--rule);
-  border-radius: 14px; padding: 22px 26px 24px; margin-bottom: 6px;
+  border-radius: 14px; padding: 20px; margin-bottom: 50px;
 }
 .page-index .eyebrow { margin-bottom: .7rem; }
 .page-index ol {
@@ -672,20 +1050,46 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 
 /* ---------- contact details ---------- */
 
+/* Sized so the email address sits on one line. It is the widest thing in here
+   by a distance and it has no space to break on, so the cards are sized from it
+   rather than from a round number: 248px in this sandbox's Arial-metric
+   fallback, 291px if a browser picks DejaVu Sans, against ~306px of usable width
+   in a card at three across. The 330px minimum track is what buys that headroom
+   -- it makes auto-fit drop to two columns rather than squeeze three, so a
+   narrow window gets wider cards instead of a wrapped address. Measured across
+   the font stack, not assumed: the client reads this on a Mac where the stack
+   resolves to a different face than it does here. */
 .contact-grid {
   display: grid; gap: 1px; background: var(--rule);
   border: 1px solid var(--rule); border-radius: 16px; overflow: hidden;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  margin: 0; max-width: 820px;
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+  margin: 0; max-width: 1040px;
 }
-.contact-grid > div { background: var(--card); padding: 24px 26px 26px; }
+.contact-grid > div { background: var(--card); padding: 20px; }
+/* Three details across two columns leaves the last row half empty -- and the
+   grid paints its own rule colour into the gaps, so that empty half renders as a
+   grey panel rather than as nothing. The last card therefore spans the row when
+   the grid is two columns wide.
+   Keyed off the grid's own width rather than the viewport, because that is what
+   actually decides the column count: with a 330px minimum track and a 1px gap,
+   three columns need 992px and two need 661px. A viewport media query would have
+   to re-derive that through the wrap's padding and would drift the moment either
+   number changed.
+   (`auto / -1` does not do this: an auto start with a definite end is a one-track
+   span, so it moved the card to the last column and left the hole on the left.) */
+.contact-grid { container-type: inline-size; }
+@container (min-width: 661px) and (max-width: 991px) {
+  .contact-grid > div:last-child { grid-column: 1 / -1; }
+}
 .contact-grid dt {
   font-size: .72rem; font-weight: 700; letter-spacing: .1em;
   text-transform: uppercase; color: var(--ink-faint); margin-bottom: 8px;
 }
 .contact-grid dd {
   margin: 0; font-weight: 600; font-size: 1rem;
-  /* an email address has no spaces to break on and will otherwise overrun the card */
+  /* The card is sized so this fits on one line, but an address has no spaces to
+     break on, so this stays as the safety net: a longer one entered in /admin
+     wraps inside the card rather than overrunning it. */
   overflow-wrap: anywhere;
 }
 
@@ -696,7 +1100,7 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 
 .cta-panel {
   background: var(--ink); color: #fff;
-  border: 1px solid #2c4f70; border-radius: 16px; padding: 38px 40px;
+  border: 1px solid #2c4f70; border-radius: 16px; padding: 20px;
   display: flex; align-items: center; justify-content: space-between;
   gap: 32px; flex-wrap: wrap;
 }
@@ -707,24 +1111,332 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 
 @media (max-width: 780px) {
   .page-head { padding: 40px 0 44px; }
-  .cta-panel { padding: 28px 26px; }
 }
 
-.criteria { background: var(--gold-wash); border-radius: 14px; padding: 24px 28px; }
+.criteria { background: var(--gold-wash); border-radius: 14px; padding: 20px; }
 .criteria h3 { margin-top: 0; }
 .criteria ul { margin: 0; }
 
-.sidebar-card { background: #fff; border: 1px solid var(--rule); border-radius: 14px; padding: 24px; box-shadow: var(--shadow); }
+.sidebar-card { background: #fff; border: 1px solid var(--rule); border-radius: 14px; padding: 20px; box-shadow: var(--shadow); }
 .sidebar-card dt { font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-faint); }
 .sidebar-card dd { margin: 2px 0 16px; font-weight: 600; }
 .sidebar-card dd.soft { font-weight: 400; color: var(--ink-soft); font-size: .92rem; }
 .sidebar-card dd.wrapany { overflow-wrap: anywhere; }
 .sidebar-card dl { margin: 0 0 4px; }
 .sidebar-card .eyebrow { color: var(--gold); }
-.split { display: grid; gap: 40px; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); align-items: start; }
+/* A scholarship's photographs, stacked in the right column under the award card,
+   ending level with the bottom of the copy.
+
+   `.split` is a two-track grid, so the card and the pictures share one wrapper:
+   a third grid child would wrap onto a new row and land under the COPY, not
+   under the card.
+
+   Getting the two columns to END together is the fiddly part, and the obvious
+   version does not work. `align-items: stretch` alone makes the ROW as tall as
+   its tallest item, so a long stack simply grows the row and the copy's own box
+   grows with it -- the two boxes then end level while the TEXT still ends
+   hundreds of pixels early, which measures as success and looks like nothing
+   changed. Measured, on the Baker page: the stack overhung the text by 588px and
+   the box said the gap was zero.
+
+   So the copy has to be the only thing that sizes the row. `.split-side` holds
+   no in-flow content -- its inner is absolutely positioned -- so it contributes
+   nothing to the row's height and then stretches to whatever the copy asked for.
+   `inset: 0` hands the card and the pictures exactly that height to divide up.
+
+   It shrinks and never grows, deliberately. Measured at 1280: the two McCurdy
+   pictures need 0.80 of their natural height to fit and the three Baker ones
+   0.49, so both stacks come down to meet the copy. But a single small picture
+   would have to go the other way -- Smith 2.5x, Gary 1.64x -- and that is
+   upscaling a photograph of a real person to fill a gap. Those two stay at their
+   own size and their column ends early. */
+.split-side {
+  /* A grid, not a flex column, and the row sizing is the whole point.
+     `minmax(0, 1fr)` makes the pictures' track contribute NOTHING to this
+     column's intrinsic height, so the pictures still do not get a vote on how
+     tall the grid row is -- which is what lets them end level with the copy.
+     The card sits in `auto` and DOES count, which is the fix: the band grows for
+     it, so it can never be clipped.
+
+     It used to be a flex column whose inner was `position: absolute; inset: 0`.
+     That also stopped the pictures voting, but it took the card out of flow with
+     them -- and on the Foster Youth page, which carries 240px of copy against a
+     376px card, the card ran 71px past the band and was drawn over the footer.
+     Measured with `elementFromPoint` at the card's own bottom edge, which
+     returned `.foot-grid`. Anything out of flow here has that failure mode; keep
+     the card in flow. */
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: 50px;
+  position: relative;   /* the containing block for the pictures below */
+}
+.split-side > .sidebar-card {
+  align-self: start;   /* the card is its own height, never stretched */
+}
+.scholarship-photos {
+  /* Out of flow, and ONLY this -- not the card with it.
+     `minmax(0, 1fr)` alone does not keep the pictures from sizing the row:
+     an `fr` track sizes to its CONTENT whenever the container's own height is
+     indefinite, and this column's height is indefinite until the grid row is
+     resolved. Measured: with the pictures in flow the Baker copy column went
+     994px to 1,640px, the row grown by the pictures it was supposed to ignore.
+     Taking them out of flow is what actually stops it.
+     An absolutely positioned grid child with a row placement gets its GRID AREA
+     as the containing block, so `inset: 0` here means exactly the space left
+     under the card -- no measuring, no magic numbers. */
+  position: absolute;
+  grid-row: 2;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  /* Centred: the photographs are not all as wide as the column -- the McCurdy
+     pair is 227px against 344 -- and a ragged left edge reads as a mistake where
+     a centred one reads as a set. */
+  align-items: center;
+  gap: 16px;
+  flex: 0 1 auto;
+  min-height: 0;    /* a flex item will not shrink below its content without it */
+}
+.scholarship-photo {
+  margin: 0;
+  /* Shrinks in proportion to its own height, so a tall picture gives up more
+     than a short one and the set keeps its relative sizes. The floor stops a
+     short copy column grinding three photographs down into slivers; past it the
+     stack simply runs on rather than becoming unreadable. */
+  flex: 0 1 auto;
+  min-height: 110px;
+  /* A LONE picture does not shrink. Shrinking only earns its keep when it
+     achieves the fit, and for one picture it often cannot: the SKW page carries
+     406px of copy against a 399px card, so there are seven pixels of room and
+     the tile was squeezed to the floor and STILL overhung by 122px -- small and
+     overflowing, the worst of both. It now renders at its own size and the
+     column simply ends past the copy on that page, which is what a page with
+     almost no copy looks like. A stack of two or more is the case the shrink was
+     asked for, and there it fits exactly.
+
+     `min-height: 0` with it: the floor above is what put a 110px box around a
+     71px-tall logo, so the column ended 39px below the picture. */
+  display: flex;
+  justify-content: center;
+  /* Centre, not the default stretch: a flex item is stretched on the cross axis,
+     which pulled a short picture's BOX down to the 110px floor above while
+     `object-fit: contain` kept the picture its own size inside it. The box was
+     then taller than the picture and the column ended on empty space. */
+  align-items: center;
+  width: 100%;
+}
+.scholarship-photo:only-child {
+  /* No floor for a lone picture: the floor is what put a 110px box around a
+     71px-tall logo, so the column ended 39px below the picture. It shrinks like
+     any other -- the reserve on `.has-photos` below is what stops it being
+     crushed on a page with no room. */
+  min-height: 0;
+}
+
+/* `max-width`, never `width: 100%`. The column is 344px and the smallest of
+   these photographs is 227px wide, so stretching them to fill would upscale --
+   measured earlier on a 463px composite, which a `width: 100%` drew at 688px.
+   `max-height: 100%` with `width: auto` is what makes the shrink keep the
+   picture's shape: the height comes down with the figure and the width follows
+   the ratio, rather than the picture letterboxing inside a box that shrank
+   without it. */
+.scholarship-photo img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: 100%;
+  object-fit: contain;
+  border-radius: 14px;
+}
+
+/* The copy column's last paragraph carries a bottom margin, so the column's box
+   ends ~18px below the last line of text -- and the pictures, which fill that
+   box, ended 18px past the text they are supposed to finish level with. Dropping
+   the trailing margin is what makes the two columns end on the same line rather
+   than 18px apart. */
+.split > div > :last-child > :last-child,
+.split > div > :last-child { margin-bottom: 0; }
+
+@media (min-width: 861px) {
+  /* The reserve, and it is not cosmetic. The pictures sit in a track that
+     contributes nothing to this column's height, so if the copy is shorter than
+     the card plus a picture there is simply no room and the pictures overflow --
+     and because the track does not count, the band does not grow to contain
+     them. On the SKW page that happened: 406px of copy against a 376px card, and
+     the tile ran past the band onto the footer.
+
+     So a column that carries pictures reserves room for them: the card plus the
+     gap (50) plus 200px of picture. The row is `max(copy, this)`, so it changes
+     nothing on the pages whose copy is already taller. Keep it in step with the
+     gap above. The class comes from the template rather than `:has()`, so it
+     does not depend on selector support.
+
+     Below 861px `.split` collapses to one column, there is nothing to end level
+     with, and everything stacks -- so none of this applies. */
+  .split-side.has-photos { min-height: 649px; }
+}
+
+/* The row stretches so the photographs have a bottom to reach. `.split-side` has
+   no in-flow content, so it is the copy that decides how tall that is. */
+/* The right track is what caps every picture on these pages: at 2fr/1fr it was
+   344px, and a logo at 344px read small even with a 700px source behind it. At
+   1.5fr/1fr it is 413px -- every picture 20% bigger, the award card with it, and
+   the copy column down from 688 to 619 which tightens its measure rather than
+   hurting it. If a picture still reads small, this number is the one to change;
+   nothing is gained by upscaling the file. */
+.split { display: grid; gap: 40px; grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr); align-items: stretch; }
+
+
+/* ---------- editable pages: the copy runs the whole column ----------
+   The grid version parked the card in a column of its own, so a long page --
+   the FAQ is thirteen questions -- ran down two thirds of the width with a tall
+   empty margin beside it. Floating the card instead lets the answers wrap past
+   it and then use the full width.
+
+   `.prose` loses its 68ch cap here, which is the point and also the cost: below
+   the card the measure is roughly 105 characters against the 60-75 that reads
+   comfortably. That is the trade that was asked for. */
+.page-flow { }
+.page-flow::after { content: ''; display: block; clear: both; }
+.page-flow > .sidebar-card {
+  float: right;
+  width: 300px;
+  margin: 0 0 28px 44px;
+}
+.page-flow .prose { max-width: none; }
+
+/* A float only shortens the line boxes beside it, never the block boxes -- so a
+   boxed element in the copy runs its background and its rules straight under the
+   card. Making each one its own block formatting context keeps it out from under
+   the card, with the card's own 44px left margin as the gap between them. */
+.page-flow .prose > .page-index,
+.page-flow .prose > h2 { display: flow-root; }
+
+@media (max-width: 860px) {
+  /* No room to float beside anything: the card goes back to being a block above
+     the copy, which is where it reads anyway on a phone. */
+  .page-flow > .sidebar-card { float: none; width: auto; margin: 0 0 24px; }
+}
+
+/* page picture — a photograph closing the copy on an editable page, the height
+   of the impact panel block that closes the copy on `/board`.
+
+   It is an `img` in the flow rather than a `background-image`, so the src goes
+   through asset_url() and carries a content hash; a url() in this sheet would
+   not, and images are served with a year's cache.
+
+   It briefly carried a quotation over it, from the live site's own testimonial
+   band. The client asked for the picture without the words. */
+.page-picture {
+  /* 50px under the last line of copy, the same gap the inline logo strip
+     leaves. No `clear`: it sits beside the card by design, and clearing it
+     would drop it below the card -- the note the inline strip carries too. */
+  display: grid; margin: 50px 0 0;
+  border-radius: 16px; overflow: hidden; background: var(--ink);
+}
+.page-picture > * { grid-area: 1 / 1; }
+
+/* A caption over the photograph, when the record carries one. Real text in a
+   grid cell on top of the picture, never baked into the raster.
+
+   The scrim is its own grid child so it covers the whole picture. The caption
+   takes a z-index because grid items paint in DOM order and a generated
+   `::after` is the last of them -- without it the tint covers the words. The
+   value was settled by rendering and looking: `object-fit: cover` puts the
+   bright sunset under the text at narrow widths, where white type read as
+   legible-but-weak. */
+.page-picture::after { content: ''; }
+.page-picture.has-caption::after { background: rgba(16, 38, 61, .42); }
+.page-picture figcaption {
+  position: relative; z-index: 1;
+  align-self: center; text-align: center;
+  padding: 26px clamp(20px, 6%, 70px);
+}
+.page-picture blockquote { margin: 0; }
+/* Two classes, or `.prose blockquote` -- a gold left bar and 18px of indent --
+   pushes the centred verse off centre. It is (0,1,1) and so is a single-class
+   selector here, which loses on source order. */
+.prose .page-picture blockquote { border-left: 0; padding-left: 0; margin: 0; }
+.page-picture blockquote p {
+  /* The measure cap is on the paragraph, because `em` resolves against the
+     element's own font and the serif verse is what it should measure. */
+  max-width: 30em; margin: 0 auto; color: #fff;
+  font-family: var(--serif); font-style: italic; font-weight: 700;
+  font-size: clamp(1rem, 1.7vw, 1.35rem); line-height: 1.38;
+  text-wrap: balance;
+}
+.page-picture cite {
+  display: block; margin-top: 12px; font-style: normal; font-weight: 700;
+  font-size: .72rem; letter-spacing: .14em; text-transform: uppercase;
+  color: #fff;
+}
+.page-picture img {
+  /* `height: 100%` is what makes the picture take the height the column hands
+     it, cropping rather than letterboxing. Where the column is not sized for it
+     -- stacked, below 861px -- the percentage resolves against an auto height,
+     which is `auto`, and the picture draws at its own ratio. */
+  display: block; width: 100%; height: 100%; min-height: 0;
+  object-fit: cover;
+}
+
+@media (min-width: 861px) {
+  /* The picture has to END level with the bottom of the card, and a float's
+     bottom is not something the flow below it can be told about: both edges are
+     content-driven and only a shared layout structure can reconcile them. So a
+     page carrying a picture puts the card in a grid column instead of floating
+     it, and the copy column becomes a flex column whose last item takes up the
+     slack.
+
+     Nothing about the copy moves. A float shortens the LINE boxes beside it, so
+     the copy already wraps at this same width; the difference would only show on
+     a page whose copy runs past the bottom of the card, and such a page gets the
+     picture at its floor instead. */
+  .page-flow.has-picture {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    column-gap: 44px;
+    align-items: stretch;
+  }
+  /* The clearfix would otherwise become a third grid item and take a row of its
+     own. There is no float left here to clear. */
+  .page-flow.has-picture::after { content: none; }
+  .page-flow.has-picture > .sidebar-card {
+    float: none; width: auto; margin: 0;
+    grid-column: 2; grid-row: 1;
+    align-self: start;   /* the card is its own height, never stretched */
+  }
+  .page-flow.has-picture > .prose {
+    grid-column: 1; grid-row: 1;
+    display: flex; flex-direction: column;
+  }
+  /* Margins do not collapse in a flex column, so the copy's last paragraph adds
+     its own 18px on top of the picture's 50 and the gap reads 68 -- against the
+     50 the inline logo strip gets, where ordinary block margins DO collapse.
+     Zeroing it puts the two components on the same gap. The picture is always
+     the last child here, so this is always the copy's last block. */
+  .page-flow.has-picture > .prose > :nth-last-child(2) { margin-bottom: 0; }
+  /* 181px is the height of the impact panel block on `/board` at the widths
+     where its four panels sit on one row -- measured, not chosen. The two
+     components close the copy on their respective pages and the client asked for
+     them to match, so the number lives here with its source named. Below about
+     1100 the panels wrap to two rows and that block grows (202 at 1024, 360 at
+     900); the picture does not follow it there, because a photograph twice as
+     tall is a different picture rather than the same one.
+
+     It used to fill the space down to the bottom of the aside card instead --
+     `flex: 1 1 0` with a floor, which ended it level with the card to the pixel.
+     That is one line away if it is ever wanted back; the note is in the history
+     of this rule. A fixed height overshoots the card slightly (8px at 1280) and
+     that is the trade the match costs.
+
+     `flex: 0 0 auto` so the flex column takes this height literally rather than
+     growing or shrinking it. */
+  .page-flow.has-picture .page-picture { flex: 0 0 auto; height: 181px; }
+}
 
 .empty {
-  border: 1px dashed var(--rule); border-radius: 14px; padding: 48px 32px;
+  border: 1px dashed var(--rule); border-radius: 14px; padding: 20px;
   text-align: center; color: var(--ink-faint); background: #fff;
 }
 
@@ -732,9 +1444,29 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 
 .notice {
   background: #fff; border: 1px solid var(--rule); border-left: 4px solid var(--gold-bright);
-  border-radius: 10px; padding: 18px 22px; display: flex; gap: 20px;
+  border-radius: 10px; padding: 20px; display: flex; gap: 20px;
   align-items: center; flex-wrap: wrap;
 }
+/* The same panel inside a page's copy column, ABOVE the jump index. It needs no
+   `flow-root` and no `clear` to stay out from under the floated card: `.notice`
+   is a flex container, which already establishes its own formatting context --
+   checked by measuring the box against the card at seven widths rather than
+   assumed, because the plain block version of this (the jump index) did need
+   one. It is the first thing in the column, so it takes no top margin and its
+   top edge lines up with the top of the aside card -- measured at 0px, which is
+   the reason it sits here rather than under the index. 30px below it, then 50px
+   under the index itself -- the two boxes read as a pair at the head of the
+   column, with the site's usual 50px break before the copy starts.
+
+   Measured, not reasoned about: 0px against the card's top and 30px to the index
+   at 1440 / 1280 / 1024 / 900 / 862. An earlier version of this note did the
+   arithmetic instead and got it wrong -- it claimed a 6px sibling margin would
+   add to this one. It does not: adjacent sibling margins COLLAPSE to the larger
+   of the two, and being a flex container does not change that. What that does
+   change is collapsing with its own CHILDREN's margins, and staying out from
+   under the floated card. */
+.page-notice { margin: 0 0 30px; }
+
 .notice h3 { margin: 0 0 2px; font-size: 1.05rem; }
 .notice p { margin: 0; color: var(--ink-soft); font-size: .95rem; }
 .notice .btn { margin-left: auto; }
@@ -744,10 +1476,91 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .foot { background: var(--ink); color: #b9c9d7; padding: 56px 0 32px; font-size: .95rem; }
 .foot a { color: #fff; }
 .foot h4 { color: #fff; font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; font-family: var(--sans); }
-.foot-grid { display: grid; gap: 32px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+/* The menus sit on the brand column's middle rather than on its top edge. The
+   sign-off runs 350px -- mark, wordmark, strapline, mission -- against 278px of
+   links and 217px of contact details, so ranged to the top they read as three
+   columns of different lengths hanging off a line. Centred, they read as one
+   row.
+   Done with alignment rather than a top padding on each menu, because the offset
+   is the difference between two content heights (36px and 67px today) and any
+   edit to the mission, the links or the contact details changes it. A padding
+   would be right once and wrong after the next admin save. Where a column is
+   alone on its row -- one and two-column layouts -- this is a no-op. */
+.foot-grid {
+  display: grid; gap: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  align-items: center;
+}
+/* The two menus start on one line as each other. Centred individually they do
+   not: the row is the sign-off's height and each menu centres by its OWN, so a
+   278px column of links and a 217px column of contact details sat 30px apart at
+   the top. Ranging both to the start of the row is what lines them up without a
+   number that has to be maintained -- an offset would be right once and wrong
+   after the next link is added in /admin.
+
+   The 60px is the client's, and it drops both menus down the row together. At
+   this value the taller menu is 338px against the sign-off's 350, so the row
+   does not grow and the footer's height is unchanged -- it was 100px for one
+   commit, which made the menu 378 and grew the row by 28. Ranging the sign-off
+   to the start rather than leaving it on `center` is what kept it still then and
+   is what would keep it still if this number grows again. */
+.foot-grid > div { align-self: start; }
+@media (min-width: 861px) {
+  /* Only where the three sit side by side. Below this the grid wraps them into
+     a column, and a top margin there is not a drop down the row -- it is that
+     much space between every stacked block, on top of the 32px gap. */
+  .foot-grid > div + div { margin-top: 60px; }
+}
+
+/* Three equal 1fr tracks are even by the ruler and not to the eye: the brand
+   column fills its track, the two menus do not, so the link lists sat in the
+   left of their columns with 90-190px of dead space to the right of each and a
+   ragged right edge to the footer. Sizing the menus to their content and
+   spreading the leftover between the columns instead puts equal air between the
+   three, and takes the last column out to the right edge.
+   Above 1080px only. The three columns need 829px of content plus the two 32px
+   gaps to sit side by side, and the threshold is set well clear of that rather
+   than at it -- the menus are sized by their own text, which is wider on the
+   client's machine than it measures here. Below it the auto-fit tracks above
+   still apply, unchanged. */
+@media (min-width: 1080px) {
+  .foot-grid {
+    /* The first track is the sign-off block's own width, so the mission
+       paragraph under it wraps to the same measure instead of running to a
+       max-content line of its own. */
+    grid-template-columns: 320px max-content max-content;
+    justify-content: space-between;
+  }
+}
 .foot ul { list-style: none; padding: 0; margin: 0; }
+/* The mission paragraph carries a trailing margin, which made the brand
+   column's box 15px taller than its ink -- so centring the menus against it left
+   them a few pixels high, and the footer carried dead space under the one column
+   that did not need it. The grid gap is what spaces these columns. */
+.foot-grid > div > :last-child { margin-bottom: 0; }
 .foot li { margin-bottom: 8px; }
-.foot-legal { border-top: 1px solid #24455f; margin-top: 40px; padding-top: 24px; font-size: .85rem; color: #7f95a8; }
+/* and not under the last one: that 8px sits inside the list, so it is not the
+   column's own trailing margin and survives the rule above -- which left the
+   menus' visible text 4px high of centre while their boxes were centred
+   exactly. */
+.foot li:last-child { margin-bottom: 0; }
+/* The right padding is a reserve for the back-to-top control, which is fixed to
+   the bottom-right of the VIEWPORT while this line's sign-in link floats to the
+   right of `.wrap`. Above about 1180px those two are apart; at every width below
+   it they coincide, and the button sat squarely on the link -- measured
+   unclickable at 1140, 1024, 900, 760, 560 and 390. The control is 46px at
+   right: 20 (42 at 14 on a phone), so 66px here always clears it: `.wrap` is
+   itself inset 24px, so the float ends at least 24px left of the button's edge
+   at every width. Padding rather than moving the link, because the link belongs
+   in that corner. */
+.foot-legal {
+  border-top: 1px solid #24455f; margin-top: 40px; padding-top: 24px;
+  padding-right: 66px;
+  font-size: .85rem; color: #7f95a8;
+}
+/* The second heading in the Contact column needs the air the first one gets
+   from the grid gap, or Legal reads as part of the contact list above it. */
+.foot-legal-head { margin-top: 24px; }
 
 /* ---------- preview bar (admins only) ---------- */
 
@@ -774,24 +1587,12 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 }
 
 /* ============================================================
-   Depth
+   Surface
    ============================================================
-   A 3D layer over the existing design rather than a replacement for it: the
-   navy, the gold, the Georgia headings and the 1120px wrap are untouched. What
-   changes is that surfaces now sit at real depths, cards turn toward the
-   pointer, and sections arrive from behind the screen instead of appearing.
-
-   Three rules hold this together and are worth keeping:
-
-   1. Nothing here hides content. Every reveal starts from the *visible* state;
-      JS adds `.is-deep` to opt an element in, so a page with no JS, a crawler,
-      or a failed script shows the finished page rather than a blank one.
-      /admin loads this stylesheet and no script at all, which is exactly the
-      case that would break if the hidden state lived in CSS.
-   2. Transforms and opacity only. Both are composited, so none of this costs a
-      layout pass on a school laptop.
-   3. Tilt is for fine pointers with hover. A finger has no hover state, and a
-      card that tilts under a thumb just looks broken.
+   What is left of the 3D layer after the motion came out: elevation, and the
+   hover affordances on a button. Surfaces are lit from above by a two-part
+   shadow rather than outlined, and nothing on the page moves by itself --
+   no scroll reveal, no pointer tilt, no parallax, no staged journey.
    ------------------------------------------------------------ */
 
 :root {
@@ -801,106 +1602,21 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   --lift-2: 0 2px 5px rgba(16, 38, 61, .07), 0 10px 26px rgba(16, 38, 61, .09);
   --lift-3: 0 6px 12px rgba(16, 38, 61, .09), 0 24px 56px rgba(16, 38, 61, .16);
   --depth-ease: cubic-bezier(.2, .7, .3, 1);
-  --tilt-speed: .32s;
 }
 
-/* ---------- perspective containers ----------
-   Perspective must live on the parent, not the card: siblings sharing one
-   vanishing point read as a single scene, whereas per-card perspective makes
-   every card its own little world and the row falls apart. */
-.grid,
-.impact-grid,
-.pillars,
-.program-list,
-.gallery,
-.hero-grid,
-.slider { perspective: 1400px; perspective-origin: 50% 40%; }
 
-/* ---------- scroll reveal ----------
-   `.is-deep` is applied by JS. Anything it wraps is already visible without it. */
-.is-deep {
-  opacity: 0;
-  transform: translate3d(0, 22px, -70px) rotateX(3.5deg);
-  transition:
-    opacity .7s var(--depth-ease) var(--deep-delay, 0ms),
-    transform .8s var(--depth-ease) var(--deep-delay, 0ms);
-  will-change: transform, opacity;
-}
-.is-deep.is-risen {
-  opacity: 1;
-  transform: none;
-  will-change: auto;
-}
 
-/* ---------- cards turn toward the pointer ----------
-   The card rotates; its contents sit forward of it on Z, so they swing slightly
-   wider than the card face and the whole thing reads as a solid object rather
-   than a printed rectangle. */
-.card, .pillar, .sidebar-card {
-  transform-style: preserve-3d;
-  transition: box-shadow var(--tilt-speed) var(--depth-ease),
-              transform var(--tilt-speed) var(--depth-ease);
-}
+/* ---------- card elevation ----------
+   Static lift only. The cards used to rotate toward the pointer with a glare
+   tracking it; that came out with the rest of the motion, and what a raised
+   surface needs to read as raised is the shadow, not the movement. */
 .card { box-shadow: var(--lift-1); }
 .sidebar-card { box-shadow: var(--lift-2); }
 
-@media (hover: hover) and (pointer: fine) {
-  .card.is-tilting, .pillar.is-tilting, .sidebar-card.is-tilting {
-    transform:
-      rotateX(var(--tilt-x, 0deg))
-      rotateY(var(--tilt-y, 0deg))
-      translate3d(0, -3px, 14px);
-    box-shadow: var(--lift-3);
-    /* while the pointer drives it, following must be immediate or it lags */
-    transition: box-shadow var(--tilt-speed) var(--depth-ease);
-  }
-  .is-tilting .portrait,
-  .is-tilting .program-photo,
-  .is-tilting .name,
-  .is-tilting .pillar-initial { transform: translateZ(26px); }
-  .is-tilting .role,
-  .is-tilting .award,
-  .is-tilting .amount { transform: translateZ(16px); }
-  .card > *, .pillar > * { transition: transform var(--tilt-speed) var(--depth-ease); }
-
-  /* a specular edge that tracks the pointer -- the cue that sells a tilted
-     surface as a surface. Sits above the card, under its content. */
-  .is-tilting::after {
-    content: '';
-    position: absolute; inset: 0; border-radius: inherit;
-    background: radial-gradient(
-      36% 46% at var(--glare-x, 50%) var(--glare-y, 0%),
-      rgba(255, 255, 255, .5), rgba(255, 255, 255, 0) 70%);
-    pointer-events: none;
-    transform: translateZ(1px);
-  }
-  .card, .pillar, .sidebar-card { position: relative; }
-}
-
-/* ---------- parallax ----------
-   Driven by a scroll-linked custom property, so the browser composites it and
-   nothing here reads layout. */
-.page-head { overflow: hidden; }
-.page-head::before { transform: translate3d(0, var(--drift, 0px), 0) scale(1.04); }
-.slide-img { transform: translate3d(0, var(--drift, 0px), 0) scale(1.06); }
+/* The hero holds absolutely positioned children of its own. */
 .hero { position: relative; }
 
-/* ---------- the slider gains a third dimension ----------
-   The outgoing slide falls back into the screen instead of cross-fading, which
-   is what makes it read as a stack rather than a dissolve. */
-.slide {
-  transform: translate3d(0, 0, -140px) scale(.985);
-  transition: opacity .62s var(--depth-ease), transform .62s var(--depth-ease);
-}
-.slide.is-current { transform: none; }
 
-/* ---------- the About dropdown opens as a panel, not a fade ---------- */
-.nav-menu {
-  transform-origin: top center;
-  transform: perspective(900px) rotateX(-10deg) translateY(-6px);
-}
-.nav-group:hover .nav-menu,
-.nav-group:focus-within .nav-menu { transform: perspective(900px) rotateX(0) translateY(0); }
 
 /* ---------- buttons pick up the same light ---------- */
 .btn { transition: transform .18s var(--depth-ease), box-shadow .18s var(--depth-ease); }
@@ -909,122 +1625,15 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .btn-gold:active, .btn-ink:active { transform: translateY(0); box-shadow: var(--lift-1); }
 
 /* ---------- respect a stated preference for stillness ----------
-   Not a softened version: off. Everything lands in its finished state. */
+   Little is left to suppress: the scroll reveal, the pointer tilt, the
+   parallax and the staged journey are gone for everyone, not merely for
+   people who ask for stillness. What remains is the hover nudge on a
+   button, and that goes too. */
 @media (prefers-reduced-motion: reduce) {
-  .is-deep,
-  .is-deep.is-risen { opacity: 1; transform: none; transition: none; }
-  .is-tilting { transform: none; }
-  .is-tilting::after { display: none; }
-  .slide { transform: none; }
-  .page-head::before, .slide-img { transform: none; }
-  .nav-menu,
-  .nav-group:hover .nav-menu,
-  .nav-group:focus-within .nav-menu { transform: none; }
+  .btn { transition: none; }
   .btn-gold:hover, .btn-ink:hover { transform: none; }
 }
 
-/* ============================================================
-   Cinematic staging
-   ============================================================
-   The page stops being a document and becomes a corridor. Sections are panels
-   suspended at different depths; scrolling moves a camera through them, so each
-   one approaches from far off, arrives at the plane of the screen, and recedes
-   behind you as you pass.
-
-   Every rule here is scoped under `body.is-staged`, which the script adds. With
-   no JavaScript, a reader mode, a crawler, or prefers-reduced-motion, none of
-   it applies and the page is exactly the document it was before. That is the
-   whole safety model: the dramatic version is the enhancement, never the
-   baseline.
-   ------------------------------------------------------------ */
-
-.is-staged main {
-  perspective: 1500px;
-  perspective-origin: 50% 45%;
-  /* Panels rotate and scale; without this their corners can push a horizontal
-     scrollbar onto the page. clip rather than hidden so position:sticky inside
-     still works. */
-  overflow-x: clip;
-}
-
-/* ---------- a panel's journey ----------
-   --p  signed progress: -1 approaching from below, 0 at the screen, +1 gone past
-   --pa its magnitude, so depth is symmetrical coming and going
-   Both are written by the script, one rAF for the whole page. */
-.is-staged main > section {
-  transform:
-    translate3d(0, 0, calc(var(--pa, 0) * -520px))
-    rotateX(calc(var(--p, 0) * -4.5deg))
-    scale(calc(1 - var(--pa, 0) * .08));
-  opacity: calc(1 - var(--pa, 0) * .72);
-  transform-origin: 50% 50%;
-  will-change: transform, opacity;
-}
-
-/* ---------- the hero is the first scene, and it fills the screen ---------- */
-.is-staged .slider { height: 78svh; min-height: 460px; }
-.is-staged .slider .slide-img { height: 100%; object-fit: cover; }
-
-.is-staged .hero {
-  min-height: 92svh;
-  display: grid;
-  align-items: center;
-  position: relative;
-}
-/* The deadline card is what applicants come for, so it travels forward rather
-   than back -- it arrives ahead of the headline instead of behind it. */
-.is-staged .hero .deadline {
-  transform: translate3d(0, 0, calc(80px - var(--pa, 0) * 120px));
-}
-.is-staged .hero h1 { transform: translate3d(0, 0, 40px); }
-
-/* ---------- travelling backdrop ----------
-   A slow field behind every panel. Without something moving back there the
-   camera has nothing to move against and the depth reads as a slideshow. */
-.is-staged main::before {
-  content: '';
-  position: fixed; inset: -10% -10% -10% -10%;
-  z-index: -1; pointer-events: none;
-  background:
-    radial-gradient(60% 50% at 20% calc(18% + var(--travel, 0px)), rgba(184, 134, 43, .10), transparent 70%),
-    radial-gradient(50% 45% at 82% calc(72% - var(--travel, 0px)), rgba(16, 38, 61, .12), transparent 68%);
-}
-
-/* ---------- impact numbers assemble in depth ----------
-   Each figure sits on its own plane, so the row has thickness rather than being
-   four numbers on a wall. */
-.is-staged .impact-grid > * {
-  transform: translate3d(0, 0, calc(var(--tier, 0) * 34px));
-}
-.is-staged .impact-grid .value { font-variant-numeric: tabular-nums; }
-
-/* ---------- page heads become title scenes ---------- */
-.is-staged .page-head {
-  min-height: 62svh;
-  display: grid;
-  align-content: center;
-}
-.is-staged .page-head h1 { transform: translate3d(0, 0, 56px); }
-.is-staged .page-head .lede { transform: translate3d(0, 0, 24px); }
-
-/* ---------- the pillars fan ---------- */
-.is-staged .pillars > .pillar:first-child { transform: rotateY(3.5deg) translateZ(-18px); }
-.is-staged .pillars > .pillar:last-child { transform: rotateY(-3.5deg) translateZ(-18px); }
-.is-staged .pillars > .pillar.is-tilting { transform: none; }
-
-@media (max-width: 860px) {
-  /* On a phone the panels are already the width of the screen; travelling them
-     in Z just makes text small and shaky. Keep the depth, drop the journey. */
-  .is-staged main > section {
-    transform: translate3d(0, 0, calc(var(--pa, 0) * -180px));
-    opacity: calc(1 - var(--pa, 0) * .4);
-  }
-  .is-staged .hero { min-height: 0; }
-  .is-staged .page-head { min-height: 0; }
-  .is-staged .slider { height: 62svh; }
-  .is-staged .pillars > .pillar:first-child,
-  .is-staged .pillars > .pillar:last-child { transform: none; }
-}
 
 /* ============================================================
    The awarded students
@@ -1082,7 +1691,6 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .is-live.awardee-deck {
   display: block;
   position: relative;
-  perspective: 1500px;
   /* Height is set by the script from the tallest student, so stepping between
      them never jolts the page. */
   min-height: var(--stage-height, 520px);
@@ -1090,22 +1698,20 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .is-live .awardee {
   position: absolute; inset: 0;
   align-content: center;
-  transition: opacity .55s var(--depth-ease), transform .55s var(--depth-ease), filter .55s var(--depth-ease);
-  transform-style: preserve-3d;
+  /* A plain cross-fade. Stepping still needs to read as a change rather than a
+     jump-cut, but the student no longer swings back in depth to do it. */
+  transition: opacity .55s var(--depth-ease);
 }
-/* Behind: still there, pushed back and out of the way. Not display:none, so the
-   browser keeps the images decoded and stepping stays instant. */
+/* Behind: still there, just not shown. Not display:none, so the browser keeps
+   the images decoded and stepping stays instant. */
 .is-live .awardee[aria-hidden="true"] {
   opacity: 0;
-  transform: translate3d(0, 0, -320px) rotateY(9deg) scale(.94);
   pointer-events: none;
 }
 .is-live .awardee:not([aria-hidden="true"]) {
-  opacity: 1; transform: none; pointer-events: auto;
+  opacity: 1; pointer-events: auto;
 }
-.is-live .awardee-portrait { transform: translateZ(50px); box-shadow: var(--lift-3); }
-.is-live .awardee-name { transform: translateZ(30px); }
-.is-live .awardee-award { transform: translateZ(38px); }
+.is-live .awardee-portrait { box-shadow: var(--lift-3); }
 
 .is-live ~ .awardee-controls {
   display: flex; align-items: center; justify-content: center; gap: 20px;
@@ -1151,20 +1757,331 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
    No headline above it: the student is the headline. Everything else in the
    hero is arranged under them, so the eye lands on a face before it lands on
    any copy. */
+/* ---------- the donor and partner strip ----------
+   A continuous marquee between the student and the figures.
+
+   It is CSS, not script, on purpose: `prefers-reduced-motion` then turns it off
+   without a line of JavaScript, and a browser throttles the animation by itself
+   while the tab is in the background. Hovering pauses it, so a logo cannot slide
+   out from under someone reading it.
+
+   The track holds the set twice and travels exactly -50%, which puts the second
+   copy where the first began -- the restart is invisible. If the number of
+   logos changes, nothing here needs touching; only the duration is a judgement,
+   and it is slow on purpose. */
+/* `section.band` is element-plus-class and outranks a lone `.logo-strip`, so
+   the strip was quietly paying the band's 64px top and bottom -- 188px of page
+   for a 58px row of logos. Matching that specificity is what takes it back. */
+section.band.logo-strip {
+  background: #fff;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: 22px 0;
+  overflow: hidden;
+}
+.logo-track {
+  display: flex;
+  width: max-content;
+  animation: logo-travel 70s linear infinite;
+}
+.logo-strip:hover .logo-track,
+.logo-strip:focus-within .logo-track { animation-play-state: paused; }
+
+.logo-run {
+  display: flex;
+  align-items: center;
+  gap: 56px;
+  margin: 0;
+  padding: 0 28px;
+  list-style: none;
+}
+.logo-run img {
+  /* The files are cropped to the mark itself, so this is the height of the
+     logo rather than the height of a square with the logo somewhere in it --
+     which is why they used to come out at wildly different sizes.
+     There is deliberately NO width cap. With one, `object-fit: contain`
+     letterboxed the wide wordmarks -- Nippon is 200x34, so capped at 190px wide
+     its mark stood about 32px tall inside a 58px box, which is exactly the
+     "still looks small" this was meant to fix. A wide logo simply takes more of
+     the row, and the row is moving anyway. */
+  height: 58px;
+  width: auto;
+  display: block;
+  /* The logos arrive in every colour and weight the donors happen to use. A
+     light grey pass settles them into one row without editing anyone's mark,
+     and full colour returns under the pointer. */
+  filter: grayscale(1);
+  opacity: .62;
+  transition: filter .25s ease, opacity .25s ease;
+}
+.logo-run img:hover { filter: grayscale(0); opacity: 1; }
+
+@keyframes logo-travel {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+/* Off, not slowed. The strip becomes a plain row that a visitor scrolls past. */
+@media (prefers-reduced-motion: reduce) {
+  .logo-track { animation: none; }
+  .logo-strip { overflow-x: auto; }
+}
+
+@media (max-width: 700px) {
+  .logo-run img { height: 46px; }
+  .logo-run { gap: 38px; }
+}
+
+/* The larger variant, for a page with room for it. Same markup, same animation,
+   bigger marks and fewer of them across the viewport. The travel time scales
+   with the size so the marks move at roughly the same speed rather than the
+   bigger ones whipping past: the track is wider, so the same 70s would be
+   faster in pixels per second. */
+section.band.logo-strip.is-large { padding: 40px 0; }
+.is-large .logo-run { gap: 104px; padding: 0 52px; }
+/* A width cap, which the base row deliberately does not have. The marks run
+   from 0.93 to 5.88 in aspect, and at 118px tall the widest wordmark is 694px --
+   nearly half the viewport for one logo, which is why only two or three fitted.
+   Capping the width lets a wide mark be shorter instead of longer.
+   `object-fit: contain` is safe HERE, unlike on the base row: there the cap was
+   on the width and the box height was fixed, so a wide mark shrank to a third of
+   the row's height with padding around it. Here the shortfall is only the empty
+   space above and below a centred mark, which is what a shorter logo looks like
+   anyway. */
+.is-large .logo-run img {
+  height: 118px; max-width: 340px; object-fit: contain;
+}
+.is-large .logo-track { animation-duration: 128s; }
+
+/* Inline: the strip sits inside a prose column, directly under the copy, rather
+   than as a full-bleed band of its own. The band's edge-to-edge rules come off
+   and it gets the copy's own corner radius.
+   `clear: right` for the same reason the page figure has it -- the card floats
+   right in this template and a float only shortens line boxes, so a block like
+   this would otherwise run underneath it. */
+.logo-strip.is-inline {
+  border-radius: 14px;
+  margin-top: 50px;
+}
+/* Sized for the column, not the viewport. `overflow: hidden` on the strip makes
+   it a block formatting context, so it sits BESIDE the floated card rather than
+   under it -- which is what puts it directly beneath the last line of copy
+   instead of below the card. That costs width: 728px beside the card against
+   1072px of column, so the marks come down from the full-bleed variant's 340px
+   cap to hold three of them. Still well above the homepage's 58px row, which is
+   the point of the large variant. Measured across 48 combinations of height,
+   cap and gap. */
+/* The inline strip renders INSIDE `.prose`, so `.prose ul li::before` was
+   giving every logo a 6px gold dot and 22px of indent -- measured, not
+   guessed. `list-style: none` on `.logo-run` does not stop it: the dot is a
+   generated pseudo-element, not a list marker. Two classes here (0,2,2) to
+   outrank `.prose ul li::before` (0,1,3). */
+.prose .logo-run li { padding-left: 0; margin-bottom: 0; }
+.prose .logo-run li::before { content: none; }
+
+.logo-strip.is-inline .logo-run { gap: 44px; padding: 0 22px; }
+.logo-strip.is-inline .logo-run img { height: 128px; max-width: 205px; }
+/* Slower than the homepage band, at the client's word. 170s puts it at about
+   32px/s against the band's 65 -- measured by sampling the track's transform
+   over four seconds rather than inferred from the duration, because the
+   duration only means the same speed if the track is the same width, and this
+   one is not. */
+.logo-strip.is-inline .logo-track { animation-duration: 170s; }
+
+/* The inline strip has its own tiers, because its width is the column beside the
+   card rather than the viewport: 728px at desktop, 632px at 1024 and 508px at
+   900. Each step is the largest mark that still leaves three of them on screen,
+   measured at that width rather than scaled from the one above. */
+@media (max-width: 1100px) {
+  .logo-strip.is-inline .logo-run { gap: 32px; padding: 0 16px; }
+  .logo-strip.is-inline .logo-run img { height: 120px; max-width: 175px; }
+}
+@media (max-width: 950px) {
+  .logo-strip.is-inline .logo-run { gap: 28px; padding: 0 14px; }
+  .logo-strip.is-inline .logo-run img { height: 96px; max-width: 126px; }
+}
+/* Below 860 the card stops floating, so the strip gets the whole column back
+   and can take the desktop size again. */
+@media (max-width: 860px) {
+  .logo-strip.is-inline .logo-run { gap: 44px; padding: 0 22px; }
+  .logo-strip.is-inline .logo-run img { height: 128px; max-width: 205px; }
+}
+@media (max-width: 600px) {
+  .logo-strip.is-inline .logo-run { gap: 30px; padding: 0 15px; }
+  .logo-strip.is-inline .logo-run img { height: 86px; max-width: 140px; }
+}
+
+/* Stepped down at 1100 rather than at the usual 900: at the desktop size a
+   340px mark plus a 104px gap is a 444px slot, so a 1024px window fitted only
+   two whole marks. This tier makes it three. */
+@media (max-width: 1100px) {
+  .is-large .logo-run { gap: 72px; padding: 0 36px; }
+  .is-large .logo-run img { height: 92px; max-width: 265px; }
+}
+@media (max-width: 700px) {
+  .is-large .logo-run { gap: 52px; }
+  .is-large .logo-run img { height: 70px; max-width: 200px; }
+  section.band.logo-strip.is-large { padding: 28px 0; }
+}
+
+/* ---------- the hero's right-hand column ----------
+   Two students and the mission, stacked. The mission used to sit under the
+   whole hero in a band of its own; standing it where the third student was is
+   the same copy in less of the page. */
+.hero-aside {
+  display: grid;
+  gap: 18px;
+  align-content: center;
+}
+
+/* ---------- the hero rail ----------
+   Three more awarded students beside the lead, rotating through all of them.
+
+   The fade is the only thing on this site that moves by itself, and it is here
+   because it was asked for. It follows the rules the old carousel followed,
+   because they are what stops an auto-advancing element being hostile: it stops
+   on hover, stops when anything inside it has keyboard focus, stops while the
+   tab is in the background, and does not run at all for a visitor who has asked
+   for reduced motion -- who simply gets the first three and no rotation.
+
+   Nothing is hidden by this stylesheet. A card that is not showing carries the
+   `hidden` ATTRIBUTE, written by the template, so with no JavaScript the page is
+   a static trio and the other portraits are never fetched. */
+.hero-rail {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 16px;
+  align-content: center;
+  text-align: left;
+  /* Every row the same fixed height, so a set of three long quotes and a set of
+     three short ones occupy exactly the same space. Without this the rail
+     measured 540px, then 551px, then 526px as it rotated, and the whole page
+     stepped up and down under the reader on every fade. The clamps below are
+     what keep the content inside the row. */
+  grid-auto-rows: 152px;
+}
+.hero-rail-card {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  background: rgba(255, 255, 255, .06);
+  border: 1px solid #2c4f70;
+  border-radius: 16px;
+  padding: 20px;
+  /* The row is a fixed height, so centre the contents within it rather than
+     letting a short card's text sit against the top edge. */
+  align-content: center;
+  overflow: hidden;
+  /* The fade. `is-shown` is added a frame after the card is un-hidden, so the
+     transition has a state to move from -- setting both at once would snap. */
+  opacity: 0;
+  transition: opacity .6s ease;
+}
+.hero-rail-card.is-shown { opacity: 1; }
+/* `display: grid` above outranks the user agent's `[hidden] { display: none }`,
+   so without this every card takes up space. Eleven invisible ones made the rail
+   2,668px tall and pushed the student down to the middle of it. This is what
+   makes `hidden` mean hidden. */
+.hero-rail-card[hidden] { display: none; }
+.hero-rail-photo {
+  width: 96px; height: 96px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  display: block;
+}
+.hero-rail-line {
+  font-family: var(--serif);
+  margin: 0 0 10px;
+  font-size: .98rem;
+  line-height: 1.5;
+  color: #eaf1f7;
+  /* Three lines, whatever the bio does. The published lines run from 63 to 150
+     characters, which is two rows' difference in height at this width. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.hero-rail-who { margin: 0; }
+.hero-rail-who strong { color: var(--gold-bright); display: block; font-size: 1rem; }
+.hero-rail-who span {
+  color: #9fb4c7;
+  font-size: .76rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-top: 3px;
+  line-height: 1.4;
+}
+
+/* No JavaScript means no `is-shown` is ever added, and a card left at opacity 0
+   would be an empty box. The template's own trio must stand on its own. */
+.hero-rail-card:not([hidden]) { opacity: 1; }
+.hero-rail[data-hero-live] .hero-rail-card:not([hidden]) { opacity: 0; }
+.hero-rail[data-hero-live] .hero-rail-card.is-shown { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-rail-card { transition: none; }
+}
+
+/* Narrow screens need taller rows, not the same ones.
+   The 152px row was measured beside the student on a wide screen. Below 900px
+   the column is the full width of the page, the quote wraps to more lines, and
+   the card -- which clips, because a fixed row is what stops the fade moving
+   the page -- was cutting the last line off. Measured: 156px of content at
+   390px against 112px of usable row. */
+@media (max-width: 900px) {
+  .hero-rail { grid-auto-rows: 184px; }
+}
+@media (max-width: 520px) {
+  .hero-rail { grid-auto-rows: 204px; }
+  /* The portrait can give up a little to buy the words some room. */
+  .hero-rail-card { grid-template-columns: 76px minmax(0, 1fr); gap: 14px; }
+  .hero-rail-photo { width: 76px; height: 76px; }
+}
+
+/* Stacked, the right-hand column is the page, so its copy and buttons keep the
+   same left edge as everything else in the wrap rather than ranging against a
+   column that no longer exists. */
+@media (max-width: 900px) {
+  .hero-aside { gap: 14px; }
+  .hero-centred .hero-mission { max-width: none; }
+  .hero-centred .actions { justify-content: flex-start; }
+}
+
 .hero-centred .hero-stage {
   max-width: 780px;
   margin: 0 auto;
   text-align: center;
-  /* The figure sits in a 3D scene like the other panels do. Perspective has to
-     live on the parent or each child becomes its own little world. */
-  perspective: 1400px;
-  perspective-origin: 50% 40%;
+}
+
+/* With a rail beside it the stage is two columns and wider: the student on the
+   left at the size they already were, the three cards on the right. */
+.hero-has-rail .hero-stage { max-width: var(--wrap); }
+.hero-centred .hero-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+@media (max-width: 900px) {
+  .hero-centred .hero-split { grid-template-columns: 1fr; gap: 28px; }
 }
 /* The whole stack has to stay close to one screen, so the padding comes in
    and the figure stops short of the column width. */
 /* With the carousel gone the hero is the top of the page, so it should not
    need scrolling to take in. */
-.hero-centred { padding: 40px 0 48px; }
+/* The eyebrow that used to open this is in the ribbon now, so the hero starts
+   on the student and can afford to start higher. */
+.hero-centred { padding: 26px 0 44px; }
 .hero-centred .eyebrow { margin-bottom: 18px; }
 .hero-centred .hero-student { width: min(350px, 100%); margin: 0 auto; }
 /* The card is centred in the column, but its own text is ranged left --
@@ -1173,10 +2090,16 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .hero-centred .hero-mission {
   color: #c6d5e2;
   font-size: 1rem;
-  max-width: 52ch;
-  margin: 20px auto 0;
+  /* In the right-hand column now, so it ranges left with the cards above it
+     rather than centring under the whole hero. */
+  max-width: 46ch;
+  margin: 0;
+  text-align: left;
+  padding: 0 4px;
 }
-.hero-centred .actions { justify-content: center; }
+/* In the right-hand column under the mission, so they line up with the copy
+   they belong to rather than centring under the whole hero. */
+.hero-centred .actions { justify-content: flex-start; margin-top: 4px; }
 .hero-centred .hero-deadline {
   justify-content: center;
   max-width: 46ch;
@@ -1305,8 +2228,3 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   .hero-centred .hero-mission { font-size: 1rem; }
 }
 
-/* The student takes over the plane the deadline card used to travel on, so the
-   staged hero still arrives in two depths rather than flattening to one. */
-.is-staged .hero .hero-student {
-  transform: translate3d(0, 0, calc(60px - var(--pa, 0) * 100px));
-}

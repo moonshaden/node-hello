@@ -18,6 +18,7 @@ router.get('/', (req, res) => {
     title: store.site.name,
     slides: store.list('slides'),
     pillars: store.list('pillars'),
+    logos: store.list('logos'),
     scholarships,
     openScholarships: content.openScholarships(scholarships),
     featuredRecipients: content.featuredRecipients(recipients, 3),
@@ -25,6 +26,8 @@ router.get('/', (req, res) => {
     // not a sample. publicRecipients() already orders featured first.
     awardees: recipients,
     heroStudent: content.heroStudent(store, recipients),
+    heroRail: content.heroRail(recipients, (store.site && store.site.heroStudentId) || ''),
+    heroLine: content.heroLine,
     stats: content.awardStats(recipients),
   });
 });
@@ -83,7 +86,9 @@ router.get('/:slug', (req, res, next) => {
   if (!page) return next();
   if (!preview && !require('../schedule').isPublished(page, today)) return next();
 
-  return res.render('page', { title: page.title, page });
+  // A page opts into the donor strip with `logoStrip: true` on its record, so
+  // which pages carry it is content rather than a slug listed in a template.
+  return res.render('page', { title: page.title, page, logos: store.list('logos') });
 });
 
 module.exports = router;

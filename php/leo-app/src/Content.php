@@ -152,6 +152,73 @@ final class Content
     }
 
     /**
+     * A short line for a student's hero card.
+     *
+     * `heroQuote` on the record wins when staff have curated one. Otherwise the
+     * first sentence of the published bio that fits a card is used -- lifted
+     * verbatim, never composed, the same rule the hero has always followed.
+     *
+     * Quotation marks are NOT automatic. Several bios are written about the
+     * student rather than by them ("Matthew became a Christian at 18..."), and
+     * setting that in quotes would put words in their mouth. Only a line written
+     * in the first person is presented as something they said. Mirrors
+     * content.heroLine(); a test asserts the two agree on all fifteen.
+     *
+     * @return array{text: string, quoted: bool}|null
+     */
+    public const HERO_LINE_MIN = 40;
+    public const HERO_LINE_MAX = 150;
+    public const FIRST_PERSON = '/\b(I|I[\'\x{2019}]\w+|my|me|mine|we|our)\b/u';
+
+    public static function heroLine(?array $person): ?array
+    {
+        if ($person === null) {
+            return null;
+        }
+
+        $text = trim((string) ($person['heroQuote'] ?? ''));
+        $bio = trim((string) ($person['quote'] ?? ''));
+
+        if ($text === '') {
+            if ($bio === '') {
+                return null;
+            }
+            $text = '';
+            if (preg_match_all('/[^.!?]+[.!?]/u', $bio, $matches) && $matches[0]) {
+                foreach ($matches[0] as $sentence) {
+                    $sentence = trim($sentence);
+                    $length = mb_strlen($sentence);
+                    if ($length >= self::HERO_LINE_MIN && $length <= self::HERO_LINE_MAX) {
+                        $text = $sentence;
+                        break;
+                    }
+                }
+            }
+            if ($text === '') {
+                return null;
+            }
+        }
+
+        return ['text' => $text, 'quoted' => preg_match(self::FIRST_PERSON, $text) === 1];
+    }
+
+    /**
+     * The students the hero rail rotates through: every published recipient
+     * except the one already standing in the hero, who would otherwise appear
+     * twice.
+     */
+    public static function heroRail(array $recipients, string $heroId): array
+    {
+        $rail = [];
+        foreach ($recipients as $person) {
+            if (($person['id'] ?? '') !== $heroId && self::heroLine($person) !== null) {
+                $rail[] = $person;
+            }
+        }
+        return $rail;
+    }
+
+    /**
      * Announcements visible right now.
      *
      * Besides show-from/show-until dates, an announcement can be tied to the
@@ -232,6 +299,22 @@ final class Content
             }
         }
         return $flat;
+    }
+
+    /**
+     * The legal pages, for the footer's own small print block.
+     *
+     * A page opts in with `legal: true` rather than the footer naming slugs, so
+     * adding the terms of service the client has not published yet is a store
+     * edit and not a template change. They are deliberately `inNav: false` --
+     * legal copy belongs in the footer, not in the header beside Scholarships.
+     */
+    public static function legalPages(array $pages): array
+    {
+        return array_values(array_filter(
+            $pages,
+            static fn (array $page) => ($page['legal'] ?? null) === true
+        ));
     }
 
     /** Totals for the impact band — computed, so they cannot drift from the data. */

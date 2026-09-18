@@ -1,5 +1,7 @@
 'use strict';
 
+const crypto = require('node:crypto');
+const fs = require('node:fs');
 const path = require('node:path');
 const express = require('express');
 
@@ -11,6 +13,40 @@ const auth = require('./auth');
 const publicRoutes = require('./routes/public');
 const adminRoutes = require('./routes/admin');
 
+// A cache-busting URL for a static asset.
+//
+// The host sends no Cache-Control for css or js, so a browser caches them
+// heuristically off Last-Modified -- and a file that was a fortnight old when it
+// was fetched stays "fresh" for over a day. After a deploy the server had the
+// new stylesheet and a visitor kept being shown the old one, with nothing a page
+// reload would fix.
+//
+// The version is the CONTENT hash, not the mtime: a deploy rewrites mtimes
+// whether or not the bytes changed, and this build and the PHP one must emit the
+// identical string or the cross-build render diff reads it as a divergence. The
+// drift test keeps the two copies byte-identical, so the same hash falls out of
+// both. Cached, because hashing 47KB per request is silly.
+const assetVersions = new Map();
+
+function assetUrl(urlPath) {
+  // A URL that is not app-absolute is somebody else's (an external logo, say),
+  // so it passes through untouched. This is what makes assetUrl a safe swap for
+  // link_url wherever an image is rendered.
+  if (typeof urlPath !== 'string' || urlPath === '' || urlPath[0] !== '/') return urlPath || '';
+  if (!assetVersions.has(urlPath)) {
+    const file = path.join(__dirname, '..', 'public', urlPath);
+    let version = '';
+    try {
+      version = crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex').slice(0, 10);
+    } catch {
+      version = '';                       // missing file: ship the bare path
+    }
+    assetVersions.set(urlPath, version);
+  }
+  const version = assetVersions.get(urlPath);
+  return version ? `${urlPath}?v=${version}` : urlPath;
+}
+
 function createApp({ store = new Store() } = {}) {
   const app = express();
 
@@ -20,8 +56,26 @@ function createApp({ store = new Store() } = {}) {
   app.locals.schedule = schedule;
   app.locals.formatMoney = content.formatMoney;
   app.locals.excerpt = content.excerpt;
+  app.locals.assetUrl = assetUrl;
 
   app.use(express.static(path.join(__dirname, '..', 'public'), { maxAge: '1h' }));
+
+  // Response headers for the generated HTML, mirroring App::sendHeaders(). This
+  // sits after the static middleware so it only touches rendered pages.
+  //
+  // `no-cache` is the important one. Every stylesheet, script and image URL now
+  // carries a hash of its own bytes, so those can be cached hard -- but only if
+  // the browser re-reads the HTML to see the new URLs. Hold the page and a
+  // returning visitor goes on asking for the old hashes, which is exactly how a
+  // replaced picture kept showing its previous version after a correct deploy.
+  // `no-cache` means revalidate, not "do not store".
+  app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-cache, must-revalidate');
+    res.set('X-Content-Type-Options', 'nosniff');
+    res.set('X-Frame-Options', 'SAMEORIGIN');
+    res.set('Referrer-Policy', 'strict-origin-when-cross-origin');
+    next();
+  });
   app.use(express.urlencoded({ extended: false, limit: '256kb' }));
   app.use(auth.session);
 
@@ -48,6 +102,7 @@ function createApp({ store = new Store() } = {}) {
     const visiblePages = content.publicPages(store, req.today, { includeHidden: req.preview });
     res.locals.navPages = content.navPages(visiblePages);
     res.locals.navFlat = content.navFlat(visiblePages);
+    res.locals.legalPages = content.legalPages(visiblePages);
     res.locals.announcements = content.activeAnnouncements(store, req.today, enrollment.state);
     res.locals.scholarshipNames = store.list('scholarships').map((item) => item.name);
     res.locals.currentPath = req.path;

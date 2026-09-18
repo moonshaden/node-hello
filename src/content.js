@@ -101,6 +101,47 @@ function heroStudent(store, recipients) {
 }
 
 /**
+ * A short line for a student's hero card.
+ *
+ * `heroQuote` on the record wins when staff have curated one. Otherwise the
+ * first sentence of the published bio that fits a card is used -- lifted
+ * verbatim, never composed, the same rule the hero has always followed.
+ *
+ * Quotation marks are NOT automatic. Several bios are written about the
+ * student rather than by them ("Matthew became a Christian at 18..."), and
+ * setting that in quotes would put words in their mouth. Only a line written
+ * in the first person is presented as something they said. Mirrors
+ * Content::heroLine(); a test asserts the two agree on all fifteen.
+ */
+const HERO_LINE_MIN = 40;
+const HERO_LINE_MAX = 150;
+const FIRST_PERSON = /\b(I|I['\u2019]\w+|my|me|mine|we|our)\b/;
+
+function heroLine(person) {
+  if (!person) return null;
+  const stored = String(person.heroQuote || '').trim();
+  const bio = String(person.quote || '').trim();
+  let text = stored;
+
+  if (!text) {
+    if (!bio) return null;
+    const sentences = (bio.match(/[^.!?]+[.!?]/g) || [bio]).map((item) => item.trim());
+    text = sentences.find((item) => item.length >= HERO_LINE_MIN && item.length <= HERO_LINE_MAX) || '';
+    if (!text) return null;
+  }
+
+  return { text, quoted: FIRST_PERSON.test(text) };
+}
+
+/**
+ * The students the hero rail rotates through: every published recipient except
+ * the one already standing in the hero, who would otherwise appear twice.
+ */
+function heroRail(recipients, heroId) {
+  return recipients.filter((item) => item.id !== heroId && heroLine(item));
+}
+
+/**
  * Announcements visible right now.
  *
  * Besides the usual show-from/show-until dates, an announcement can be tied to
@@ -153,6 +194,18 @@ function navPages(pages) {
 /** The same nav flattened, parent then its children -- for the footer column. */
 function navFlat(pages) {
   return navPages(pages).flatMap((page) => [page, ...page.children]);
+}
+
+/**
+ * The legal pages, for the footer's own small print block.
+ *
+ * A page opts in with `legal: true` rather than the footer naming slugs, so
+ * adding the terms of service the client has not published yet is a store edit
+ * and not a template change. They are deliberately `inNav: false` -- legal
+ * copy belongs in the footer, not in the header beside Scholarships.
+ */
+function legalPages(pages) {
+  return pages.filter((page) => page.legal === true);
 }
 
 /** Totals for the impact band. Computed, so they can never drift from the data. */
@@ -209,10 +262,13 @@ module.exports = {
   groupRecipientsByYear,
   featuredRecipients,
   heroStudent,
+  heroLine,
+  heroRail,
   activeAnnouncements,
   publicPages,
   navPages,
   navFlat,
+  legalPages,
   awardStats,
   formatMoney,
   excerpt,

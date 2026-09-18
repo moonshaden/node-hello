@@ -1,6 +1,11 @@
-<article class="card recipient">
+<%# `row` lays the card out horizontally -- a small portrait beside the text
+    rather than a full-width one above it. Used on a scholarship's own page,
+    where the column is wide and the four cards stacked vertically ran to
+    4,663px. Same component either way, so the two cannot drift. %>
+<% const row = typeof cardLayout !== 'undefined' && cardLayout === 'row'; %>
+<article class="card recipient<%= row ? ' recipient-row' : '' %>">
   <% if (recipient.photoUrl) { %>
-    <img class="portrait" src="<%= recipient.photoUrl %>" alt="<%= recipient.name %>" loading="lazy" width="800" height="1000">
+    <img class="portrait" src="<%= assetUrl(recipient.photoUrl) %>" alt="<%= recipient.name %>" loading="lazy" width="800" height="1000">
   <% } else { %>
     <div class="portrait portrait-fallback"><%= (recipient.name || '?').trim().charAt(0).toUpperCase() %></div>
   <% } %>

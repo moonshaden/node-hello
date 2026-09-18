@@ -6,23 +6,61 @@ RewriteEngine On
 # RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
 
 # Old WordPress URLs. These ran for years — keep them working.
-RewriteRule ^available-scholarships/?$ scholarships [R=301,L]
-RewriteRule ^scholarship-recipients/?$ recipients [R=301,L]
-RewriteRule ^scholarship-faqs/?$ faq [R=301,L]
+#
+# The targets MUST be root-relative ('/faq', not 'faq'). In a .htaccess an
+# external redirect with a relative substitution is resolved against the
+# FILESYSTEM directory, not the URL space, so 'faq' became
+# https://host/home/<account>/public_html/faq -- a dead link that also leaked
+# the server path. Caught on the build subdomain; it cannot reproduce in either
+# dev build, since neither reads this file.
+RewriteRule ^available-scholarships/?$ /scholarships [R=301,L]
+RewriteRule ^scholarship-recipients/?$ /recipients [R=301,L]
+RewriteRule ^scholarship-faqs/?$ /faq [R=301,L]
 
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [L]
 
-# Static assets are safe to cache; the HTML is generated per request.
+# Static assets are safe to cache; the HTML is generated per request and
+# carries no Last-Modified, so it is never cached and always re-fetched -- which
+# is what makes the versioned asset URLs below work.
+#
+# mod_expires is NOT enabled on this host: these rules were in place and the
+# server still answered with no Cache-Control at all, which is how a returning
+# visitor ended up holding a stale stylesheet for days after a deploy. They are
+# kept for a host that does have it, and mod_headers (which IS enabled here)
+# states the same intent below.
 <IfModule mod_expires.c>
   ExpiresActive On
-  ExpiresByType text/css "access plus 7 days"
-  ExpiresByType application/javascript "access plus 7 days"
-  ExpiresByType image/jpeg "access plus 30 days"
-  ExpiresByType image/png "access plus 30 days"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType image/jpeg "access plus 7 days"
+  ExpiresByType image/png "access plus 7 days"
 </IfModule>
 
+<IfModule mod_headers.c>
+  # The stylesheet and the script are requested with a hash of their own bytes
+  # in the query string, so a changed file is a different URL and a year is
+  # safe: nothing can serve a stale one.
+  <FilesMatch "\.(css|js)$">
+    Header always set Cache-Control "public, max-age=31536000"
+  </FilesMatch>
+
+  # Images carry a hash of their own bytes now, the same as the css and the js,
+  # so a changed file is a different URL and a year is safe. Before that they
+  # were plain /img/... paths on a seven-day max-age, which is how a replaced
+  # picture went on showing its previous version to anyone who had already
+  # loaded the page.
+  <FilesMatch "\.(jpg|jpeg|png|ico|svg|webp)$">
+    Header always set Cache-Control "public, max-age=31536000"
+  </FilesMatch>
+</IfModule>
+
+# These reach the STATIC files only. Measured on the live subdomain: the same
+# `Header always set` block puts X-Frame-Options on /css/site.css and not on /,
+# so on this host the directives do not apply to PHP output. The generated HTML
+# sets its own in App::sendHeaders(), where nothing can drop them -- including
+# the Cache-Control that makes the hashed URLs above actually work.
 <IfModule mod_headers.c>
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "SAMEORIGIN"

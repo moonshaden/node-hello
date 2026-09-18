@@ -31,14 +31,20 @@
 
       <?php if ($recipients !== []): ?>
         <h2 style="margin-top:2.4em">Past recipients of this award</h2>
-        <div class="grid grid-2">
+        <div class="grid recipient-rows">
           <?php foreach (array_slice($recipients, 0, 4) as $recipient): ?>
-            <?php $app->partial('recipient-card', ['recipient' => $recipient]); ?>
+            <?php $app->partial('recipient-card', ['recipient' => $recipient, 'cardLayout' => 'row']); ?>
           <?php endforeach; ?>
         </div>
       <?php endif; ?>
     </div>
 
+    <?php // The award card and the photographs share the right column: the card
+          // on top, the pictures stacked beneath it. They need one wrapper
+          // because `.split` is a two-track grid, and a third child would wrap
+          // onto a new row under the copy instead of under the card. ?>
+    <?php $hasPhotos = !empty($scholarship['photos']); ?>
+    <div class="split-side<?= $hasPhotos ? ' has-photos' : '' ?>">
     <aside class="sidebar-card">
       <span class="pill pill-<?= e($scholarship['window']['state']) ?>"><?= $scholarship['isOpen'] ? 'Accepting applications' : 'Not accepting applications' ?></span>
       <dl style="margin-top:20px">
@@ -64,6 +70,11 @@
         <p class="small muted" style="margin-top:16px;margin-bottom:0"><?= e($enrollmentSettings['awardedNote']) ?></p>
       <?php endif; ?>
     </aside>
+
+    <?php if ($hasPhotos): ?>
+      <?php $app->partial('scholarship-photo', ['photos' => $scholarship['photos']]); ?>
+    <?php endif; ?>
+    </div>
   </div>
 </section>
 

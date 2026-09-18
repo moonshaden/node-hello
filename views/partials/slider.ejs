@@ -18,7 +18,7 @@
         aria-hidden="<%= i === 0 ? 'false' : 'true' %>"
         aria-roledescription="slide" aria-label="<%= i + 1 %> of <%= slides.length %>"
         <%- url ? 'href="' + url + '"' : '' %>>
-        <img class="slide-img" src="<%= slide.image %>"
+        <img class="slide-img" src="<%= assetUrl(slide.image) %>"
              alt="<%= slide.alt || '' %>"
              loading="<%= i === 0 ? 'eager' : 'lazy' %>"
              <%- i === 0 ? 'fetchpriority="high"' : '' %>>

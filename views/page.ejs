@@ -14,9 +14,41 @@
   const article = markdown.renderSections(page.body);
   const index = article.headings.length >= INDEX_FROM ? article.headings : [];
 %>
+<%
+  // A page can close its copy with a photograph that ends level with the bottom
+  // of the aside card. The two have to END together, and a float's bottom is not
+  // something the flow below it can be told about -- so such a page puts the
+  // card in a grid column instead of floating it. The class is what switches
+  // the layout; see the stylesheet. Mirrored in page.php.
+  const hasPicture = Boolean(page.picture && page.picture.src);
+%>
 <section class="band">
-  <div class="wrap split">
+  <%# The aside floats rather than taking a grid column, so the answers wrap
+      beside it and then run the full width of the page once past it, instead of
+      leaving a tall empty margin down the right. It has to come first in the
+      source for a float to work, which does mean a screen reader meets the card
+      before the copy -- it is four short lines, so that is the cheaper of the
+      two costs. %>
+  <div class="wrap page-flow<%= hasPicture ? ' has-picture' : '' %>">
+    <%- include('partials/page-aside') %>
     <div class="prose">
+      <%# A page can open its copy with a callout -- a `notice` object on the
+          record, `{ heading, body }`, in the same panel the scholarships page
+          uses for its enrolment instructions: the heading in bold with the body
+          under it. Either half may be empty.
+
+          It is the FIRST thing in the copy column, above the jump index, so its
+          top edge lines up with the top of the aside card and the column starts
+          on one horizontal. Mirrored in page.php. %>
+      <% if (page.notice && (page.notice.heading || page.notice.body)) { %>
+        <div class="notice page-notice">
+          <div>
+            <% if (page.notice.heading) { %><h3><%= page.notice.heading %></h3><% } %>
+            <% if (page.notice.body) { %><p><%= page.notice.body %></p><% } %>
+          </div>
+        </div>
+      <% } %>
+
       <% if (index.length) { %>
       <nav class="page-index" aria-label="On this page">
         <p class="eyebrow">On this page</p>
@@ -25,10 +57,40 @@
         </ol>
       </nav>
       <% } %>
+
       <%- article.html %>
+
+      <%# A page with short copy leaves a gap under it. A page record can set
+          `logoStrip: true` to fill it with the donor and partner marquee -- the
+          same component the homepage uses, in its larger variant, and inline so
+          it sits in this column directly under the last line of copy rather
+          than as a band of its own below the section. Mirrored in page.php. %>
+      <% if (page.logoStrip && typeof logos !== 'undefined' && logos.length) { %>
+        <%- include('partials/logo-strip', { logos, stripSize: 'large', stripInline: true }) %>
+      <% } %>
+
+      <%# A page can carry the impact figures under its copy -- the same four
+          panels the homepage band shows, from the same `site.impact`, so the
+          numbers can never drift between the two. `.impact` is the ancestor the
+          gold numerals are scoped to; `.impact-inline` drops the band's
+          padding, border and watermark. Mirrored in page.php. %>
+      <% if (page.impactFigures && site.impact && site.impact.length) { %>
+        <div class="impact impact-inline">
+          <%- include('partials/impact-figures', { impact: site.impact }) %>
+        </div>
+      <% } %>
+
+      <%# A page can close its copy with a photograph. It sits INSIDE the prose
+          column, directly under the last line of copy, the way the inline logo
+          strip does -- and it ends level with the bottom of the aside card,
+          which is why `.page-flow` takes `has-picture` above. Mirrored in
+          page.php. %>
+      <% if (hasPicture) { %>
+        <%- include('partials/page-picture', { picture: page.picture }) %>
+      <% } %>
     </div>
-    <%- include('partials/page-aside') %>
   </div>
+
 </section>
 
 <%
@@ -67,7 +129,7 @@
     <% if (gallery.length) { %>
       <div class="gallery">
         <% gallery.forEach(function (shot) { %>
-          <img src="<%= shot.src %>" alt="<%= shot.alt %>" loading="lazy">
+          <img src="<%= assetUrl(shot.src) %>" alt="<%= shot.alt %>" loading="lazy">
         <% }) %>
       </div>
     <% } %>

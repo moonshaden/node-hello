@@ -14,9 +14,41 @@ $indexFrom = 6;
 $article = md_sections($page['body'] ?? '');
 $index = count($article['headings']) >= $indexFrom ? $article['headings'] : [];
 ?>
+<?php
+// A page can close its copy with a photograph that ends level with the bottom of
+// the aside card. The two have to END together, and a float's bottom is not
+// something the flow below it can be told about -- so such a page puts the card
+// in a grid column instead of floating it. The class is what switches the
+// layout; see the stylesheet. Mirrored in page.ejs.
+$hasPicture = !empty($page['picture']['src']);
+?>
 <section class="band">
-  <div class="wrap split">
+  <?php /* The aside floats rather than taking a grid column, so the answers wrap
+      beside it and then run the full width of the page once past it, instead of
+      leaving a tall empty margin down the right. It has to come first in the
+      source for a float to work, which does mean a screen reader meets the card
+      before the copy -- it is four short lines, so that is the cheaper of the
+      two costs. */ ?>
+  <div class="wrap page-flow<?= $hasPicture ? ' has-picture' : '' ?>">
+    <?php $app->partial('page-aside'); ?>
     <div class="prose">
+      <?php /* A page can open its copy with a callout -- a `notice` object on
+          the record, `{ heading, body }`, in the same panel the scholarships
+          page uses for its enrolment instructions: the heading in bold with the
+          body under it. Either half may be empty.
+
+          It is the FIRST thing in the copy column, above the jump index, so its
+          top edge lines up with the top of the aside card and the column starts
+          on one horizontal. Mirrored in page.ejs. */ ?>
+      <?php if (!empty($page['notice']['heading']) || !empty($page['notice']['body'])): ?>
+        <div class="notice page-notice">
+          <div>
+            <?php if (!empty($page['notice']['heading'])): ?><h3><?= e($page['notice']['heading']) ?></h3><?php endif; ?>
+            <?php if (!empty($page['notice']['body'])): ?><p><?= e($page['notice']['body']) ?></p><?php endif; ?>
+          </div>
+        </div>
+      <?php endif; ?>
+
       <?php if ($index !== []): ?>
       <nav class="page-index" aria-label="On this page">
         <p class="eyebrow">On this page</p>
@@ -25,10 +57,40 @@ $index = count($article['headings']) >= $indexFrom ? $article['headings'] : [];
         </ol>
       </nav>
       <?php endif; ?>
+
       <?= $article['html'] ?>
+
+      <?php /* A page with short copy leaves a gap under it. A page record can
+          set `logoStrip: true` to fill it with the donor and partner marquee --
+          the same component the homepage uses, in its larger variant, and inline
+          so it sits in this column directly under the last line of copy rather
+          than as a band of its own below the section. Mirrored in page.ejs. */ ?>
+      <?php if (!empty($page['logoStrip']) && !empty($logos)): ?>
+        <?php $app->partial('logo-strip', ['logos' => $logos, 'stripSize' => 'large', 'stripInline' => true]); ?>
+      <?php endif; ?>
+
+      <?php /* A page can carry the impact figures under its copy -- the same
+          four panels the homepage band shows, from the same `site.impact`, so
+          the numbers can never drift between the two. `.impact` is the ancestor
+          the gold numerals are scoped to; `.impact-inline` drops the band's
+          padding, border and watermark. Mirrored in page.ejs. */ ?>
+      <?php if (!empty($page['impactFigures']) && !empty($site['impact'])): ?>
+        <div class="impact impact-inline">
+          <?php $app->partial('impact-figures', ['impact' => $site['impact']]); ?>
+        </div>
+      <?php endif; ?>
+
+      <?php /* A page can close its copy with a photograph. It sits INSIDE the
+          prose column, directly under the last line of copy, the way the inline
+          logo strip does -- and it ends level with the bottom of the aside card,
+          which is why `.page-flow` takes `has-picture` above. Mirrored in
+          page.ejs. */ ?>
+      <?php if ($hasPicture): ?>
+        <?php $app->partial('page-picture', ['picture' => $page['picture']]); ?>
+      <?php endif; ?>
     </div>
-    <?php $app->partial('page-aside'); ?>
   </div>
+
 </section>
 
 <?php
@@ -67,7 +129,7 @@ $gallery = is_array($page['gallery'] ?? null) ? $page['gallery'] : [];
     <?php if ($gallery !== []): ?>
       <div class="gallery">
         <?php foreach ($gallery as $shot): ?>
-          <img src="<?= e(link_url($shot['src'], $basePath)) ?>" alt="<?= e($shot['alt'] ?? '') ?>" loading="lazy">
+          <img src="<?= e(asset_url($shot['src'], $basePath)) ?>" alt="<?= e($shot['alt'] ?? '') ?>" loading="lazy">
         <?php endforeach; ?>
       </div>
     <?php endif; ?>

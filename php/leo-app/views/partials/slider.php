@@ -25,7 +25,7 @@ $count = count($slides);
         aria-hidden="<?= $i === 0 ? 'false' : 'true' ?>"
         aria-roledescription="slide" aria-label="<?= $i + 1 ?> of <?= $count ?>"
         <?= $url !== '' ? 'href="' . e($basePath . $url) . '"' : '' ?>>
-        <img class="slide-img" src="<?= e(link_url($slide['image'] ?? '', $basePath)) ?>"
+        <img class="slide-img" src="<?= e(asset_url($slide['image'] ?? '', $basePath)) ?>"
              alt="<?= e($slide['alt'] ?? '') ?>"
              loading="<?= $i === 0 ? 'eager' : 'lazy' ?>"
              <?= $i === 0 ? 'fetchpriority="high"' : '' ?>>

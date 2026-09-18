@@ -5,7 +5,7 @@
     above them was the one element competing for that. The slides, their images
     and their /admin section are all still in place, so this is a change of
     what the page renders, not a deletion of anything the client can edit. %>
-<section class="hero<%= heroStudent ? ' hero-centred' : '' %>">
+<section class="hero<%= heroStudent ? ' hero-centred' : '' %><%= heroStudent && heroRail.length ? ' hero-has-rail' : '' %>">
   <% if (heroStudent) { %>
     <div class="wrap hero-stage">
       <%# The visible headline is gone -- the student is the headline now. The
@@ -13,7 +13,6 @@
           page screen readers and search engines cannot outline. Same words as
           before; only the display changes. %>
       <h1 class="visually-hidden">Every scholarship is a door someone walks through.</h1>
-      <p class="eyebrow"><%= site.location %> · 501(c)(3) nonprofit</p>
 
       <%# One of the awarded students, cut free of their own photograph and stood
           at the centre of the page. The client asked for the awards to be the
@@ -21,9 +20,10 @@
           the site is a student who is plainly glad to be at university.
           Everything shown is their own record -- the name, the award, the
           school, and a line lifted verbatim out of the bio they published. %>
+      <div class="hero-split">
       <figure class="hero-student">
         <div class="hero-student-stage">
-          <img class="hero-student-cut" src="<%= heroStudent.cutoutUrl %>"
+          <img class="hero-student-cut" src="<%= assetUrl(heroStudent.cutoutUrl) %>"
                alt="<%= heroStudent.name %>, holding up a Grand Canyon University pin"
                width="640" height="832">
         </div>
@@ -38,13 +38,56 @@
         </figcaption>
       </figure>
 
+      <%# Three more awarded students beside the lead, rotating through every
+          published recipient. Every card is in the document from the start and
+          the first three are simply the ones not hidden, so with no JavaScript
+          this is a static trio rather than an empty box. The rest carry
+          loading="lazy" AND the hidden attribute, which is what keeps fourteen
+          portraits off the wire until they are actually wanted. %>
+      <div class="hero-aside">
+      <% if (heroRail.length) { %>
+        <ul class="hero-rail" data-hero-rail data-hero-interval="5000" data-hero-visible="2">
+          <% heroRail.forEach((person, index) => { const line = heroLine(person); %>
+            <%# These two interpolations BUILD an attribute rather than fill one,
+                so they take the raw output tag. The escaping one turns the
+                quotes around lazy into &#34;, which PHP's own tag does not do:
+                a broken attribute here and a divergence between the builds.
+                Do not write an EJS open tag inside a comment either -- the
+                tokenizer reads it as a real tag and the template stops parsing. %>
+            <li class="hero-rail-card<%= index < 2 ? ' is-shown' : '' %>"<%- index < 2 ? '' : ' hidden' %>>
+              <img class="hero-rail-photo" src="<%= assetUrl(person.photoUrl) %>" alt="<%= person.name %>"
+                   width="96" height="96"<%- index < 2 ? '' : ' loading="lazy"' %>>
+              <div class="hero-rail-text">
+                <% if (line.quoted) { %>
+                  <blockquote class="hero-rail-line">&ldquo;<%= line.text %>&rdquo;</blockquote>
+                <% } else { %>
+                  <p class="hero-rail-line"><%= line.text %></p>
+                <% } %>
+                <p class="hero-rail-who">
+                  <strong><%= person.name %></strong>
+                  <span><%= person.school || person.scholarship %></span>
+                </p>
+              </div>
+            </li>
+          <% }) %>
+        </ul>
+      <% } %>
+
+      <%# The mission sat under the whole hero and cost a band of its own. It
+          now stands where the third student used to, which is the same copy in
+          less of the page. %>
       <p class="hero-mission"><%= site.mission %></p>
 
+      <%# The buttons belong to the copy above them, so they sit under it and
+          range left with it rather than being centred under the whole hero --
+          which also took a row of its own that the page did not have to spend. %>
       <div class="actions">
         <a class="btn btn-gold" href="/scholarships">
           <%= enrollment.state === 'open' ? 'Apply for a scholarship' : 'See available scholarships' %>
         </a>
         <a class="btn btn-outline" style="color:#fff" href="/recipients">Meet our recipients</a>
+      </div>
+      </div>
       </div>
 
       <%# The deadline is still what applicants come here for, so it stays in
@@ -66,7 +109,6 @@
   <% } else { %>
     <div class="wrap hero-grid">
       <div class="hero-copy">
-        <p class="eyebrow"><%= site.location %> · 501(c)(3) nonprofit</p>
         <h1>Every scholarship is a door someone walks through.</h1>
         <p><%= site.mission %></p>
         <div class="actions">
@@ -109,23 +151,20 @@
 </section>
 
 <% if (site.impact && site.impact.length) { %>
+<%# The donors and partners the live site carries in a carousel on its own
+    homepage, between the student and the figures. How it works is in the
+    partial, which the community page shares. %>
+<% if (logos.length) { %>
+  <%- include('partials/logo-strip', { logos }) %>
+<% } %>
+
 <section class="impact">
   <div class="wrap">
     <div class="impact-head">
       <p class="eyebrow">Our impact</p>
       <h2><%= site.impactTitle || 'What the scholarships have added up to.' %></h2>
     </div>
-    <div class="impact-grid">
-      <% site.impact.forEach(function (item) { %>
-        <div>
-          <div class="value"><%= item.value %></div>
-          <div class="label"><%= item.label %></div>
-          <% if (item.detail) { %>
-            <p class="detail"><%= item.detail %></p>
-          <% } %>
-        </div>
-      <% }) %>
-    </div>
+    <%- include('partials/impact-figures', { impact: site.impact }) %>
   </div>
 </section>
 <% } %>

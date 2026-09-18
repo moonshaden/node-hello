@@ -5,11 +5,55 @@
   lead uses, alternating side so three of them do not read as one column of
   repeats. The copy is markdown so the two partner links stay editable in
   /admin rather than being baked into the template.
+
+  The lead paragraph shows and the rest opens behind "Read more", because these
+  three run 900-1,500 characters each. The split is on the blank line between
+  paragraphs, NOT on a character count: these bodies carry markdown links, and a
+  count cuts one in half. Both builds split the same way -- a test asserts the
+  rendered pages agree.
+%>
+<%
+  // The shown part fills the card down to the photograph beside it rather than
+  // stopping at the first paragraph, which left two of the three cards with a
+  // block of white under the copy. Whole paragraphs are added until the budget
+  // is passed -- passed, not approached: stopping short of it left the Impact
+  // Leadership card on its 174-character opener, which is the case this is for.
+  // The number is a proxy for the photograph's 300px, checked by measuring the
+  // rendered cards, not by arithmetic.
+  const FILL_TO = 500;
+  // And hiding has to earn its keep: under this much left over, the whole body
+  // renders instead. The one partner on /community -- which shares this partial
+  // -- had 116 characters behind a toggle, more friction than the text it saved.
+  const DISCLOSE_FROM = 240;
+  const paragraphs = String(program.body || '').split(/\n{2,}/).filter(function (p) { return p.trim(); });
+  let shown = 0;
+  let taken = 0;
+  while (taken < paragraphs.length && shown < FILL_TO) {
+    shown += paragraphs[taken].length;
+    taken += 1;
+  }
+  const remainder = paragraphs.slice(taken).join('\n\n');
+  const disclose = remainder.length >= DISCLOSE_FROM;
+  const lead = disclose ? paragraphs.slice(0, taken).join('\n\n') : String(program.body || '');
+  const rest = disclose ? remainder : '';
 %>
 <article class="card program<%= flip ? ' program-flip' : '' %>">
   <% if (program.photoUrl) { %>
-    <img class="program-photo" src="<%= program.photoUrl %>" alt="<%= program.alt || program.name %>" loading="lazy" width="800" height="800">
+    <img class="program-photo" src="<%= assetUrl(program.photoUrl) %>" alt="<%= program.alt || program.name %>" loading="lazy" width="800" height="800">
   <% } %>
   <h3 class="program-name" id="<%= program.slug %>"><%= program.name %></h3>
-  <div class="program-body"><%- markdown.render(program.body) %></div>
+  <div class="program-body">
+    <%- markdown.render(lead) %>
+    <% if (rest) { %>
+      <%# The lead stays outside the disclosure: it is the first paragraph of the
+          same copy rather than a summary of it, so it should not disappear when
+          the rest opens -- and `summary` may only carry phrasing content. %>
+      <details class="story">
+        <summary>
+          <span class="story-toggle"><span class="when-shut">Read more</span><span class="when-open">Show less</span></span>
+        </summary>
+        <div class="story-rest"><%- markdown.render(rest) %></div>
+      </details>
+    <% } %>
+  </div>
 </article>
