@@ -1393,16 +1393,25 @@ test('the memorial scholarships carry their photographs, sized and described', f
         // than photographs, and they are .png: flat colour and sharp type, which
         // JPEG rings around.
         'gcu-guild-continuing-student-scholarship' => [['', 142, 80, 'png']],
-        'leo-foundation-christian-studies-scholarship' => [['', 700, 144, 'png']],
         'skw-play-it-forward-music-scholarship' => [['', 608, 500, 'png']],
         'bhhs-legacy-nursing-health-related-scholarship' => [['', 482, 134, 'png']],
     ];
 
-    // The live site publishes no image at all on these four, so they must carry
-    // none here either -- "all of them" has to mean all of them and no more.
-    $withoutPhoto = [
+    // The three LEO-branded awards carry no sponsor's logo of their own, so they
+    // take the foundation's own lion -- the same mark the footer and the masthead
+    // use, matted on the brand navy the way the favicons are, because the file is
+    // white and gold and would all but vanish on the page's #fdfcfa band. One
+    // shared file, not three copies.
+    $lion = '/img/scholarships/leo-lion-mark.png';
+    $lionSlugs = [
         'leo-foundation-scholarship',
         'leo-foundation-entrepreneurial-scholarship',
+        'leo-foundation-christian-studies-scholarship',
+    ];
+
+    // The live site publishes no image on these two and none was invented for
+    // them either -- "all of them" has to mean all of them and no more.
+    $withoutPhoto = [
         'foundation-theatre-scholarship',
         'foster-youth-scholarships',
     ];
@@ -1457,7 +1466,16 @@ test('the memorial scholarships carry their photographs, sized and described', f
                 ok(empty($record['photos']),
                     $store . ': ' . $record['slug'] . ' has a picture the live site does not publish');
             }
+            if (in_array($record['slug'], $lionSlugs, true)) {
+                $photos = $record['photos'] ?? [];
+                ok(count($photos) === 1 && ($photos[0]['src'] ?? '') === $lion,
+                    $store . ': ' . $record['slug'] . ' does not carry the lion mark');
+            }
         }
+    }
+    foreach (['public/img/scholarships', 'php/public_html/img/scholarships'] as $dir) {
+        $file = $root . '/' . $dir . '/leo-lion-mark.png';
+        ok(is_file($file) && filesize($file) > 1024, $file . ' is missing or empty');
     }
 
     // Only one picture on the whole site is allowed past its own pixels. If this
