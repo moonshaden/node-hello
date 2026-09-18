@@ -1391,6 +1391,13 @@ test('the donor strip is one shared partial, opted into by the page record', fun
         $src = file_get_contents($root . '/' . $view);
         ok(str_contains($src, 'logoStrip'), $view . ' does not read the record flag');
         ok(str_contains($src, "'large'"), $view . ' does not ask for the large variant');
+        // Inline, and inside the prose column: the strip belongs directly under
+        // the last line of copy, not in a band below the section. A template
+        // that renders it outside .prose puts it back below the card.
+        $prose = strpos($src, 'class="prose"');
+        $strip = strpos($src, 'logo-strip');
+        ok($prose !== false && $strip !== false && $strip > $prose, $view . ' renders the strip outside the prose column');
+        ok(str_contains($src, 'stripInline'), $view . ' does not ask for the inline variant');
     }
     // And the page that asked for it has the flag.
     $seed = json_decode(file_get_contents(__DIR__ . '/../leo-app/data/content.json'), true);
@@ -1409,6 +1416,18 @@ test('the donor strip is one shared partial, opted into by the page record', fun
         ok(
             preg_match('/\.is-large \.logo-run img \{[^}]*max-width: 340px;/s', $css) === 1,
             $sheet . ': the large marks have no width cap, so one wordmark fills the row'
+        );
+        // The inline strip must NOT clear the float. overflow:hidden already
+        // makes it a block formatting context, so it sits beside the card and
+        // therefore directly under the copy; clearing it would drop it below the
+        // card and re-open the 352px gap this was meant to close.
+        ok(
+            preg_match('/\\.logo-strip\\.is-inline \\{[^}]*clear:/s', $css) !== 1,
+            $sheet . ': the inline strip clears the card, which puts it back below it'
+        );
+        ok(
+            preg_match('/\\.logo-strip\\.is-inline \\.logo-run img \\{[^}]*max-width: 170px;/s', $css) === 1,
+            $sheet . ': the inline marks are not sized for the column'
         );
     }
 });

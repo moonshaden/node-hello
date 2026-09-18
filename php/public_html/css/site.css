@@ -1328,6 +1328,33 @@ section.band.logo-strip.is-large { padding: 40px 0; }
 }
 .is-large .logo-track { animation-duration: 128s; }
 
+/* Inline: the strip sits inside a prose column, directly under the copy, rather
+   than as a full-bleed band of its own. The band's edge-to-edge rules come off
+   and it gets the copy's own corner radius.
+   `clear: right` for the same reason the page figure has it -- the card floats
+   right in this template and a float only shortens line boxes, so a block like
+   this would otherwise run underneath it. */
+.logo-strip.is-inline {
+  border-radius: 14px;
+  margin-top: 30px;
+}
+/* Sized for the column, not the viewport. `overflow: hidden` on the strip makes
+   it a block formatting context, so it sits BESIDE the floated card rather than
+   under it -- which is what puts it directly beneath the last line of copy
+   instead of below the card. That costs width: 728px beside the card against
+   1072px of column, so the marks come down from the full-bleed variant's 340px
+   cap to hold three of them. Still well above the homepage's 58px row, which is
+   the point of the large variant. Measured across 48 combinations of height,
+   cap and gap. */
+.logo-strip.is-inline .logo-run { gap: 52px; padding: 0 26px; }
+.logo-strip.is-inline .logo-run img { height: 94px; max-width: 170px; }
+.logo-strip.is-inline .logo-track { animation-duration: 96s; }
+
+@media (max-width: 900px) {
+  .logo-strip.is-inline .logo-run { gap: 40px; padding: 0 20px; }
+  .logo-strip.is-inline .logo-run img { height: 74px; max-width: 132px; }
+}
+
 /* Stepped down at 1100 rather than at the usual 900: at the desktop size a
    340px mark plus a 104px gap is a 444px slot, so a 1024px window fitted only
    two whole marks. This tier makes it three. */

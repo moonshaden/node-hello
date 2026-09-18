@@ -14,8 +14,11 @@
 // `large` is the variant: fewer, bigger marks, for a page with room for them.
 // It is a class, not a second copy of this markup.
 $large = ($stripSize ?? '') === 'large';
+// `inline` drops the full-bleed band and lets the strip sit inside a column,
+// directly under the copy it belongs to.
+$inline = !empty($stripInline);
 ?>
-<section class="band logo-strip<?= $large ? ' is-large' : '' ?>" aria-label="Our donors and partners">
+<section class="band logo-strip<?= $large ? ' is-large' : '' ?><?= $inline ? ' is-inline' : '' ?>" aria-label="Our donors and partners">
   <div class="logo-track">
     <ul class="logo-run">
       <?php foreach ($logos as $logo): ?>

@@ -33,17 +33,18 @@ $index = count($article['headings']) >= $indexFrom ? $article['headings'] : [];
       </nav>
       <?php endif; ?>
       <?= $article['html'] ?>
+
+      <?php /* A page with short copy leaves a gap under it. A page record can
+          set `logoStrip: true` to fill it with the donor and partner marquee --
+          the same component the homepage uses, in its larger variant, and inline
+          so it sits in this column directly under the last line of copy rather
+          than as a band of its own below the section. Mirrored in page.ejs. */ ?>
+      <?php if (!empty($page['logoStrip']) && !empty($logos)): ?>
+        <?php $app->partial('logo-strip', ['logos' => $logos, 'stripSize' => 'large', 'stripInline' => true]); ?>
+      <?php endif; ?>
     </div>
   </div>
 </section>
-
-<?php /* A page with short copy leaves a long gap between its body and whatever
-    follows. A page record can set `logoStrip: true` to fill it with the donor
-    and partner marquee -- the same component the homepage uses, in its larger
-    variant, which shows fewer marks at a bigger size. Mirrored in page.ejs. */ ?>
-<?php if (!empty($page['logoStrip']) && !empty($logos)): ?>
-  <?php $app->partial('logo-strip', ['logos' => $logos, 'stripSize' => 'large']); ?>
-<?php endif; ?>
 
 <?php
 // A page can carry a list of programs alongside its prose, the same way it can
