@@ -38,7 +38,7 @@ reaches real students and real donors. So:
   you did. Report the failure with the evidence, not a reassuring summary.
 
 
-## Where this left off — 2026-09-18, head `b35c06b`
+## Where this left off — 2026-09-18, head `689dbfa`
 
 Several sessions work this branch at once. Pull before starting, and expect the
 head to have moved mid-task. PR #3 is **merged**; the open one is **PR #4**
@@ -48,12 +48,12 @@ head.
 `docs/sessions/` holds a log per working session — what was asked, what was tried
 and rejected, and what went wrong. This file is the state; those are the reasons.
 The most recent is
-`docs/sessions/2026-09-18-strip-placement-and-recipient-rows.md`.
+`docs/sessions/2026-09-18-scholarship-photographs.md`.
 
-**Landed and verified** (90 node / 92 PHP tests, PHP lint clean, cross-build
-render diff zero on **twelve** paths — the eleven public pages plus a
-scholarship's own detail page — and every change byte-compared against the
-deployed build subdomain):
+**Landed and verified** (90 node / 93 PHP tests, PHP lint clean, cross-build
+render diff zero on **nineteen** paths — the eleven public pages plus eight
+scholarship detail pages — and every change byte-compared against the deployed
+build subdomain):
 
 - `/board`, `/programs`, `/community` — all three transcribed pages, shipped in
   #3. See *Content accuracy*.
@@ -125,6 +125,14 @@ deployed build subdomain):
   `height: 100%` plus `object-fit: cover`, measured at 0px difference on all
   four cards. Stacking is keyed to the **list's own width**, not the viewport:
   `@container (max-width: 600px)` on `.recipient-rows`. See *Gotchas* for both.
+- **The five memorial scholarships carry their photographs**, in the right
+  column under the award card, centred and stacked. `photos` is an array on the
+  scholarship record, so an award with several pictures stacks them; two of the
+  five publish a composite that was split into its own files, because a three-up
+  composite in a 344px column draws each face about 40px across. The stack ends
+  level with the bottom of the copy — it shrinks to fit and never grows. See
+  *Content accuracy* for where the files came from and *Gotchas* for the two
+  traps that cost the most time.
 
 **The debt this branch carries, stated plainly:** *nothing in either suite covers
 the hero rail or the logo strip.* The rotation, the one-at-a-time slot logic, the
@@ -224,7 +232,7 @@ once in `php/leo-app/views` + `php/public_html/css`, once in `views/` +
 
 ```bash
 npm test                                    # 90 tests
-php php/test/run.php                        # 92 tests
+php php/test/run.php                        # 93 tests
 find php -name '*.php' -exec php -l {} \;   # lint
 
 ADMIN_PASSWORD='...' npm start              # Node build, :3000
@@ -394,6 +402,20 @@ list already work — `271c13a` ("Carry the What We Do photograph onto the About
 page") did exactly that, and the commit after it took it out again — a commit
 cannot name its own hash, so look for the pair by message rather than by SHA.
 
+**marked autolinks a bare email address and the PHP `Markdown` does not.** Same
+class as the bare URL already on record, and it had been live: five scholarship
+pages carried `mwinney@leofoundationusa.org` as plain text in their `criteria`, so
+the dev twin rendered a `mailto:` link and **the deployed site rendered an
+unclickable address**. Both suites green, because neither reads the rendered
+output. Write it as an explicit `[address](mailto:address)` link in the store; a
+test asserts no markdown field carries a bare one.
+
+The reason it survived so long is worth more than the bug: **the cross-build diff
+only covered one scholarship page.** Five pages had never been diffed at all. When
+a route is a template with many records behind it, diffing one record proves the
+template, not the content — the set now holds all eight scholarship pages, and
+that is what found this.
+
 **A block box in the prose runs under the floated card, and the right answer is
 not always the same.** The float rule that bit the jump index bites anything
 boxed, but what you want differs per element and all three cases are now in the
@@ -445,6 +467,45 @@ wrong moments in both directions. `container-type: inline-size` on
 `.recipient-rows` with `@container (max-width: 600px)` asks the question the
 layout actually answers. Anything inside a `.split` or `.page-flow` column has
 the same problem.
+
+**`align-items: stretch` will not make two columns END together, and it measures
+as though it did.** The ask was that a stack of pictures in the right column
+finish level with the bottom of the copy on the left. Stretch makes the grid ROW
+as tall as its tallest item — so a long stack grows the row, the copy column's
+*box* grows with it, and the two boxes do end level while the TEXT still ends
+hundreds of pixels early. On the Baker page the stack overhung the text by 588px
+and the measurement reported the gap as **zero**, because what was measured was
+the stretched box.
+
+- **Measure the last line of text, not the column.** `copy.getBoundingClientRect()`
+  is the box; `Math.max(...[...copy.children].map(e => e.getBoundingClientRect().bottom))`
+  is the text. They are the same number until something stretches, which is
+  exactly when you need them not to be.
+- **The fix is to stop the pictures voting on the row's height.** `.split-side`
+  holds no in-flow content — its inner is `position: absolute; inset: 0` — so the
+  copy is the only thing that sizes the row, and the inner is handed exactly that
+  height to divide between the card and the pictures. Gated to the width where
+  `.split` actually has two columns.
+- **Shrink, never grow.** Flex shrink brings a too-tall stack down in proportion.
+  Growing a short one means upscaling: Smith would need 2.5x and Gary 1.64x, on
+  photographs of real people. Those columns end early instead, and that is the
+  honest outcome rather than a bug to fix.
+- A `min-height` floor stops a short copy column grinding three pictures into
+  slivers.
+
+**A flex item stretches on the cross axis, including a picture you sized
+yourself.** `.scholarship-photo` is a flex row, so its `img` was stretched to the
+figure's `min-height` floor while `object-fit: contain` kept the picture its own
+size inside it — a box taller than its picture, so the column ended on empty
+space. `align-items: center` on the figure is what stops it. Any time a rule sets
+a height on a flex item's container and the child is a replaced element, check the
+box and the picture separately.
+
+**A trailing margin is enough to miss a measurement.** The stack finished a
+constant 18px below the text, at every width, which is the copy's last paragraph's
+`margin-bottom` — the column's box ends below its last line. Worth checking
+whenever two things are meant to line up and are consistently out by a small
+constant.
 
 **Piping a test suite throws away its exit code.** `php php/test/run.php | tail -2
 && git commit` commits whatever the suite did, because `tail` exits 0. A commit
@@ -648,6 +709,47 @@ eighth header item.
   are not named anywhere. They are carried as published; worth asking the client
   whether they want them kept.
 
+**The five memorial scholarships publish a photograph each**, taken from the live
+site on 2026-09-18 and rehosted under `public/img/scholarships/` and
+`php/public_html/img/scholarships/` — 1.5 MB of originals down to 280 KB for all
+eight files. They reach the server through a `seed_content` run, like every other
+content change.
+
+The record holds a **`photos` array**, each entry `{ src, alt, width, height }`.
+An array because two of the five publish a *composite* rather than a single
+picture, and a composite is useless at this size: the pictures sit in a 344px
+column, where a three-up composite draws each face about 40px across. Split into
+their own files they stack one per row at the column's full width.
+
+- **McCurdy** splits into 2, **Baker** into 3. The split lines are *measured*, not
+  guessed — the gap columns between the photographs carry no ink at all, so each
+  boundary is where the picture actually ends. Every crop was looked at before it
+  shipped.
+- **Smith does not split** and ships whole. Its three photographs sit on a
+  continuous tinted background with no separable gap, so any boundary would be a
+  guess through someone's face. It is the one picture that stays small in the
+  column. If the client wants it split they have to supply the originals.
+- **Mealman and Gary** are single portraits and are carried whole.
+- The **Baker banner is the one crop that removes something**: the scholarship's
+  name is set into the artwork, and the page already renders it as the `h1`.
+  Cropped to the three photographs, the same way the board portraits were cropped
+  to their ring. Worth confirming with the client.
+- Three of the files carried an **alpha channel**, and JPEG has none, so each was
+  matted on white first — an unmatted transparent pixel encodes as black.
+- **No alt text is published live for any of them**, so it was written here from
+  the photograph: the two single portraits take the person's name, the composites'
+  parts describe what is shown without naming who is who. The client is the only
+  source for anything more, the same as the 26 strip logos.
+- **`width` and `height` are stored** because they become the attributes that
+  reserve the space before the picture loads, and because nothing here is ever
+  drawn past its own pixels. The narrowest is 227px against a 344px column.
+- **The array is not editable in `/admin`.** It follows the board roster and the
+  programs list — it lives on the record and survives a save because
+  `applyFields()` spreads the existing record first, but nothing in the
+  scholarship form edits it. The four flat photo fields that existed for one
+  commit were dropped when the shape became an array. Open item if the client
+  wants to change these themselves.
+
 The **Board of Directors page is the live `/leadership-2/` page** ("LEADERSHIP"),
 transcribed on 2026-08-29: six members, in the live order, with each office and
 bio word for word. It is seeded as a page with slug `board` and `inNav: false` —
@@ -821,6 +923,14 @@ is an empty string on all three. Do not compose one.
     month. The most valuable item here that does not need the client.
 11. **The 26 strip logos have no alt text**, because nothing published names
     those organisations. See *Content accuracy*.
+12. **The scholarship photographs are not editable in `/admin`.** `photos` is an
+    array on the record, so it follows the board roster and the programs list:
+    it survives a save but no form field edits it. Everything else on a
+    scholarship is editable, so this is the odd one out. Needs a repeating
+    field — worth doing if the client wants to swap a picture themselves.
+13. **The Smith photograph is one composite that could not be split**, so it
+    renders small in the column while the others fill it. Only the client can
+    close this, by supplying the three originals. See *Content accuracy*.
 
 ## Deploying
 
