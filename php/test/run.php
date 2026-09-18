@@ -1811,38 +1811,24 @@ test('the page picture and the program rows are built the way they measure', fun
     foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
         $css = file_get_contents($root . '/' . $sheet);
 
-        // The photograph runs the full height of the text. That needs the grid
-        // item stretched AND a real height on the image -- stretching alone
-        // gives the box the height and leaves the picture drawing at its own
-        // ratio inside it. Same trio as the recipient rows.
+        // The programs' photographs are SQUARE, which is the whole picture:
+        // the live site publishes all three at 1200x1200. A tall frame crops
+        // them, and on the Impact Leadership one -- which has the word
+        // LEADERSHIP set into the artwork -- it cut the word to "ADERSH".
         ok(
-            preg_match('/\\.program > \\.program-photo \\{[^}]*align-self: stretch;/s', $css) === 1,
-            $sheet . ': the program photo does not stretch to the text'
+            preg_match('/^\\.program-photo \\{[^}]*aspect-ratio: 1 \\/ 1;/ms', $css) === 1,
+            $sheet . ': the program photo is not square, so it crops its own picture'
         );
         ok(
-            preg_match('/^\\.program-photo \\{[^}]*height: 100%;/ms', $css) === 1,
-            $sheet . ': the program photo has no height, so it will not match the text'
+            preg_match('/\\.program > \\.program-photo \\{[^}]*align-self: start;/s', $css) === 1,
+            $sheet . ': the program photo stretches, which crops it to the text'
         );
+        // `height: auto` is load-bearing with the width/height attributes: they
+        // reserve space before the photo loads, and without it they apply as a
+        // real height and beat aspect-ratio (portraits rendered 1000px tall).
         ok(
-            preg_match('/^\\.program-photo \\{[^}]*object-fit: cover;/ms', $css) === 1,
-            $sheet . ': the stretched program photo will distort'
-        );
-        // A grid item's automatic minimum size transfers through the intrinsic
-        // ratio, so a square photo in a 300px column floors every row at 300px
-        // whatever the text does.
-        ok(
-            preg_match('/^\\.program-photo \\{[^}]*min-height: 0;/ms', $css) === 1,
-            $sheet . ': the program photo can floor a short row at its own width'
-        );
-        // A fixed ratio in the two-column rule is what this replaced; it belongs
-        // only in the stacked query, where there is no row to fill.
-        ok(
-            preg_match('/^\\.program-photo \\{[^}]*aspect-ratio:/ms', $css) !== 1,
-            $sheet . ': the program photo is back on a fixed ratio, so it cannot match the text'
-        );
-        ok(
-            preg_match('/\\.program-flip > \\.program-photo \\{[^}]*aspect-ratio: 1 \\/ 1;/s', $css) === 1,
-            $sheet . ': the stacked program photo has no ratio of its own'
+            preg_match('/^\\.program-photo \\{[^}]*height: auto;/ms', $css) === 1,
+            $sheet . ': the width/height attributes will beat the ratio'
         );
 
         // The picture ends where the card does, and that needs all three of

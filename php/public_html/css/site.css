@@ -824,20 +824,21 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   padding: 20px;
   border-color: #dcd3c2;
 }
-.program > .program-photo { grid-column: 1; grid-row: 1 / span 30; align-self: stretch; }
+.program > .program-photo { grid-column: 1; grid-row: 1 / span 30; align-self: start; }
 .program > :not(.program-photo) { grid-column: 2; }
 .program-photo {
-  /* The photograph runs the full height of the text beside it, so the two
-     columns of a row end level. That needs all three of these: `align-self:
-     stretch` above gives the BOX the row's height, `height: 100%` makes the
-     picture take the box (a replaced element otherwise keeps drawing at its own
-     ratio inside a stretched box), and `object-fit: cover` stops the crop
-     distorting it. Same trio as the recipient rows.
+  /* A square, which is the WHOLE picture: the live site publishes all three of
+     these at 1200x1200 and they are stored at 800x800, so a square frame crops
+     none of them. That matters for the Impact Leadership one, which has the word
+     LEADERSHIP set into the artwork -- it ran the full height of its text for a
+     few hours and the tall crop cut the word to "ADERSH".
 
-     `min-height: 0` is the fourth piece: a grid item's automatic minimum size
-     transfers through the intrinsic ratio, so a square photo in a 300px column
-     would force every row to at least 300px whatever the text does. */
-  width: 100%; height: 100%; min-height: 0; object-fit: cover;
+     `height: auto` is load-bearing: the width/height attributes reserve space
+     before the photo loads, and without it they apply as a real height and beat
+     aspect-ratio. `object-fit: cover` does nothing to a square source in a
+     square frame; it is there so a future non-square file crops rather than
+     distorts. */
+  width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover;
   border-radius: 12px; background: var(--gold-wash);
 }
 .program-name {
@@ -847,6 +848,29 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .program-body p { color: var(--ink-soft); margin: 0 0 .9em; }
 .program-body p:last-child { margin-bottom: 0; }
 
+/* The lead paragraph shows and the rest opens, so three programs of 900-1,500
+   characters do not each run a screen deep. The lead sits OUTSIDE the disclosure
+   -- it stays visible when the rest opens, because it is the first paragraph of
+   the same copy rather than a summary of it, and a `summary` element may only
+   carry phrasing content anyway.
+
+   Third copy of this disclosure's rules, after the recipient story and the board
+   bio. They are the same three declarations each time and would lift into one
+   `.story` block; not done here because that changes specificity for two
+   components on two other pages and neither was measured today. */
+.program .story { margin-top: 4px; }
+.program .story > summary { list-style: none; cursor: pointer; display: block; }
+.program .story > summary::-webkit-details-marker { display: none; }
+.program .story-toggle {
+  display: inline-block;
+  color: var(--gold); font-size: .85rem; font-weight: 600;
+}
+.program .story > summary:hover .story-toggle { text-decoration: underline; }
+.program .story .when-open,
+.program .story[open] .when-shut { display: none; }
+.program .story[open] .when-open { display: inline; }
+.program .story-rest > :first-child { margin-top: .9em; }
+
 /* Mirrored so the photo sits on the right for every other program. */
 .program-flip { grid-template-columns: minmax(0, 1fr) 300px; }
 .program-flip > .program-photo { grid-column: 2; }
@@ -855,14 +879,8 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 @media (max-width: 720px) {
   .program,
   .program-flip { grid-template-columns: 1fr; row-gap: 18px; }
-  /* Stacked, there is no row to fill, so the photograph goes back to a square
-     that sizes itself -- and `height: auto` is load-bearing here, or the
-     width/height attributes apply as a real height and beat aspect-ratio. */
   .program > .program-photo,
-  .program-flip > .program-photo {
-    grid-column: 1; grid-row: auto;
-    height: auto; aspect-ratio: 1 / 1;
-  }
+  .program-flip > .program-photo { grid-column: 1; grid-row: auto; }
   .program > :not(.program-photo),
   .program-flip > :not(.program-photo) { grid-column: 1; }
 }

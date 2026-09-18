@@ -542,6 +542,50 @@ test('the giving callout carries its two sentences once each, above the copy', a
   });
 });
 
+// Each program shows its lead paragraph and opens the rest behind "Read more".
+// The split is on the blank line between paragraphs rather than on a character
+// count, because these bodies carry markdown links and a count cuts one in half
+// -- so the thing worth asserting is that every link still renders as a link,
+// and that nothing published is left out of the page.
+test('the programs show a lead paragraph and open the rest, links intact', async () => {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  const page = seed.pages.find((p) => p.slug === 'programs');
+
+  await withServer(async (base) => {
+    const body = await (await fetch(`${base}/programs`)).text();
+    // A paragraph's longest run of plain text between markdown links. Matching
+    // on the whole paragraph would fail wherever a link sits in the middle of
+    // it, because the rendered HTML puts an <a> there -- which is the page
+    // being right, not wrong.
+    const plainRun = (markdown) => markdown
+      .split(/\[[^\]]+\]\([^)]+\)/)
+      .map((run) => run.replace(/\s+/g, ' ').trim())
+      .sort((a, b) => b.length - a.length)[0];
+
+    for (const program of page.programs) {
+      const paragraphs = String(program.body).split(/\n{2,}/).filter((p) => p.trim());
+      // The lead is on the page as rendered markdown, outside the disclosure.
+      assert.ok(body.includes(plainRun(paragraphs[0])),
+        `${program.name}: the lead paragraph is not on the page`);
+      if (paragraphs.length > 1) {
+        assert.ok(body.includes('class="story-rest"'), `${program.name}: the rest is not disclosed`);
+        // Every paragraph after the first is still there.
+        for (const rest of paragraphs.slice(1)) {
+          assert.ok(body.includes(plainRun(rest)), `${program.name}: a paragraph is missing from the page`);
+        }
+      }
+      // Every markdown link in the body renders as an anchor -- the split must
+      // never land inside one.
+      for (const [, , href] of String(program.body).matchAll(/\[([^\]]+)\]\(([^)]+)\)/g)) {
+        assert.ok(body.includes(`href="${href}"`), `${program.name}: a link was broken by the split: ${href}`);
+      }
+    }
+    // The toggle is real text, not an icon, and says both states.
+    assert.match(body, /class="when-shut">Read more</, 'the read-more label is missing');
+    assert.match(body, /class="when-open">Show less</, 'the show-less label is missing');
+  });
+});
+
 // The header carried a CSS placeholder mark for months. Now that real artwork
 // is in the repo, nothing should render the site's identity from type again.
 test('the real lockup and favicons are served, not a placeholder', async () => {
