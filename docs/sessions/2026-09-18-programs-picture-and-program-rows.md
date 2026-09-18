@@ -1,17 +1,23 @@
 # 2026-09-18 — the programs picture, and the program rows
 
-Three commits, all one thread: a picture the client handed over, and the three
-program rows beside it.
+Four commits: a picture the client handed over and the three program rows beside
+it, then the impact figures under the copy on `/board`.
 
     cf60c7a  Close the programs copy with the quotation, and size each photo to its text
     29ba57b  Put the quotation under the copy, the way the community strip sits
     65275ab  Drop the words and end the photograph on the card's bottom
+    9264af7  Carry the impact figures under the copy on the board page
 
-The shape of the session is worth more than any one commit: the same component
-was built three times because each answer taught the client what they actually
+The shape of the session is worth more than any one commit: the **same component
+was built three times**, because each answer taught the client what they actually
 wanted. Nothing here was wasted — each round was measured and shipped before the
 next ask arrived — but it is the argument for showing a thing early rather than
 polishing it.
+
+The fourth commit is a different component in the same slot, and the thread runs
+through all four: **under the copy, in the copy column, 50px down.** That slot
+now holds an inline logo strip on `/community`, a photograph on `/programs` and
+the impact panels on `/board`.
 
 ## What the picture actually was (`cf60c7a`)
 
@@ -146,6 +152,52 @@ Final measurement: the picture's bottom is level with the card's **to the pixel*
 at 1440 / 1280 / 1200 / 1024 / 940 / 900 / 862, the gap is 50 at every one, and
 nothing overlaps the card. Re-measured on the deployed page at 1280 and 900: 0px
 both.
+
+## The impact figures on /board (`9264af7`)
+
+> "put this under script on board of directors page"
+
+A screenshot of the homepage's four panels, and the same placement again: inside
+the copy column, 50px under the last line. The screenshot pointed at the panels
+rather than the band, so the page carries the panels only and the OUR IMPACT
+eyebrow and heading stay on the homepage.
+
+**One component, not a second copy.** The grid markup moved into
+`impact-figures.ejs` / `.php`; both homepages and both page templates include it
+and read the same `site.impact`. Worth being firm about, because the live
+WordPress site is the cautionary tale: it states 5,685 / $6.9M on nine pages,
+4,500 / $6M on `/financial-statements` and $8.9M raised on `/ways-to-give`. That
+is what a second copy of the markup buys. A page opts in with
+`impactFigures: true` on its record, exactly as `logoStrip` works -- it survives
+an admin save because `applyFields()` spreads the existing record first, and no
+form field edits it, so there is no silent-data-loss trap to open.
+
+**Specificity, twice, in one component, and both failed silently.**
+`.impact-inline` is (0,1,0) -- a TIE with the `.impact` rules it is undoing, so
+source order decides and the later rule wins:
+
+- the narrow-screen `.impact { padding: 44px 0 48px }` put the band's padding
+  back above the panels below 861px. It showed as a 94px gap under the copy where
+  every other width measured 50 -- and the first diagnosis of that number was
+  wrong (a collapsed margin was blamed) until the element's own top was compared
+  with the grid's and the 44px appeared between them.
+- `.impact .value` held the numerals at the band's 51px inside a 157px panel,
+  with `$6.9M` 6px past its own box. The overflow probe found it; reading the
+  computed `font-size` is what explained it.
+
+Every rule in the variant carries both classes now, and a test asserts that none
+of them carries only one -- the regression is writing the obvious selector.
+
+**The panel is the container, not the viewport.** Same lesson as the recipient
+rows: this sits in a `.page-flow` column, so a panel is 181px at a 1280 viewport
+and 155px at 862. The numerals size off `cqi` of the panel, with a plain `rem`
+declared first so a browser without container units still gets something that
+fits rather than falling back to the band's `clamp(2.5rem, 5vw, 3.5rem)`.
+
+Measured at 1440 / 1280 / 1024 / 900 / 862 / 760 / 390: 50px under the copy at
+every one, nothing overlapping the card, no panel or numeral overflowing -- four
+across in the wide column, two by two in the narrow one. Re-measured on the
+deployed page: 50px, four panels, no overflow.
 
 ## Process notes
 

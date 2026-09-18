@@ -38,7 +38,7 @@ reaches real students and real donors. So:
   you did. Report the failure with the evidence, not a reassuring summary.
 
 
-## Where this left off — 2026-09-18, head `65275ab`
+## Where this left off — 2026-09-18, head `9264af7`
 
 Several sessions work this branch at once. Pull before starting, and expect the
 head to have moved mid-task. PR #3 is **merged**; the open one is **PR #4**
@@ -50,7 +50,7 @@ and rejected, and what went wrong. This file is the state; those are the reasons
 The most recent is
 `docs/sessions/2026-09-18-programs-picture-and-program-rows.md`.
 
-**Landed and verified** (93 node / 95 PHP tests, PHP lint clean, cross-build
+**Landed and verified** (94 node / 96 PHP tests, PHP lint clean, cross-build
 render diff zero on **twenty-four** paths — the eleven public pages plus **all
 thirteen** scholarship detail pages — and every change byte-compared against the
 deployed build subdomain):
@@ -129,6 +129,13 @@ deployed build subdomain):
   `height: 100%` plus `object-fit: cover`, measured at 0px difference on all
   four cards. Stacking is keyed to the **list's own width**, not the viewport:
   `@container (max-width: 600px)` on `.recipient-rows`. See *Gotchas* for both.
+- **The impact figures are one component in two places.** The four panels are
+  `partials/impact-figures`, included by both homepages inside the navy band and
+  by a page that sets `impactFigures: true` on its record -- `/board` is the one
+  that does, at the client's word, under its copy and without the band's eyebrow
+  and heading. Both read the same `site.impact`, so the numbers cannot drift the
+  way the live WordPress site's do between its own pages. **Every rule in the
+  `.impact-inline` variant carries two classes on purpose**; see *Gotchas*.
 - **`/programs` closes its copy with a photograph, and its three rows run
   their picture the full height of the text.** The picture is a `picture`
   object on the page record, rendered inside the copy column 50px under the
@@ -257,8 +264,8 @@ once in `php/leo-app/views` + `php/public_html/css`, once in `views/` +
 ## Commands
 
 ```bash
-npm test                                    # 93 tests
-php php/test/run.php                        # 95 tests
+npm test                                    # 94 tests
+php php/test/run.php                        # 96 tests
 find php -name '*.php' -exec php -l {} \;   # lint
 
 ADMIN_PASSWORD='...' npm start              # Node build, :3000
@@ -508,6 +515,14 @@ wrong moments in both directions. `container-type: inline-size` on
 layout actually answers. Anything inside a `.split` or `.page-flow` column has
 the same problem.
 
+The same applies to type, not just to breakpoints. The impact panels in the
+`/board` copy column are 181px at a 1280 viewport and 155px at 862, so a numeral
+sized in `vw` overflowed its panel; sizing it in `cqi` of the panel (each panel
+`container-type: inline-size`) asks the right question. Declare a plain `rem`
+first -- a browser without container units drops the `cqi` declaration and would
+otherwise fall back to whatever the component's other rule says, which here was
+the band's much larger `clamp()`.
+
 **`align-items: stretch` will not make two columns END together, and it measures
 as though it did.** The ask was that a stack of pictures in the right column
 finish level with the bottom of the copy on the left. Stretch makes the grid ROW
@@ -530,6 +545,18 @@ the stretched box.
   honest outcome rather than a bug to fix.
 - A `min-height` floor stops a short copy column grinding three pictures into
   slivers.
+
+**A one-class override only TIES with the rule it is undoing.** The inline
+variant of the impact figures is `.impact.impact-inline`, not `.impact-inline`,
+and both halves of that were learned by breaking: `.impact-inline` is (0,1,0),
+the same weight as the `.impact` rules it overrides, so source order decided and
+the later rule won. The narrow-screen `.impact { padding: 44px 0 48px }` put the
+band's padding back above the panels below 861px (a 94px gap under the copy where
+every other width measured 50), and `.impact .value` held the numerals at the
+band's 51px in a 157px panel with `$6.9M` 6px outside its own box. Same family as
+the `.prose ul li::before` gold dots, where the longer-looking selector was the
+one that lost. Count the classes; a test asserts no rule in that variant carries
+only one.
 
 **Two content-driven edges cannot be made to meet across a float.** The ask on
 `/programs` was that the picture closing the copy END level with the bottom of
