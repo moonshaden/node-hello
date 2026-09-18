@@ -83,6 +83,42 @@ test('the stylesheet and the script are requested with a version of their conten
   });
 });
 
+// The stylesheet and the script carry a content hash; images did not, and it
+// reached the client. The lion mark was replaced in place -- same filename, navy
+// plate swapped for a transparent one -- and they still saw the navy version,
+// because nothing about the URL had changed and their browser served what it
+// already had. The deployed bytes were right the whole time, which is exactly
+// what makes this hard to spot: every server-side check passes.
+//
+// This reads the RENDERED pages, not the templates, because a template can be
+// right while a route hands it a value that never went through the helper.
+test('every image the site renders carries a content hash', async () => {
+  await withServer(async (base) => {
+    const routes = [
+      '/', '/scholarships', '/recipients', '/about', '/faq', '/donate', '/contact',
+      '/board', '/programs', '/community', '/privacy',
+      '/scholarships/leo-foundation-scholarship',
+      '/scholarships/gcu-guild-continuing-student-scholarship',
+      '/scholarships/richard-mccurdy-club-sports-golf-scholarship',
+      '/scholarships/evan-c-gary-memorial-scholarship',
+    ];
+
+    let checked = 0;
+    for (const route of routes) {
+      const html = await (await fetch(`${base}${route}`)).text();
+      for (const [, src] of html.matchAll(/<img[^>]+src="([^"]+)"/g)) {
+        if (!src.includes('/img/')) continue;   // not one of ours
+        checked += 1;
+        assert.ok(
+          src.includes('?v='),
+          `${route}: ${src} is served without a content hash, so replacing that file in place never reaches a returning visitor`,
+        );
+      }
+    }
+    assert.ok(checked >= 20, `expected to check a good number of images, saw ${checked}`);
+  });
+});
+
 test('every public page renders', async () => {
   await withServer(async (base) => {
     for (const route of ['/', '/scholarships', '/recipients', '/about', '/faq', '/donate', '/contact']) {

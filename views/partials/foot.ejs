@@ -10,14 +10,14 @@
             1fr track and is wider -- which is what this wrapper is for. Sizing
             the mark then stays a single height value. %>
         <div class="foot-sign">
-          <img class="foot-mark" src="/img/brand/leo-mark-lion.png"
+          <img class="foot-mark" src="<%= assetUrl('/img/brand/leo-mark-lion.png') %>"
                alt="" aria-hidden="true" width="520" height="380" loading="lazy">
           <%# The wordmark below is the accessible name of the group, so the
               mark above it is decorative -- otherwise both announce the same
               thing. The artwork is cropped to the name and its two rules; the
               strapline it used to carry is set in type underneath, the way the
               masthead does it, so it stays sharp and can be restyled in CSS. %>
-          <img class="foot-lockup" src="/img/brand/leo-wordmark-footer.png"
+          <img class="foot-lockup" src="<%= assetUrl('/img/brand/leo-wordmark-footer.png') %>"
                alt="<%= site.name %>"
                width="679" height="101" loading="lazy">
           <span class="foot-strap">Leadership &middot; Education &middot; Opportunity</span>

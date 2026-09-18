@@ -7,7 +7,7 @@ $row = ($cardLayout ?? '') === 'row';
 ?>
 <article class="card recipient<?= $row ? ' recipient-row' : '' ?>">
   <?php if (!empty($recipient['photoUrl'])): ?>
-    <img class="portrait" src="<?= e(link_url($recipient['photoUrl'], $basePath)) ?>" alt="<?= e($recipient['name'] ?? '') ?>" loading="lazy" width="800" height="1000">
+    <img class="portrait" src="<?= e(asset_url($recipient['photoUrl'], $basePath)) ?>" alt="<?= e($recipient['name'] ?? '') ?>" loading="lazy" width="800" height="1000">
   <?php else: ?>
     <div class="portrait portrait-fallback"><?= e(mb_strtoupper(mb_substr(trim((string) ($recipient['name'] ?? '?')), 0, 1))) ?></div>
   <?php endif; ?>

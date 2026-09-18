@@ -8,7 +8,7 @@
 %>
 <article class="card program<%= flip ? ' program-flip' : '' %>">
   <% if (program.photoUrl) { %>
-    <img class="program-photo" src="<%= program.photoUrl %>" alt="<%= program.alt || program.name %>" loading="lazy" width="800" height="800">
+    <img class="program-photo" src="<%= assetUrl(program.photoUrl) %>" alt="<%= program.alt || program.name %>" loading="lazy" width="800" height="800">
   <% } %>
   <h3 class="program-name" id="<%= program.slug %>"><%= program.name %></h3>
   <div class="program-body"><%- markdown.render(program.body) %></div>

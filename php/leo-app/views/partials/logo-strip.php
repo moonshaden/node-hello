@@ -22,12 +22,12 @@ $inline = !empty($stripInline);
   <div class="logo-track">
     <ul class="logo-run">
       <?php foreach ($logos as $logo): ?>
-        <li><img src="<?= e(link_url($logo['src'] ?? '', $basePath)) ?>" alt="<?= e($logo['alt'] ?? '') ?>" width="200" height="200" loading="lazy"></li>
+        <li><img src="<?= e(asset_url($logo['src'] ?? '', $basePath)) ?>" alt="<?= e($logo['alt'] ?? '') ?>" width="200" height="200" loading="lazy"></li>
       <?php endforeach; ?>
     </ul>
     <ul class="logo-run" aria-hidden="true">
       <?php foreach ($logos as $logo): ?>
-        <li><img src="<?= e(link_url($logo['src'] ?? '', $basePath)) ?>" alt="" width="200" height="200" loading="lazy"></li>
+        <li><img src="<?= e(asset_url($logo['src'] ?? '', $basePath)) ?>" alt="" width="200" height="200" loading="lazy"></li>
       <?php endforeach; ?>
     </ul>
   </div>

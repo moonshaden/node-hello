@@ -25,7 +25,7 @@
       <div class="hero-split">
       <figure class="hero-student">
         <div class="hero-student-stage">
-          <img class="hero-student-cut" src="<?= e(link_url($heroStudent['cutoutUrl'], $basePath)) ?>"
+          <img class="hero-student-cut" src="<?= e(asset_url($heroStudent['cutoutUrl'], $basePath)) ?>"
                alt="<?= e($heroStudent['name'] ?? '') ?>, holding up a Grand Canyon University pin"
                width="640" height="832">
         </div>
@@ -51,7 +51,7 @@
         <ul class="hero-rail" data-hero-rail data-hero-interval="5000" data-hero-visible="2">
           <?php foreach ($heroRail as $index => $person): $line = \Leo\Content::heroLine($person); ?>
             <li class="hero-rail-card<?= $index < 2 ? ' is-shown' : '' ?>"<?= $index < 2 ? '' : ' hidden' ?>>
-              <img class="hero-rail-photo" src="<?= e(link_url($person['photoUrl'] ?? '', $basePath)) ?>" alt="<?= e($person['name'] ?? '') ?>"
+              <img class="hero-rail-photo" src="<?= e(asset_url($person['photoUrl'] ?? '', $basePath)) ?>" alt="<?= e($person['name'] ?? '') ?>"
                    width="96" height="96"<?= $index < 2 ? '' : ' loading="lazy"' ?>>
               <div class="hero-rail-text">
                 <?php if ($line['quoted']): ?>

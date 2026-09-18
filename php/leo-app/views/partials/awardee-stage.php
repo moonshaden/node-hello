@@ -18,7 +18,7 @@
     <article class="awardee" data-awardee data-index="<?= (int) $i ?>"<?= $i === 0 ? '' : ' aria-hidden="true"' ?>>
       <div class="awardee-frame">
         <?php if (!empty($person['photoUrl'])): ?>
-          <img class="awardee-portrait" src="<?= e(link_url($person['photoUrl'], $basePath)) ?>" alt="<?= e($person['name'] ?? '') ?>"
+          <img class="awardee-portrait" src="<?= e(asset_url($person['photoUrl'], $basePath)) ?>" alt="<?= e($person['name'] ?? '') ?>"
                width="800" height="1000" loading="<?= $i < 2 ? 'eager' : 'lazy' ?>">
         <?php else: ?>
           <div class="awardee-portrait portrait-fallback"><?= e(mb_strtoupper(mb_substr(trim((string) ($person['name'] ?? '?')), 0, 1))) ?></div>

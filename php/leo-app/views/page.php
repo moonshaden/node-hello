@@ -82,7 +82,7 @@ $gallery = is_array($page['gallery'] ?? null) ? $page['gallery'] : [];
     <?php if ($gallery !== []): ?>
       <div class="gallery">
         <?php foreach ($gallery as $shot): ?>
-          <img src="<?= e(link_url($shot['src'], $basePath)) ?>" alt="<?= e($shot['alt'] ?? '') ?>" loading="lazy">
+          <img src="<?= e(asset_url($shot['src'], $basePath)) ?>" alt="<?= e($shot['alt'] ?? '') ?>" loading="lazy">
         <?php endforeach; ?>
       </div>
     <?php endif; ?>

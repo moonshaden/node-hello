@@ -29,6 +29,10 @@ const adminRoutes = require('./routes/admin');
 const assetVersions = new Map();
 
 function assetUrl(urlPath) {
+  // A URL that is not app-absolute is somebody else's (an external logo, say),
+  // so it passes through untouched. This is what makes assetUrl a safe swap for
+  // link_url wherever an image is rendered.
+  if (typeof urlPath !== 'string' || urlPath === '' || urlPath[0] !== '/') return urlPath || '';
   if (!assetVersions.has(urlPath)) {
     const file = path.join(__dirname, '..', 'public', urlPath);
     let version = '';

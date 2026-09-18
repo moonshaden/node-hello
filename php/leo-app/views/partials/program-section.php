@@ -9,7 +9,7 @@ $isFlipped = !empty($flip);
 ?>
 <article class="card program<?= $isFlipped ? ' program-flip' : '' ?>">
   <?php if (!empty($program['photoUrl'])): ?>
-    <img class="program-photo" src="<?= e(link_url($program['photoUrl'], $basePath)) ?>" alt="<?= e($program['alt'] ?? $program['name'] ?? '') ?>" loading="lazy" width="800" height="800">
+    <img class="program-photo" src="<?= e(asset_url($program['photoUrl'], $basePath)) ?>" alt="<?= e($program['alt'] ?? $program['name'] ?? '') ?>" loading="lazy" width="800" height="800">
   <?php endif; ?>
   <h3 class="program-name" id="<?= e($program['slug'] ?? '') ?>"><?= e($program['name'] ?? '') ?></h3>
   <div class="program-body"><?= md($program['body'] ?? '') ?></div>

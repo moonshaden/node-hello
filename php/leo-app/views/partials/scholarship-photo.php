@@ -28,7 +28,7 @@
 <div class="scholarship-photos">
   <?php foreach ($photos as $photo): ?>
     <figure class="scholarship-photo">
-      <img src="<?= e(link_url($photo['src'] ?? '', $basePath)) ?>" alt="<?= e($photo['alt'] ?? '') ?>"
+      <img src="<?= e(asset_url($photo['src'] ?? '', $basePath)) ?>" alt="<?= e($photo['alt'] ?? '') ?>"
            <?= !empty($photo['width']) && !empty($photo['height']) ? 'width="' . (int) $photo['width'] . '" height="' . (int) $photo['height'] . '"' : '' ?> loading="lazy">
     </figure>
   <?php endforeach; ?>

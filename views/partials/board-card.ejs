@@ -11,7 +11,7 @@
 <% const story = excerpt(member.bio); %>
 <article class="card board-member<%= isLead ? ' board-lead' : '' %>">
   <% if (member.photoUrl) { %>
-    <img class="portrait portrait-round" src="<%= member.photoUrl %>" alt="<%= member.name %>" loading="lazy" width="800" height="800">
+    <img class="portrait portrait-round" src="<%= assetUrl(member.photoUrl) %>" alt="<%= member.name %>" loading="lazy" width="800" height="800">
   <% } else { %>
     <div class="portrait portrait-round portrait-fallback"><%= (member.name || '?').trim().charAt(0).toUpperCase() %></div>
   <% } %>

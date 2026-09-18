@@ -27,7 +27,7 @@
 <div class="scholarship-photos">
   <% photos.forEach(function (photo) { %>
     <figure class="scholarship-photo">
-      <img src="<%= photo.src %>" alt="<%= photo.alt || '' %>"
+      <img src="<%= assetUrl(photo.src) %>" alt="<%= photo.alt || '' %>"
            <%- photo.width && photo.height ? `width="${photo.width}" height="${photo.height}"` : '' %> loading="lazy">
     </figure>
   <% }) %>

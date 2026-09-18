@@ -82,7 +82,7 @@
     <% if (gallery.length) { %>
       <div class="gallery">
         <% gallery.forEach(function (shot) { %>
-          <img src="<%= shot.src %>" alt="<%= shot.alt %>" loading="lazy">
+          <img src="<%= assetUrl(shot.src) %>" alt="<%= shot.alt %>" loading="lazy">
         <% }) %>
       </div>
     <% } %>

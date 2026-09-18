@@ -23,7 +23,7 @@
       <div class="hero-split">
       <figure class="hero-student">
         <div class="hero-student-stage">
-          <img class="hero-student-cut" src="<%= heroStudent.cutoutUrl %>"
+          <img class="hero-student-cut" src="<%= assetUrl(heroStudent.cutoutUrl) %>"
                alt="<%= heroStudent.name %>, holding up a Grand Canyon University pin"
                width="640" height="832">
         </div>
@@ -55,7 +55,7 @@
                 Do not write an EJS open tag inside a comment either -- the
                 tokenizer reads it as a real tag and the template stops parsing. %>
             <li class="hero-rail-card<%= index < 2 ? ' is-shown' : '' %>"<%- index < 2 ? '' : ' hidden' %>>
-              <img class="hero-rail-photo" src="<%= person.photoUrl %>" alt="<%= person.name %>"
+              <img class="hero-rail-photo" src="<%= assetUrl(person.photoUrl) %>" alt="<%= person.name %>"
                    width="96" height="96"<%- index < 2 ? '' : ' loading="lazy"' %>>
               <div class="hero-rail-text">
                 <% if (line.quoted) { %>

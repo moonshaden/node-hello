@@ -1379,6 +1379,40 @@ test('no page body contains a markdown image', function () {
 // are split apart here and stacked -- a three-up composite in a 344px column
 // renders each face about 40px across. So the record holds an ARRAY, and this
 // pins the data, the files and the CSS trap the stack walked into.
+// The stylesheet and the script carry a content hash; images did not, and the
+// consequence showed up on a real page. The lion mark was replaced in place --
+// same filename, navy plate swapped for a transparent one -- and the client
+// still saw the navy version, because nothing about the URL had changed and
+// their browser served what it already had. The deployed bytes were correct the
+// whole time, which is what makes this class hard to see from here.
+//
+// The rendered-output check lives in the node suite, which can serve a page;
+// this is the template-level half, and the cross-build render diff ties the two
+// builds together.
+test('no view renders an image without a content hash', function () {
+    $root = dirname(__DIR__, 2);
+    $views = [];
+    $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($root . '/php/leo-app/views'));
+    foreach ($it as $f) {
+        if ($f->isFile() && substr($f->getFilename(), -4) === '.php') {
+            $views[] = $f->getPathname();
+        }
+    }
+    ok(count($views) > 5, 'expected to find the view files, saw ' . count($views));
+
+    foreach ($views as $view) {
+        foreach (file($view) as $i => $line) {
+            if (strpos($line, '<img') === false && strpos($line, 'src=') === false) {
+                continue;
+            }
+            ok(
+                strpos($line, 'src="<?= e(link_url(') === false,
+                str_replace($root . '/', '', $view) . ':' . ($i + 1) . ' builds an image src with link_url, which carries no content hash'
+            );
+        }
+    }
+});
+
 test('the memorial scholarships carry their photographs, sized and described', function () {
     $root = dirname(__DIR__, 2);
 

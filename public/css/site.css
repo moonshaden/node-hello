@@ -1121,7 +1121,13 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 
 /* The row stretches so the photographs have a bottom to reach. `.split-side` has
    no in-flow content, so it is the copy that decides how tall that is. */
-.split { display: grid; gap: 40px; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); align-items: stretch; }
+/* The right track is what caps every picture on these pages: at 2fr/1fr it was
+   344px, and a logo at 344px read small even with a 700px source behind it. At
+   1.5fr/1fr it is 413px -- every picture 20% bigger, the award card with it, and
+   the copy column down from 688 to 619 which tightens its measure rather than
+   hurting it. If a picture still reads small, this number is the one to change;
+   nothing is gained by upscaling the file. */
+.split { display: grid; gap: 40px; grid-template-columns: minmax(0, 1.5fr) minmax(280px, 1fr); align-items: stretch; }
 
 
 /* ---------- editable pages: the copy runs the whole column ----------

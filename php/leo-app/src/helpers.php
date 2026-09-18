@@ -53,6 +53,13 @@ function asset_url(string $path, string $basePath): string
 {
     static $versions = [];
 
+    // A URL that is not app-absolute is somebody else's (an external logo, say),
+    // so it passes through untouched. This is what makes asset_url a safe swap
+    // for link_url wherever an image is rendered.
+    if ($path === '' || $path[0] !== '/') {
+        return $path;
+    }
+
     if (!array_key_exists($path, $versions)) {
         $root = defined('LEO_PUBLIC_DIR') ? LEO_PUBLIC_DIR : dirname(__DIR__, 2) . '/public_html';
         $file = $root . $path;

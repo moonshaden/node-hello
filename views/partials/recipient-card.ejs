@@ -5,7 +5,7 @@
 <% const row = typeof cardLayout !== 'undefined' && cardLayout === 'row'; %>
 <article class="card recipient<%= row ? ' recipient-row' : '' %>">
   <% if (recipient.photoUrl) { %>
-    <img class="portrait" src="<%= recipient.photoUrl %>" alt="<%= recipient.name %>" loading="lazy" width="800" height="1000">
+    <img class="portrait" src="<%= assetUrl(recipient.photoUrl) %>" alt="<%= recipient.name %>" loading="lazy" width="800" height="1000">
   <% } else { %>
     <div class="portrait portrait-fallback"><%= (recipient.name || '?').trim().charAt(0).toUpperCase() %></div>
   <% } %>
