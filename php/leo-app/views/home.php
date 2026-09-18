@@ -160,17 +160,7 @@
       <p class="eyebrow">Our impact</p>
       <h2><?= e($site['impactTitle'] ?? 'What the scholarships have added up to.') ?></h2>
     </div>
-    <div class="impact-grid">
-      <?php foreach ($site['impact'] as $item): ?>
-        <div>
-          <div class="value"><?= e($item['value'] ?? '') ?></div>
-          <div class="label"><?= e($item['label'] ?? '') ?></div>
-          <?php if (!empty($item['detail'])): ?>
-            <p class="detail"><?= e($item['detail']) ?></p>
-          <?php endif; ?>
-        </div>
-      <?php endforeach; ?>
-    </div>
+    <?php $app->partial('impact-figures', ['impact' => $site['impact']]); ?>
   </div>
 </section>
 <?php endif; ?>

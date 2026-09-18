@@ -1898,6 +1898,79 @@ test('the page picture and the program rows are built the way they measure', fun
     }
 });
 
+// The impact figures render in two places now -- the homepage band and, for a
+// page record that asks for them, under that page's copy. One partial, so the
+// numbers cannot drift; and a variant whose every rule needs TWO classes,
+// because a single one only ties with the band rules it is undoing.
+test('the impact figures are one component in both places', function () {
+    $root = dirname(__DIR__, 2);
+
+    // Neither homepage may keep a second copy of the grid markup.
+    foreach ([
+        ['views/home.ejs', "include('partials/impact-figures'"],
+        ['php/leo-app/views/home.php', "partial('impact-figures'"],
+        ['views/page.ejs', "include('partials/impact-figures'"],
+        ['php/leo-app/views/page.php', "partial('impact-figures'"],
+    ] as [$view, $call]) {
+        $src = file_get_contents($root . '/' . $view);
+        ok(str_contains($src, $call), $view . ' does not use the shared impact partial');
+        ok(
+            !preg_match('/<div class="value">/', $src),
+            $view . ' carries its own copy of the impact markup, which will drift'
+        );
+    }
+
+    // The page variant needs the `.impact` ancestor -- the gold numerals and the
+    // white labels are scoped to it, so the grid alone renders unstyled.
+    foreach (['views/page.ejs', 'php/leo-app/views/page.php'] as $view) {
+        $src = file_get_contents($root . '/' . $view);
+        ok(str_contains($src, 'impact impact-inline'), $view . ' renders the grid without the styling it is scoped to');
+    }
+
+    // The board page is the one that asks for them today.
+    $seed = json_decode(file_get_contents(__DIR__ . '/../leo-app/data/content.json'), true);
+    $board = null;
+    foreach ($seed['pages'] as $page) {
+        if (($page['slug'] ?? '') === 'board') {
+            $board = $page;
+        }
+    }
+    ok(!empty($board['impactFigures']), 'the board page no longer asks for the impact figures');
+    ok(count($seed['site']['impact'] ?? []) === 4, 'the four impact figures are not in settings');
+
+    foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
+        $css = file_get_contents($root . '/' . $sheet);
+
+        // EVERY inline rule needs both classes. One is (0,1,0) -- a tie with the
+        // `.impact` rules it undoes -- and source order then decides, which put
+        // the band's 44px of padding back above the panels below 861px and left
+        // the numerals at 51px in a 157px panel with `$6.9M` past its own box.
+        ok(
+            preg_match('/\\.impact\\.impact-inline \\{[^}]*padding: 0;/s', $css) === 1,
+            $sheet . ': the inline figures do not outrank the band padding'
+        );
+        ok(
+            preg_match('/\\.impact\\.impact-inline \\.value \\{[^}]*font-size:/s', $css) === 1,
+            $sheet . ': the inline numerals do not outrank the band numerals'
+        );
+        ok(
+            preg_match('/^\\.impact-inline[ .:]/m', $css) !== 1,
+            $sheet . ': an inline rule carries one class, so it only ties with the band'
+        );
+        // The panel is the container, not the viewport: this sits in a
+        // `.page-flow` column, where the two diverge -- 181px at a 1280 viewport
+        // and 155px at 862.
+        ok(
+            preg_match('/\\.impact\\.impact-inline \\.impact-grid > div \\{[^}]*container-type: inline-size;/s', $css) === 1,
+            $sheet . ': the panels are not containers, so nothing inside can size off them'
+        );
+        ok(
+            preg_match('/\\.impact\\.impact-inline \\.value \\{[^}]*vw/s', $css) !== 1,
+            $sheet . ': the inline numerals size off the viewport, which is not this column'
+        );
+    }
+});
+
 echo "\n" . str_repeat('-', 46) . "\n";
 echo ($failed === 0 ? "ALL PASSED" : "FAILURES") . ": $passed passed, $failed failed\n\n";
 exit($failed === 0 ? 0 : 1);

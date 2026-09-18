@@ -51,6 +51,17 @@ $hasPicture = !empty($page['picture']['src']);
         <?php $app->partial('logo-strip', ['logos' => $logos, 'stripSize' => 'large', 'stripInline' => true]); ?>
       <?php endif; ?>
 
+      <?php /* A page can carry the impact figures under its copy -- the same
+          four panels the homepage band shows, from the same `site.impact`, so
+          the numbers can never drift between the two. `.impact` is the ancestor
+          the gold numerals are scoped to; `.impact-inline` drops the band's
+          padding, border and watermark. Mirrored in page.ejs. */ ?>
+      <?php if (!empty($page['impactFigures']) && !empty($site['impact'])): ?>
+        <div class="impact impact-inline">
+          <?php $app->partial('impact-figures', ['impact' => $site['impact']]); ?>
+        </div>
+      <?php endif; ?>
+
       <?php /* A page can close its copy with a photograph. It sits INSIDE the
           prose column, directly under the last line of copy, the way the inline
           logo strip does -- and it ends level with the bottom of the aside card,

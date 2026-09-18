@@ -547,6 +547,41 @@ a.slide:hover .slide-cta { color: #fff; border-bottom-color: #fff; }
 }
 .impact-grid > div { background: #16304a; padding: 20px; }
 
+/* The same figures inside a page's copy column rather than in the homepage's
+   full-bleed band. `.impact` has to stay on an ancestor -- the gold numerals and
+   the white labels are scoped to it -- so this variant only undoes what the band
+   itself contributes. The column is about two thirds the width of the homepage's
+   `.wrap`, so the panels are told to fit four across at a smaller minimum and
+   the numerals come down to suit; left at the band's size, `$6.9M` overflowed
+   its panel. */
+/* Every one of these carries both classes. A single `.impact-inline` is (0,1,0)
+   -- the same weight as the `.impact` rules it is undoing, including the one in
+   the narrow-screen query at the foot of this block, which therefore won on
+   source order and put the band's 44px of padding back above the panels below
+   861px. */
+.impact.impact-inline {
+  background: none; border-top: 0; padding: 0; margin: 50px 0 0;
+  border-radius: 16px;
+}
+.impact.impact-inline::after { display: none; }   /* no room behind the panels here */
+.impact.impact-inline .impact-grid { grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); }
+.impact.impact-inline .impact-grid > div { padding: 16px; container-type: inline-size; }
+/* Two classes here as well, and for the same reason: `.impact-inline .value` is
+   (0,1,1), the same as `.impact .value` below it, which therefore won on source
+   order and left the numerals at the band's 51px in a 157px panel -- `$6.9M`
+   ran 6px past its own box. Counting specificity matters more than it looks. */
+.impact.impact-inline .value {
+  /* The panel is the container, not the viewport: this sits in a `.page-flow`
+     column, where the two diverge -- the panel is 181px at a 1280 viewport and
+     155px at 862, because the layout changes what the column gets before the
+     viewport gets narrow. The plain size is first so a browser without
+     container units still gets something that fits; `cqi` then only ever takes
+     it down. */
+  font-size: 2.1rem;
+  font-size: min(2.1rem, 26cqi);
+}
+.impact.impact-inline .detail { margin-bottom: 0; }
+
 .impact .value {
   font-family: var(--serif);
   font-size: clamp(2.5rem, 5vw, 3.5rem);

@@ -1,0 +1,25 @@
+<%# The impact figures — the four panels the homepage carries in its navy band.
+
+    Extracted so a page can carry the same figures under its copy without a
+    second copy of the markup drifting from the first. The homepage includes it
+    inside its own `section.impact`, under the heading; a page record that sets
+    `impactFigures: true` gets it inside the copy column, wrapped in
+    `.impact.impact-inline` -- the `.impact` ancestor is what the gold numerals
+    and the white labels are scoped to, and the inline variant drops the band's
+    padding, its border and its watermark.
+
+    The numbers are the counter targets transcribed from the live site; they
+    live in `site.impact` and are editable in `/admin` under settings.
+
+    Mirrored in impact-figures.php. %>
+<div class="impact-grid">
+  <% impact.forEach(function (item) { %>
+    <div>
+      <div class="value"><%= item.value %></div>
+      <div class="label"><%= item.label %></div>
+      <% if (item.detail) { %>
+        <p class="detail"><%= item.detail %></p>
+      <% } %>
+    </div>
+  <% }) %>
+</div>

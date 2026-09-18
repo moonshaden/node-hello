@@ -477,6 +477,31 @@ test('the programs page renders its photograph inside the copy column', async ()
   });
 });
 
+// The impact figures appear on the homepage and, since the client asked for
+// them there, under the copy on /board. One partial feeds both, so this reads
+// the RENDERED pages: a template can be right while a route hands it a
+// different array, and two sets of numbers on one site is exactly the drift the
+// live WordPress site already has between its own pages.
+test('the impact figures read the same on the homepage and on /board', async () => {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  const board = seed.pages.find((p) => p.slug === 'board');
+  assert.ok(board.impactFigures, 'the board page does not ask for the impact figures');
+
+  await withServer(async (base) => {
+    const home = await (await fetch(`${base}/`)).text();
+    const page = await (await fetch(`${base}/board`)).text();
+    assert.match(page, /class="impact impact-inline"/, 'the board page renders the grid unstyled');
+    for (const item of seed.site.impact) {
+      assert.ok(home.includes(`<div class="value">${item.value}</div>`), `the homepage lost ${item.value}`);
+      assert.ok(page.includes(`<div class="value">${item.value}</div>`), `/board lost ${item.value}`);
+      assert.ok(page.includes(`<div class="label">${item.label}</div>`), `/board lost the label for ${item.value}`);
+    }
+    // The band's heading belongs to the homepage; the page carries the panels
+    // only, which is what was asked for.
+    assert.doesNotMatch(page, /impact-head/, '/board carries the homepage band heading too');
+  });
+});
+
 // The header carried a CSS placeholder mark for months. Now that real artwork
 // is in the repo, nothing should render the site's identity from type again.
 test('the real lockup and favicons are served, not a placeholder', async () => {
