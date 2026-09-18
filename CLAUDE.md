@@ -38,7 +38,7 @@ reaches real students and real donors. So:
   you did. Report the failure with the evidence, not a reassuring summary.
 
 
-## Where this left off — 2026-09-18, head `06e990e`
+## Where this left off — 2026-09-18, head `b35c06b`
 
 Several sessions work this branch at once. Pull before starting, and expect the
 head to have moved mid-task. PR #3 is **merged**; the open one is **PR #4**
@@ -119,8 +119,12 @@ deployed build subdomain):
   clear the floated card.
 - **A scholarship's past recipients are horizontal rows.** The card is shared
   with `/recipients` and only the scholarship page passes `cardLayout: 'row'`,
-  which drops the portrait from filling the column (646x808) to 140x175 beside
-  the text. The four-card block went 4,663px to 1,540px. Below 560px it stacks.
+  which drops the portrait from filling the column (646x808) to a **265px**
+  column beside the text. The four-card block went 4,663px to 1,540px. The
+  portrait runs the **full height of the text** — `align-self: stretch` plus
+  `height: 100%` plus `object-fit: cover`, measured at 0px difference on all
+  four cards. Stacking is keyed to the **list's own width**, not the viewport:
+  `@container (max-width: 600px)` on `.recipient-rows`. See *Gotchas* for both.
 
 **The debt this branch carries, stated plainly:** *nothing in either suite covers
 the hero rail or the logo strip.* The rotation, the one-at-a-time slot logic, the
@@ -404,6 +408,43 @@ sheet:
   context, so it sits beside the card by itself. Adding `clear` there put it
   below the card and opened a 352px gap — the gap the move was meant to close.
   A test asserts that rule has no `clear`.
+
+**Putting a component inside `.prose` hands it every rule `.prose` has.** The
+inline logo strip is a `ul` of `li`, and `.prose ul li::before` paints a 6px gold
+dot and indents 22px — so every one of the 26 marks arrived with a bullet beside
+it. Two traps in one:
+
+- **`list-style: none` does not remove it.** The dot is a generated
+  pseudo-element, not a list marker; the two have nothing to do with each other.
+  `.logo-run` has carried `list-style: none` since the day it was written and the
+  dots appeared anyway.
+- **The override needs the specificity.** `.prose ul li::before` is (0,1,3), so
+  `.logo-run li::before` at (0,1,2) loses. `.prose .logo-run li::before` is
+  (0,2,2) and wins. Counting these matters more than it looks: the rule that
+  reads more specific (three elements) is the one that loses.
+
+The check is to read the *computed* `::before` on the items, not to look at the
+markup — `content: none` on all 52 (26 logos, twice) is the proof, and injecting
+a plain `li` into the same `.prose` afterwards is what proves ordinary markdown
+lists still get their dot.
+
+**A stretched grid item needs a real `height` as well.** `align-self: stretch`
+gives the *box* the row's height; a replaced element like `img` keeps drawing at
+its own ratio inside it, so the picture stayed short while its box grew. The pair
+that works is `align-self: stretch` **and** `height: 100%` **and**
+`object-fit: cover` — the first sizes the box, the second makes the image take
+it, the third stops the crop distorting. Measured to 0px against the text on all
+four recipient rows.
+
+**Stack a component in a `.split` track by its own width, not the viewport's.**
+The recipient rows live in the scholarship page's narrow column, so a viewport
+media query reads the wrong number: the card is **532px at a 900px viewport** and
+**732px at 780px**, because the layout changes what the track gets before the
+viewport gets narrow. A `@media (max-width: 560px)` therefore stacked at the
+wrong moments in both directions. `container-type: inline-size` on
+`.recipient-rows` with `@container (max-width: 600px)` asks the question the
+layout actually answers. Anything inside a `.split` or `.page-flow` column has
+the same problem.
 
 **Piping a test suite throws away its exit code.** `php php/test/run.php | tail -2
 && git commit` commits whatever the suite did, because `tail` exits 0. A commit

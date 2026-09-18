@@ -54,7 +54,64 @@ many rows the text produces, everything else pinned to column two.
   170 → 190 → 205. Scroll 56.5 px/s → 31.9. Three fully visible at every width
   from 1440 down to 600, two at 390.
 - Scholarship recipients: portrait 646x808 → 140x175, card 688x1165 → 688x389,
-  the four-card block **4,663px → 1,540px**.
+  the four-card block **4,663px → 1,540px**. Then the portrait column 140 →
+  **265px** and the picture to the text's full height, 0px difference on all
+  four.
+
+## Then: widen the portrait and match its height (`290f81e`)
+
+> "make recipient column 125px wider and make pic height match the text"
+
+Both halves were literal. 140 + 125 = **265px**, so the column is `265px
+minmax(0, 1fr)` and the portrait `width: 265px`.
+
+"Match the text" was the interesting one. The portrait already spanned the rows
+with `align-self: stretch`, so its *box* was the full height of the text — and
+the picture inside it was not. A replaced element keeps drawing at its own
+aspect ratio however tall its box gets, so the image sat short in a stretched
+box and looked exactly like the stretch had not worked. Three declarations make
+the pair behave: `align-self: stretch` sizes the box, `height: 100%` makes the
+image take it, `object-fit: cover` stops the crop distorting. Measured at **0px**
+difference against the text on all four cards.
+
+Widening the column then broke the stacking breakpoint, and the reason is worth
+keeping. The rows sit in the scholarship page's `.split` column, so the viewport
+is not the number that matters: the card measures **532px at a 900px viewport**
+and **732px at 780px**, because the layout gives the track more of a narrower
+page. `@media (max-width: 560px)` therefore stacked too early at one width and
+too late at another. Moved to `container-type: inline-size` on `.recipient-rows`
+with `@container (max-width: 600px)`. Row at 1440 / 1280 / 1120 / 1024 / 780,
+stacked at 900 / 600 / 480 / 390.
+
+## Then: the gold dots on the community strip (`b35c06b`)
+
+> "remove gold dots from logo scroller on community partnerships page"
+
+The inline strip renders **inside `.prose`** — that is the whole point of the
+inline variant, it sits in the copy column under the last line. Which means it
+inherits `.prose ul li::before`: a 6px gold dot at `--gold-bright`, absolutely
+positioned, with 22px of indent. The strip is a `ul` of `li`, so all 26 marks
+got one.
+
+Two things about this that are easy to get wrong:
+
+- `.logo-run` has carried `list-style: none` since it was written, and the dots
+  appeared anyway. A generated pseudo-element is not a list marker; turning
+  markers off does nothing to it.
+- `.logo-run li::before` would not have fixed it either. `.prose ul li::before`
+  is (0,1,3) and that is (0,1,2), so the *longer* selector loses.
+  `.prose .logo-run li::before` is (0,2,2) and wins.
+
+Verified by reading the computed `::before`, not the markup: before, 6x6,
+`rgb(217, 164, 65)`, padding-left 22px; after, `content: none` on all **52**
+items (26 logos, twice, for the seamless loop), padding 0, image flush with the
+item's left edge. Then a plain `li` injected into the same `.prose` still drew
+its 6px gold dot at 22px — so an admin's ordinary markdown list is untouched,
+which is the thing a blunter fix would have broken.
+
+Two assertions in the PHP suite, which loops over both sheets. Watched red with
+the rule pulled ("the prose bullet is back on the inline strip logos") and green
+with it back.
 
 ## Where to pick up
 
@@ -62,4 +119,4 @@ many rows the text produces, everything else pinned to column two.
    tests for its markup, its sharing and its CSS, but nothing exercises the
    rotation or the marquee. The hero rail still has nothing at all.
 2. **The About figures** — still waiting on the client; see `CLAUDE.md` item 3.
-3. **PR #4's body** is stale again, seventeen commits behind.
+3. **PR #4's body** is stale again, nineteen commits behind.
