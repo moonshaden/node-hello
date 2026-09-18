@@ -38,7 +38,7 @@ reaches real students and real donors. So:
   you did. Report the failure with the evidence, not a reassuring summary.
 
 
-## Where this left off — 2026-09-16, head `7c47917`
+## Where this left off — 2026-09-17, head `bc5219e`
 
 Several sessions work this branch at once. Pull before starting, and expect the
 head to have moved mid-task. PR #3 is **merged**; the open one is **PR #4**
@@ -47,11 +47,11 @@ head.
 
 `docs/sessions/` holds a log per working session — what was asked, what was tried
 and rejected, and what went wrong. This file is the state; those are the reasons.
-The most recent is `docs/sessions/2026-09-15-homepage-rework.md`.
+The most recent is `docs/sessions/2026-09-16-privacy-footer-about.md`.
 
-**Landed and verified** (87 node / 80 PHP tests, PHP lint clean, cross-build
-render diff zero on all ten public pages, and every change byte-compared against
-the deployed build subdomain):
+**Landed and verified** (90 node / 91 PHP tests, PHP lint clean, cross-build
+render diff zero on all **eleven** public pages — `/privacy` is the eleventh —
+and every change byte-compared against the deployed build subdomain):
 
 - `/board`, `/programs`, `/community` — all three transcribed pages, shipped in
   #3. See *Content accuracy*.
@@ -99,6 +99,19 @@ the deployed build subdomain):
   untranscribed board-governance sentence and the "5,685 students to $6.9
   million" pair the client had picked — neither live page states a figure. See
   *Content accuracy*, and item 3 below.
+- **`/privacy` is the live privacy policy, verbatim** — 1,030 words, diffed word
+  for word against the live page. It is linked from the footer under Contact.
+  **There is no terms of service to transcribe**; see *Content accuracy*.
+- **The footer is a stacked sign-off over three spread columns.** The lion
+  (128px) sits centred over the wordmark, the strapline under it is type rather
+  than baked into the raster, and the menus are sized to their content with the
+  leftover width spread between the columns and centred on the brand column's
+  middle. Every number in there was measured; see *Gotchas* before changing one.
+- **The contact cards are sized from the email address**, which is the widest
+  thing in them and has no space to break on.
+- **The donor strip is one shared partial**, used by the homepage at 58px and by
+  any page with `logoStrip: true` at up to 118px. `/community` uses the large
+  variant to fill the gap its short body left.
 
 **The debt this branch carries, stated plainly:** *nothing in either suite covers
 the hero rail or the logo strip.* The rotation, the one-at-a-time slot logic, the
@@ -197,8 +210,8 @@ once in `php/leo-app/views` + `php/public_html/css`, once in `views/` +
 ## Commands
 
 ```bash
-npm test                                    # 87 tests
-php php/test/run.php                        # 80 tests
+npm test                                    # 90 tests
+php php/test/run.php                        # 91 tests
 find php -name '*.php' -exec php -l {} \;   # lint
 
 ADMIN_PASSWORD='...' npm start              # Node build, :3000
@@ -375,6 +388,19 @@ card, so it gets `display: flow-root`; something like a photograph does not, and
 wants `clear: right` so it keeps one width instead of shrinking whenever it
 lands level with the card. Measured on a 720px figure, where the overlap showed
 at 1024px only.
+
+**Piping a test suite throws away its exit code.** `php php/test/run.php | tail -2
+&& git commit` commits whatever the suite did, because `tail` exits 0. A commit
+went out with a red test this way. Run the suite on its own, read the result,
+then commit.
+
+**A CSS assertion must stay inside its rule.** Two tests here used `.*?` with the
+`/s` flag to reach a declaration inside a block — which runs straight past the
+closing brace and matches a rule further down the sheet, so the assertion passed
+with its declaration deleted. Use `[^}]*?`, match the declaration rather than the
+rule's exact one-line text (adding a property reformats the rule and turns an
+exact match red on formatting, not behaviour), and watch every new assertion fail
+before trusting it.
 
 ## Design system
 
