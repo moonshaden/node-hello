@@ -13,15 +13,28 @@
   rendered pages agree.
 %>
 <%
-  // Hiding has to earn its keep: the three programs keep 541, 1,346 and 731
-  // characters behind the toggle, while the one partner on /community -- which
-  // shares this partial -- had only 116, which is more friction than the text it
-  // saves. Under this and the whole body just renders. Mirrored in the php.
+  // The shown part fills the card down to the photograph beside it rather than
+  // stopping at the first paragraph, which left two of the three cards with a
+  // block of white under the copy. Whole paragraphs are added until the budget
+  // is passed -- passed, not approached: stopping short of it left the Impact
+  // Leadership card on its 174-character opener, which is the case this is for.
+  // The number is a proxy for the photograph's 300px, checked by measuring the
+  // rendered cards, not by arithmetic.
+  const FILL_TO = 500;
+  // And hiding has to earn its keep: under this much left over, the whole body
+  // renders instead. The one partner on /community -- which shares this partial
+  // -- had 116 characters behind a toggle, more friction than the text it saved.
   const DISCLOSE_FROM = 240;
   const paragraphs = String(program.body || '').split(/\n{2,}/).filter(function (p) { return p.trim(); });
-  const remainder = paragraphs.slice(1).join('\n\n');
+  let shown = 0;
+  let taken = 0;
+  while (taken < paragraphs.length && shown < FILL_TO) {
+    shown += paragraphs[taken].length;
+    taken += 1;
+  }
+  const remainder = paragraphs.slice(taken).join('\n\n');
   const disclose = remainder.length >= DISCLOSE_FROM;
-  const lead = disclose ? paragraphs[0] : String(program.body || '');
+  const lead = disclose ? paragraphs.slice(0, taken).join('\n\n') : String(program.body || '');
   const rest = disclose ? remainder : '';
 %>
 <article class="card program<%= flip ? ' program-flip' : '' %>">

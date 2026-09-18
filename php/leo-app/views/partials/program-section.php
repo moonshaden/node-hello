@@ -12,18 +12,31 @@
 // count cuts one in half. Both builds split the same way -- a test asserts the
 // rendered pages agree.
 $isFlipped = !empty($flip);
-// Hiding has to earn its keep: the three programs keep 541, 1,346 and 731
-// characters behind the toggle, while the one partner on /community -- which
-// shares this partial -- had only 116, which is more friction than the text it
-// saves. Under this and the whole body just renders. Mirrored in the ejs.
+// The shown part fills the card down to the photograph beside it rather than
+// stopping at the first paragraph, which left two of the three cards with a
+// block of white under the copy. Whole paragraphs are added until the budget is
+// passed -- passed, not approached: stopping short of it left the Impact
+// Leadership card on its 174-character opener, which is the case this is for.
+// The number is a proxy for the photograph's 300px, checked by measuring the
+// rendered cards, not by arithmetic.
+$fillTo = 500;
+// And hiding has to earn its keep: under this much left over, the whole body
+// renders instead. The one partner on /community -- which shares this partial --
+// had 116 characters behind a toggle, more friction than the text it saved.
 $discloseFrom = 240;
 $paragraphs = array_values(array_filter(
     preg_split('/\n{2,}/', (string) ($program['body'] ?? '')),
     static fn ($p) => trim($p) !== ''
 ));
-$remainder = implode("\n\n", array_slice($paragraphs, 1));
+$shown = 0;
+$taken = 0;
+while ($taken < count($paragraphs) && $shown < $fillTo) {
+    $shown += strlen($paragraphs[$taken]);
+    $taken++;
+}
+$remainder = implode("\n\n", array_slice($paragraphs, $taken));
 $disclose = strlen($remainder) >= $discloseFrom;
-$lead = $disclose ? ($paragraphs[0] ?? '') : (string) ($program['body'] ?? '');
+$lead = $disclose ? implode("\n\n", array_slice($paragraphs, 0, $taken)) : (string) ($program['body'] ?? '');
 $rest = $disclose ? $remainder : '';
 ?>
 <article class="card program<?= $isFlipped ? ' program-flip' : '' ?>">

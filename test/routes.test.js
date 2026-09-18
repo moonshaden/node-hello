@@ -585,6 +585,17 @@ test('the programs show a lead paragraph and open the rest, links intact', async
         assert.ok(body.includes(`href="${href}"`), `${program.name}: a link was broken by the split: ${href}`);
       }
     }
+    // The shown part FILLS the card rather than stopping at the first
+    // paragraph. The Impact Leadership opener is 174 characters against a 300px
+    // photograph, so that card is the one that shows it: its second paragraph
+    // has to be on the shown side of the disclosure, not inside it.
+    const impact = page.programs.find((p) => p.slug === 'impact-leadership-program');
+    const impactParas = String(impact.body).split(/\n{2,}/).filter((p) => p.trim());
+    const card = body.slice(body.indexOf('id="impact-leadership-program"'));
+    const shownHalf = card.slice(0, card.indexOf('class="story-rest"'));
+    assert.ok(shownHalf.includes(plainRun(impactParas[1])),
+      'the Impact Leadership card stops at its 174-character opener, leaving the box unfilled');
+
     // And the page that shares this partial for its one partner keeps its copy
     // in the open, because only 116 characters would have been behind the
     // toggle there.
