@@ -9,8 +9,17 @@
 // `width` and `height` are the stored pixel size, and they become the attributes
 // so the column reserves the space before the picture loads. They also cap it:
 // the smallest of these is 227px wide against a 344px column, and stretching a
-// 227px photograph to fill would upscale it. Nothing here is ever drawn past its
-// own pixels -- see the `max-width` note in the stylesheet.
+// 227px photograph to fill would upscale it. Nothing is drawn past its own
+// pixels -- see the `max-width` note in the stylesheet -- UNLESS the record asks
+// for it with `fill`.
+//
+// `fill` is the deliberate exception, and it is a decision about one picture
+// rather than a default. The GCU Guild logo is 146x91 on the live site and
+// nothing bigger exists anywhere in its media library, so at its own size it sat
+// noticeably smaller than every other mark on the site. Filling the column is a
+// 2.4x upscale and it is visibly soft; it is what the client asked for knowing
+// that, and a better file from them is what would fix it properly. Do not reach
+// for this flag to tidy up a ragged column -- the softness is real.
 //
 // The array lives on the record rather than being its own content type, the same
 // way the board roster and the programs list do, and it survives an admin save
@@ -21,7 +30,7 @@
 ?>
 <div class="scholarship-photos">
   <?php foreach ($photos as $photo): ?>
-    <figure class="scholarship-photo">
+    <figure class="scholarship-photo<?= !empty($photo['fill']) ? ' is-fill' : '' ?>">
       <img src="<?= e(link_url($photo['src'] ?? '', $basePath)) ?>" alt="<?= e($photo['alt'] ?? '') ?>"
            <?= !empty($photo['width']) && !empty($photo['height']) ? 'width="' . (int) $photo['width'] . '" height="' . (int) $photo['height'] . '"' : '' ?> loading="lazy">
     </figure>

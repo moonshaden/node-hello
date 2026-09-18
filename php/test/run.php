@@ -1460,6 +1460,23 @@ test('the memorial scholarships carry their photographs, sized and described', f
         }
     }
 
+    // Only one picture on the whole site is allowed past its own pixels. If this
+    // count ever grows, someone has reached for `fill` to tidy a ragged column
+    // rather than to carry a deliberate decision, and the softness is real.
+    foreach (['data/content.json', 'php/leo-app/data/content.json'] as $store) {
+        $seed = json_decode(file_get_contents($root . '/' . $store), true);
+        $filled = [];
+        foreach ($seed['scholarships'] as $record) {
+            foreach ($record['photos'] ?? [] as $photo) {
+                if (!empty($photo['fill'])) {
+                    $filled[] = $record['slug'];
+                }
+            }
+        }
+        ok($filled === ['gcu-guild-continuing-student-scholarship'],
+            $store . ': the fill opt-in is on ' . (count($filled) ?: 'no') . ' picture(s), expected only the GCU Guild logo');
+    }
+
     // .cpanel.yml has no --delete and creates each image directory by hand, so a
     // new one that is not listed simply never arrives on the server.
     $cpanel = file_get_contents($root . '/.cpanel.yml');
@@ -1525,6 +1542,15 @@ test('the memorial scholarships carry their photographs, sized and described', f
         ok(
             preg_match('/\.scholarship-photo:only-child \{[^}]*min-height: 0;/s', $css) === 1,
             $sheet . ': a lone short picture gets a box taller than itself'
+        );
+        // `fill` is the single deliberate exception to "never draw a picture past
+        // its own pixels", and it must stay an opt-in on one record rather than
+        // a default -- the GCU Guild logo is 146x91 with nothing larger anywhere
+        // in the live media library, so filling the column is a 2.4x upscale and
+        // it is visibly soft.
+        ok(
+            preg_match('/\.scholarship-photo\.is-fill img \{[^}]*width: 100%;/s', $css) === 1,
+            $sheet . ': the fill opt-in does not actually enlarge the picture'
         );
         // The reserve, and it is the one rule here that prevents a visible
         // defect rather than an untidy one. The inner is out of flow, so the
