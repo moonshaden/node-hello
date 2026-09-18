@@ -44,6 +44,7 @@
         `.split` is a two-track grid, and a third child would wrap onto a new row
         under the copy instead of under the card. %>
     <div class="split-side">
+    <div class="split-side-inner">
     <aside class="sidebar-card">
       <span class="pill pill-<%= scholarship.window.state %>"><%= scholarship.isOpen ? 'Accepting applications' : 'Not accepting applications' %></span>
       <dl style="margin-top:20px">
@@ -73,6 +74,7 @@
     <% if (scholarship.photos && scholarship.photos.length) { %>
       <%- include('partials/scholarship-photo', { photos: scholarship.photos }) %>
     <% } %>
+    </div>
     </div>
   </div>
 </section>

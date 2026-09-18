@@ -1463,6 +1463,39 @@ test('the memorial scholarships carry their photographs, sized and described', f
             preg_match('/\.scholarship-photos \{[^}]*flex-direction: column;/s', $css) === 1,
             $sheet . ': the photographs do not stack'
         );
+        // Centred, because the pictures are not all as wide as the column.
+        ok(
+            preg_match('/\.scholarship-photos \{[^}]*align-items: center;/s', $css) === 1,
+            $sheet . ': the photographs are not centred in the column'
+        );
+        // A flex item is stretched on the cross axis by default, which pulled a
+        // short picture's BOX down to the min-height floor while the picture
+        // itself stayed its own size inside it -- so the column ended on empty
+        // space rather than on the picture.
+        ok(
+            preg_match('/\.scholarship-photo \{[^}]*align-items: center;/s', $css) === 1,
+            $sheet . ': a short photograph is stretched to its box rather than centred in it'
+        );
+        // The stack ends level with the copy only if the COPY is the thing that
+        // sizes the grid row. `align-items: stretch` on its own makes the row as
+        // tall as its tallest item, so a long stack grows the row and the copy's
+        // box grows with it -- the boxes end level while the text still ends
+        // hundreds of pixels early. Taking the inner out of flow is what stops
+        // the pictures voting on the row's height.
+        ok(
+            preg_match('/\.split-side-inner \{[^}]*position: absolute;[^}]*inset: 0;/s', $css) === 1,
+            $sheet . ': the photographs size the row, so the copy never ends level with them'
+        );
+        ok(
+            preg_match('/\.split \{[^}]*align-items: stretch;/s', $css) === 1,
+            $sheet . ': the right column does not stretch, so there is no bottom to reach'
+        );
+        // The copy's last paragraph carries a bottom margin, so without this the
+        // pictures finish a measured 18px below the last line of text.
+        ok(
+            preg_match('/\.split > div > :last-child > :last-child,\s*\.split > div > :last-child \{[^}]*margin-bottom: 0;/s', $css) === 1,
+            $sheet . ': the copy column keeps its trailing margin, so the columns end 18px apart'
+        );
     }
 });
 

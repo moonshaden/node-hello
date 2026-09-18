@@ -44,6 +44,7 @@
           // because `.split` is a two-track grid, and a third child would wrap
           // onto a new row under the copy instead of under the card. ?>
     <div class="split-side">
+    <div class="split-side-inner">
     <aside class="sidebar-card">
       <span class="pill pill-<?= e($scholarship['window']['state']) ?>"><?= $scholarship['isOpen'] ? 'Accepting applications' : 'Not accepting applications' ?></span>
       <dl style="margin-top:20px">
@@ -73,6 +74,7 @@
     <?php if (!empty($scholarship['photos'])): ?>
       <?php $app->partial('scholarship-photo', ['photos' => $scholarship['photos']]); ?>
     <?php endif; ?>
+    </div>
     </div>
   </div>
 </section>

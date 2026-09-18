@@ -981,39 +981,111 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .sidebar-card dd.wrapany { overflow-wrap: anywhere; }
 .sidebar-card dl { margin: 0 0 4px; }
 .sidebar-card .eyebrow { color: var(--gold); }
-/* A scholarship's photographs, stacked in the right column under the award card.
+/* A scholarship's photographs, stacked in the right column under the award card,
+   ending level with the bottom of the copy.
 
    `.split` is a two-track grid, so the card and the pictures share one wrapper:
    a third grid child would wrap onto a new row and land under the COPY, not
-   under the card. */
+   under the card.
+
+   Getting the two columns to END together is the fiddly part, and the obvious
+   version does not work. `align-items: stretch` alone makes the ROW as tall as
+   its tallest item, so a long stack simply grows the row and the copy's own box
+   grows with it -- the two boxes then end level while the TEXT still ends
+   hundreds of pixels early, which measures as success and looks like nothing
+   changed. Measured, on the Baker page: the stack overhung the text by 588px and
+   the box said the gap was zero.
+
+   So the copy has to be the only thing that sizes the row. `.split-side` holds
+   no in-flow content -- its inner is absolutely positioned -- so it contributes
+   nothing to the row's height and then stretches to whatever the copy asked for.
+   `inset: 0` hands the card and the pictures exactly that height to divide up.
+
+   It shrinks and never grows, deliberately. Measured at 1280: the two McCurdy
+   pictures need 0.80 of their natural height to fit and the three Baker ones
+   0.49, so both stacks come down to meet the copy. But a single small picture
+   would have to go the other way -- Smith 2.5x, Gary 1.64x -- and that is
+   upscaling a photograph of a real person to fill a gap. Those two stay at their
+   own size and their column ends early. */
 .split-side {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
+.split-side-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 0;
+}
+.split-side-inner > .sidebar-card {
+  flex: 0 0 auto;   /* the card is never the thing that shrinks */
+}
 .scholarship-photos {
   display: flex;
   flex-direction: column;
+  /* Centred: the photographs are not all as wide as the column -- the McCurdy
+     pair is 227px against 344 -- and a ragged left edge reads as a mistake where
+     a centred one reads as a set. */
+  align-items: center;
   gap: 16px;
+  flex: 0 1 auto;
+  min-height: 0;    /* a flex item will not shrink below its content without it */
 }
 .scholarship-photo {
   margin: 0;
+  /* Shrinks in proportion to its own height, so a tall picture gives up more
+     than a short one and the set keeps its relative sizes. The floor stops a
+     short copy column grinding three photographs down into slivers; past it the
+     stack simply runs on rather than becoming unreadable. */
+  flex: 0 1 auto;
+  min-height: 110px;
+  display: flex;
+  justify-content: center;
+  /* Centre, not the default stretch: a flex item is stretched on the cross axis,
+     which pulled a short picture's BOX down to the 110px floor above while
+     `object-fit: contain` kept the picture its own size inside it. The box was
+     then taller than the picture and the column ended on empty space. */
+  align-items: center;
+  width: 100%;
 }
 /* `max-width`, never `width: 100%`. The column is 344px and the smallest of
    these photographs is 227px wide, so stretching them to fill would upscale --
    measured earlier on a 463px composite, which a `width: 100%` drew at 688px.
-   `height: auto` is what lets the img's own width/height attributes cooperate
-   with a responsive width instead of fighting it; without it a 924x300 picture
-   keeps a literal 300px height whatever the width does. */
+   `max-height: 100%` with `width: auto` is what makes the shrink keep the
+   picture's shape: the height comes down with the figure and the width follows
+   the ratio, rather than the picture letterboxing inside a box that shrank
+   without it. */
 .scholarship-photo img {
   display: block;
   width: auto;
   max-width: 100%;
   height: auto;
+  max-height: 100%;
+  object-fit: contain;
   border-radius: 14px;
 }
 
-.split { display: grid; gap: 40px; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); align-items: start; }
+/* The copy column's last paragraph carries a bottom margin, so the column's box
+   ends ~18px below the last line of text -- and the pictures, which fill that
+   box, ended 18px past the text they are supposed to finish level with. Dropping
+   the trailing margin is what makes the two columns end on the same line rather
+   than 18px apart. */
+.split > div > :last-child > :last-child,
+.split > div > :last-child { margin-bottom: 0; }
+
+@media (min-width: 861px) {
+  /* Only where `.split` actually has two columns. Below this it collapses to one
+     and there is no second column to end level with, so the inner goes back into
+     the flow and everything stacks as normal. */
+  .split-side { position: relative; display: block; }
+  .split-side-inner { position: absolute; inset: 0; }
+}
+
+/* The row stretches so the photographs have a bottom to reach. `.split-side` has
+   no in-flow content, so it is the copy that decides how tall that is. */
+.split { display: grid; gap: 40px; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); align-items: stretch; }
+
 
 /* ---------- editable pages: the copy runs the whole column ----------
    The grid version parked the card in a column of its own, so a long page --
