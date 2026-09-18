@@ -31,9 +31,9 @@
 
       <?php if ($recipients !== []): ?>
         <h2 style="margin-top:2.4em">Past recipients of this award</h2>
-        <div class="grid grid-2">
+        <div class="grid recipient-rows">
           <?php foreach (array_slice($recipients, 0, 4) as $recipient): ?>
-            <?php $app->partial('recipient-card', ['recipient' => $recipient]); ?>
+            <?php $app->partial('recipient-card', ['recipient' => $recipient, 'cardLayout' => 'row']); ?>
           <?php endforeach; ?>
         </div>
       <?php endif; ?>

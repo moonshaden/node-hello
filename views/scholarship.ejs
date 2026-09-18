@@ -31,9 +31,9 @@
 
       <% if (recipients.length) { %>
         <h2 style="margin-top:2.4em">Past recipients of this award</h2>
-        <div class="grid grid-2">
+        <div class="grid recipient-rows">
           <% recipients.slice(0, 4).forEach(function (recipient) { %>
-            <%- include('partials/recipient-card', { recipient }) %>
+            <%- include('partials/recipient-card', { recipient, cardLayout: 'row' }) %>
           <% }) %>
         </div>
       <% } %>

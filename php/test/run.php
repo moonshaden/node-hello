@@ -1432,6 +1432,45 @@ test('the donor strip is one shared partial, opted into by the page record', fun
     }
 });
 
+// The recipient card is shared by /recipients, the homepage and a scholarship's
+// own page. Only the scholarship page asks for the horizontal variant, so this
+// pins BOTH halves: that the scholarship template asks for it, and that the
+// shared partial still renders the stacked card when nobody does.
+test('the recipient card lays out horizontally only where it is asked to', function () {
+    $root = dirname(__DIR__, 2);
+    foreach (['views/scholarship.ejs', 'php/leo-app/views/scholarship.php'] as $view) {
+        $src = file_get_contents($root . '/' . $view);
+        ok(str_contains($src, "'row'"), $view . ' does not ask for the row layout');
+    }
+    foreach (['views/partials/recipient-card.ejs', 'php/leo-app/views/partials/recipient-card.php'] as $partial) {
+        $src = file_get_contents($root . '/' . $partial);
+        ok(str_contains($src, 'cardLayout'), $partial . ' does not read the layout flag');
+        ok(str_contains($src, 'recipient-row'), $partial . ' cannot render the row variant');
+    }
+    // The pages that did not ask for it must not have it applied by a stray
+    // selector: the variant is a class on the card, never a page-level rule.
+    foreach (['views/recipients.ejs', 'php/leo-app/views/recipients.php'] as $view) {
+        $src = file_get_contents($root . '/' . $view);
+        ok(!str_contains($src, "'row'"), $view . ' asks for the row layout, which it should not');
+    }
+
+    foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
+        $css = file_get_contents($root . '/' . $sheet);
+        // The portrait is the whole point: unconstrained it filled the 690px
+        // column at 4:5 and stood 808px tall.
+        ok(
+            preg_match('/\\.recipient-row \\.portrait \\{[^}]*width: 140px;/s', $css) === 1,
+            $sheet . ': the row portrait has no width, so it fills the column again'
+        );
+        // And the text has to be pinned to column two, or it auto-places under
+        // the portrait and the row is a stack with a small photo.
+        ok(
+            preg_match('/\\.recipient-row > :not\\(\\.portrait\\) \\{[^}]*grid-column: 2;/s', $css) === 1,
+            $sheet . ': the row text is not pinned beside the portrait'
+        );
+    }
+});
+
 // A checkbox the save handler does not read comes back false on the first admin
 // edit, which would drop the page out of the footer silently. Both page forms
 // have to declare it.

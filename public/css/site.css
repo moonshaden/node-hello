@@ -628,6 +628,38 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .recipient .story[open] .when-open { display: inline; }
 .recipient .story[open] .story-excerpt { display: none; }
 
+/* The horizontal variant, for a scholarship's own page. The column there is
+   ~690px wide and the card fills it, so a portrait at `width: 100%` in a 4:5
+   crop stood 808px tall and the four cards ran to 4,663px of page. A small
+   portrait beside the text instead.
+
+   Same arrangement as .board-lead: the portrait spans the left column across
+   however many rows the text produces, and everything else is pinned to column
+   two and auto-places down it. The span number just has to exceed the rows a
+   card can produce. */
+.recipient-rows { gap: 18px; }
+.recipient-row {
+  display: grid;
+  grid-template-columns: 140px minmax(0, 1fr);
+  column-gap: 22px;
+  align-items: start;
+}
+.recipient-row > .portrait { grid-column: 1; grid-row: 1 / span 30; align-self: start; }
+.recipient-row > :not(.portrait) { grid-column: 2; }
+.recipient-row .portrait { width: 140px; margin-bottom: 0; }
+.recipient-row .portrait-fallback { font-size: 2.2rem; }
+.recipient-row .name { font-size: 1.15rem; }
+.recipient-row blockquote { margin-top: 12px; }
+.recipient-row .story { margin-top: 12px; }
+
+@media (max-width: 560px) {
+  /* Too narrow to keep a column beside 140px of portrait and still read. */
+  .recipient-row { grid-template-columns: 1fr; }
+  .recipient-row > .portrait { grid-column: 1; grid-row: auto; }
+  .recipient-row > :not(.portrait) { grid-column: 1; }
+  .recipient-row .portrait { width: 120px; margin-bottom: 14px; }
+}
+
 /* board members — the same card as a recipient, but the published portraits
    are circular badges already matted on white, so they sit square and centred
    rather than filling the card in a 4:5 crop. */
