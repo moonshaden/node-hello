@@ -32,21 +32,14 @@ $hasPicture = !empty($page['picture']['src']);
   <div class="wrap page-flow<?= $hasPicture ? ' has-picture' : '' ?>">
     <?php $app->partial('page-aside'); ?>
     <div class="prose">
-      <?php if ($index !== []): ?>
-      <nav class="page-index" aria-label="On this page">
-        <p class="eyebrow">On this page</p>
-        <ol>
-          <?php foreach ($index as $heading): ?><li><a href="#<?= e($heading['id']) ?>"><?= $heading['html'] ?></a></li><?php endforeach; ?>
-        </ol>
-      </nav>
-      <?php endif; ?>
-
       <?php /* A page can open its copy with a callout -- a `notice` object on
           the record, `{ heading, body }`, in the same panel the scholarships
           page uses for its enrolment instructions: the heading in bold with the
-          body under it. Either half may be empty. It sits under the jump index,
-          or at the top of the copy on a page that has no index.
-          Mirrored in page.ejs. */ ?>
+          body under it. Either half may be empty.
+
+          It is the FIRST thing in the copy column, above the jump index, so its
+          top edge lines up with the top of the aside card and the column starts
+          on one horizontal. Mirrored in page.ejs. */ ?>
       <?php if (!empty($page['notice']['heading']) || !empty($page['notice']['body'])): ?>
         <div class="notice page-notice">
           <div>
@@ -54,6 +47,15 @@ $hasPicture = !empty($page['picture']['src']);
             <?php if (!empty($page['notice']['body'])): ?><p><?= e($page['notice']['body']) ?></p><?php endif; ?>
           </div>
         </div>
+      <?php endif; ?>
+
+      <?php if ($index !== []): ?>
+      <nav class="page-index" aria-label="On this page">
+        <p class="eyebrow">On this page</p>
+        <ol>
+          <?php foreach ($index as $heading): ?><li><a href="#<?= e($heading['id']) ?>"><?= $heading['html'] ?></a></li><?php endforeach; ?>
+        </ol>
+      </nav>
       <?php endif; ?>
 
       <?= $article['html'] ?>

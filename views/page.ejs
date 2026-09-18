@@ -32,21 +32,14 @@
   <div class="wrap page-flow<%= hasPicture ? ' has-picture' : '' %>">
     <%- include('partials/page-aside') %>
     <div class="prose">
-      <% if (index.length) { %>
-      <nav class="page-index" aria-label="On this page">
-        <p class="eyebrow">On this page</p>
-        <ol>
-          <% index.forEach(function (heading) { %><li><a href="#<%= heading.id %>"><%- heading.html %></a></li><% }) %>
-        </ol>
-      </nav>
-      <% } %>
-
       <%# A page can open its copy with a callout -- a `notice` object on the
           record, `{ heading, body }`, in the same panel the scholarships page
           uses for its enrolment instructions: the heading in bold with the body
-          under it. Either half may be empty. It sits under the jump index, or
-          at the top of the copy on a page that has no index.
-          Mirrored in page.php. %>
+          under it. Either half may be empty.
+
+          It is the FIRST thing in the copy column, above the jump index, so its
+          top edge lines up with the top of the aside card and the column starts
+          on one horizontal. Mirrored in page.php. %>
       <% if (page.notice && (page.notice.heading || page.notice.body)) { %>
         <div class="notice page-notice">
           <div>
@@ -54,6 +47,15 @@
             <% if (page.notice.body) { %><p><%= page.notice.body %></p><% } %>
           </div>
         </div>
+      <% } %>
+
+      <% if (index.length) { %>
+      <nav class="page-index" aria-label="On this page">
+        <p class="eyebrow">On this page</p>
+        <ol>
+          <% index.forEach(function (heading) { %><li><a href="#<%= heading.id %>"><%- heading.html %></a></li><% }) %>
+        </ol>
+      </nav>
       <% } %>
 
       <%- article.html %>

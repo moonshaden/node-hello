@@ -1320,20 +1320,25 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   border-radius: 10px; padding: 20px; display: flex; gap: 20px;
   align-items: center; flex-wrap: wrap;
 }
-/* The same panel inside a page's copy column, under the jump index. It needs no
+/* The same panel inside a page's copy column, ABOVE the jump index. It needs no
    `flow-root` and no `clear` to stay out from under the floated card: `.notice`
    is a flex container, which already establishes its own formatting context --
    checked by measuring the box against the card at seven widths rather than
    assumed, because the plain block version of this (the jump index) did need
-   one. 50px above is the gap the inline logo strip and the programs picture also
-   sit on, so the three components share one rhythm. The measured space above is
-   50px, not 56: the index's own 6px bottom margin COLLAPSES with this one.
-   Being a flex container stops a box's margins collapsing with its CHILDREN's
-   and keeps it out from under a float; it does nothing to sibling margins in the
-   block container around it. Measured before it was written down, because the
-   first version of this comment said 56. The bottom margin is the break before
-   the copy. */
-.page-notice { margin: 50px 0 24px; }
+   one. It is the first thing in the column, so it takes no top margin and its
+   top edge lines up with the top of the aside card -- measured at 0px, which is
+   the reason it sits here rather than under the index. 50px below is the gap the
+   inline logo strip and the programs picture also sit on, so the components that
+   live in a copy column share one rhythm.
+
+   Measured, not reasoned about: 0px against the card's top and 50px to the index
+   at 1440 / 1280 / 1024 / 900 / 862. An earlier version of this note did the
+   arithmetic instead and got it wrong -- it claimed a 6px sibling margin would
+   add to this one. It does not: adjacent sibling margins COLLAPSE to the larger
+   of the two, and being a flex container does not change that. What that does
+   change is collapsing with its own CHILDREN's margins, and staying out from
+   under the floated card. */
+.page-notice { margin: 0 0 50px; }
 
 .notice h3 { margin: 0 0 2px; font-size: 1.05rem; }
 .notice p { margin: 0; color: var(--ink-soft); font-size: .95rem; }

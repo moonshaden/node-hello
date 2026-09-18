@@ -1984,9 +1984,13 @@ test('a page can open its copy with a callout', function () {
     }
     foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
         $css = file_get_contents($root . '/' . $sheet);
+        // No top margin and 50px below: the callout is the first thing in the
+        // column, so its top edge lines up with the top of the aside card, and
+        // the gap is the one the strip and the picture also sit on. A test that
+        // only looked for `margin:` passed with the 50 flipped to the top.
         ok(
-            preg_match('/^\\.page-notice \\{[^}]*margin:/m', $css) === 1,
-            $sheet . ': the callout has no spacing of its own'
+            preg_match('/^\\.page-notice \\{[^}]*margin: 0 0 50px;/m', $css) === 1,
+            $sheet . ': the callout is not spaced for the top of the column'
         );
         // It needs no `clear` and no `flow-root`: `.notice` is a flex container,
         // which already establishes its own formatting context, so it sits
