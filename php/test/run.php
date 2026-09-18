@@ -1984,13 +1984,22 @@ test('a page can open its copy with a callout', function () {
     }
     foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
         $css = file_get_contents($root . '/' . $sheet);
-        // No top margin and 50px below: the callout is the first thing in the
+        // No top margin, 30px below: the callout is the first thing in the
         // column, so its top edge lines up with the top of the aside card, and
-        // the gap is the one the strip and the picture also sit on. A test that
-        // only looked for `margin:` passed with the 50 flipped to the top.
+        // it sits close to the index because the two read as a pair at the head
+        // of the column. A test that only looked for `margin:` passed with the
+        // gap flipped to the top, so this pins the declaration.
         ok(
-            preg_match('/^\\.page-notice \\{[^}]*margin: 0 0 50px;/m', $css) === 1,
+            preg_match('/^\\.page-notice \\{[^}]*margin: 0 0 30px;/m', $css) === 1,
             $sheet . ': the callout is not spaced for the top of the column'
+        );
+        // And 50px under the index -- the break before the copy, the same gap
+        // the strip and the programs picture sit on. It was 6px, which read as
+        // the index and the copy touching. This is the shared component, so the
+        // FAQ and the privacy policy carry it too.
+        ok(
+            preg_match('/^\\.page-index \\{[^}]*margin-bottom: 50px;/m', $css) === 1,
+            $sheet . ': the jump index is back to touching the copy under it'
         );
         // It needs no `clear` and no `flow-root`: `.notice` is a flex container,
         // which already establishes its own formatting context, so it sits

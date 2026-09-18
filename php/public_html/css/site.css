@@ -932,9 +932,14 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
    Thirteen FAQ questions in one prose column read as a wall, so the page opens
    on a table of contents and each question carries an anchor to link to. */
 
+/* 50px under it, the gap the callout, the inline logo strip and the programs
+   picture all sit on. It used to be 6px, which read as the index and the copy
+   touching. This is the shared component, so it moves the FAQ and the privacy
+   policy as well as the giving page -- those are the three pages with enough
+   headings to get an index. */
 .page-index {
   background: var(--gold-wash); border: 1px solid var(--rule);
-  border-radius: 14px; padding: 20px; margin-bottom: 6px;
+  border-radius: 14px; padding: 20px; margin-bottom: 50px;
 }
 .page-index .eyebrow { margin-bottom: .7rem; }
 .page-index ol {
@@ -1327,18 +1332,18 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
    assumed, because the plain block version of this (the jump index) did need
    one. It is the first thing in the column, so it takes no top margin and its
    top edge lines up with the top of the aside card -- measured at 0px, which is
-   the reason it sits here rather than under the index. 50px below is the gap the
-   inline logo strip and the programs picture also sit on, so the components that
-   live in a copy column share one rhythm.
+   the reason it sits here rather than under the index. 30px below it, then 50px
+   under the index itself -- the two boxes read as a pair at the head of the
+   column, with the site's usual 50px break before the copy starts.
 
-   Measured, not reasoned about: 0px against the card's top and 50px to the index
+   Measured, not reasoned about: 0px against the card's top and 30px to the index
    at 1440 / 1280 / 1024 / 900 / 862. An earlier version of this note did the
    arithmetic instead and got it wrong -- it claimed a 6px sibling margin would
    add to this one. It does not: adjacent sibling margins COLLAPSE to the larger
    of the two, and being a flex container does not change that. What that does
    change is collapsing with its own CHILDREN's margins, and staying out from
    under the floated card. */
-.page-notice { margin: 0 0 50px; }
+.page-notice { margin: 0 0 30px; }
 
 .notice h3 { margin: 0 0 2px; font-size: 1.05rem; }
 .notice p { margin: 0; color: var(--ink-soft); font-size: .95rem; }
