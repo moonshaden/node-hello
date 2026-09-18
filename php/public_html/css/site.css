@@ -1346,31 +1346,36 @@ section.band.logo-strip.is-large { padding: 40px 0; }
    cap to hold three of them. Still well above the homepage's 58px row, which is
    the point of the large variant. Measured across 48 combinations of height,
    cap and gap. */
-.logo-strip.is-inline .logo-run { gap: 52px; padding: 0 26px; }
-.logo-strip.is-inline .logo-run img { height: 112px; max-width: 190px; }
-.logo-strip.is-inline .logo-track { animation-duration: 96s; }
+.logo-strip.is-inline .logo-run { gap: 44px; padding: 0 22px; }
+.logo-strip.is-inline .logo-run img { height: 128px; max-width: 205px; }
+/* Slower than the homepage band, at the client's word. 170s puts it at about
+   32px/s against the band's 65 -- measured by sampling the track's transform
+   over four seconds rather than inferred from the duration, because the
+   duration only means the same speed if the track is the same width, and this
+   one is not. */
+.logo-strip.is-inline .logo-track { animation-duration: 170s; }
 
 /* The inline strip has its own tiers, because its width is the column beside the
    card rather than the viewport: 728px at desktop, 632px at 1024 and 508px at
    900. Each step is the largest mark that still leaves three of them on screen,
    measured at that width rather than scaled from the one above. */
 @media (max-width: 1100px) {
-  .logo-strip.is-inline .logo-run { gap: 40px; padding: 0 20px; }
-  .logo-strip.is-inline .logo-run img { height: 104px; max-width: 175px; }
+  .logo-strip.is-inline .logo-run { gap: 32px; padding: 0 16px; }
+  .logo-strip.is-inline .logo-run img { height: 120px; max-width: 175px; }
 }
 @media (max-width: 950px) {
-  .logo-strip.is-inline .logo-run { gap: 32px; padding: 0 16px; }
-  .logo-strip.is-inline .logo-run img { height: 96px; max-width: 130px; }
+  .logo-strip.is-inline .logo-run { gap: 28px; padding: 0 14px; }
+  .logo-strip.is-inline .logo-run img { height: 96px; max-width: 126px; }
 }
 /* Below 860 the card stops floating, so the strip gets the whole column back
    and can take the desktop size again. */
 @media (max-width: 860px) {
   .logo-strip.is-inline .logo-run { gap: 44px; padding: 0 22px; }
-  .logo-strip.is-inline .logo-run img { height: 104px; max-width: 175px; }
+  .logo-strip.is-inline .logo-run img { height: 128px; max-width: 205px; }
 }
 @media (max-width: 600px) {
-  .logo-strip.is-inline .logo-run { gap: 32px; padding: 0 16px; }
-  .logo-strip.is-inline .logo-run img { height: 78px; max-width: 132px; }
+  .logo-strip.is-inline .logo-run { gap: 30px; padding: 0 15px; }
+  .logo-strip.is-inline .logo-run img { height: 86px; max-width: 140px; }
 }
 
 /* Stepped down at 1100 rather than at the usual 900: at the desktop size a

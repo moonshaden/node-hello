@@ -1426,7 +1426,7 @@ test('the donor strip is one shared partial, opted into by the page record', fun
             $sheet . ': the inline strip clears the card, which puts it back below it'
         );
         ok(
-            preg_match('/\\.logo-strip\\.is-inline \\.logo-run img \\{[^}]*max-width: 190px;/s', $css) === 1,
+            preg_match('/\\.logo-strip\\.is-inline \\.logo-run img \\{[^}]*max-width: 205px;/s', $css) === 1,
             $sheet . ': the inline marks are not sized for the column'
         );
     }
