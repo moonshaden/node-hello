@@ -1336,7 +1336,7 @@ section.band.logo-strip.is-large { padding: 40px 0; }
    this would otherwise run underneath it. */
 .logo-strip.is-inline {
   border-radius: 14px;
-  margin-top: 30px;
+  margin-top: 50px;
 }
 /* Sized for the column, not the viewport. `overflow: hidden` on the strip makes
    it a block formatting context, so it sits BESIDE the floated card rather than
@@ -1347,12 +1347,30 @@ section.band.logo-strip.is-large { padding: 40px 0; }
    the point of the large variant. Measured across 48 combinations of height,
    cap and gap. */
 .logo-strip.is-inline .logo-run { gap: 52px; padding: 0 26px; }
-.logo-strip.is-inline .logo-run img { height: 94px; max-width: 170px; }
+.logo-strip.is-inline .logo-run img { height: 112px; max-width: 190px; }
 .logo-strip.is-inline .logo-track { animation-duration: 96s; }
 
-@media (max-width: 900px) {
+/* The inline strip has its own tiers, because its width is the column beside the
+   card rather than the viewport: 728px at desktop, 632px at 1024 and 508px at
+   900. Each step is the largest mark that still leaves three of them on screen,
+   measured at that width rather than scaled from the one above. */
+@media (max-width: 1100px) {
   .logo-strip.is-inline .logo-run { gap: 40px; padding: 0 20px; }
-  .logo-strip.is-inline .logo-run img { height: 74px; max-width: 132px; }
+  .logo-strip.is-inline .logo-run img { height: 104px; max-width: 175px; }
+}
+@media (max-width: 950px) {
+  .logo-strip.is-inline .logo-run { gap: 32px; padding: 0 16px; }
+  .logo-strip.is-inline .logo-run img { height: 96px; max-width: 130px; }
+}
+/* Below 860 the card stops floating, so the strip gets the whole column back
+   and can take the desktop size again. */
+@media (max-width: 860px) {
+  .logo-strip.is-inline .logo-run { gap: 44px; padding: 0 22px; }
+  .logo-strip.is-inline .logo-run img { height: 104px; max-width: 175px; }
+}
+@media (max-width: 600px) {
+  .logo-strip.is-inline .logo-run { gap: 32px; padding: 0 16px; }
+  .logo-strip.is-inline .logo-run img { height: 78px; max-width: 132px; }
 }
 
 /* Stepped down at 1100 rather than at the usual 900: at the desktop size a
