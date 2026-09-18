@@ -11,6 +11,10 @@
 <section class="band">
   <div class="wrap split">
     <div>
+      <% if (scholarship.photoUrl) { %>
+        <%- include('partials/scholarship-photo', { scholarship }) %>
+      <% } %>
+
       <% if (scholarship.criteria) { %>
         <div class="criteria">
           <h3>Who can apply</h3>

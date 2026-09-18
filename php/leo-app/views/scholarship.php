@@ -11,6 +11,10 @@
 <section class="band">
   <div class="wrap split">
     <div>
+      <?php if (!empty($scholarship['photoUrl'])): ?>
+        <?php $app->partial('scholarship-photo', ['scholarship' => $scholarship]); ?>
+      <?php endif; ?>
+
       <?php if (!empty($scholarship['criteria'])): ?>
         <div class="criteria">
           <h3>Who can apply</h3>

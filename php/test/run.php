@@ -1374,6 +1374,121 @@ test('no page body contains a markdown image', function () {
 // The donor strip is one partial shared by the homepage and by any page that
 // opts in, so the two cannot drift. Before this it was the same twenty lines of
 // markup written out twice per build -- four copies.
+// The five memorial scholarships carry a photograph transcribed from the live
+// site. Three of the five are narrower than the copy column and the live site
+// floats them (`alignleft`); two are banners it runs full width
+// (`img-responsive`). The rule here reproduces that split by the stored width,
+// so this pins the data, the partial and the two CSS traps it walked into.
+// marked turns a bare email address into a mailto: link; the PHP Markdown has no
+// autolink rule and leaves it as text. So the dev twin showed a clickable
+// address and the deployed site showed plain text, on five scholarship pages,
+// with both suites green -- the same class as the bare URL already on record,
+// and only the cross-build render diff sees it. Five pages carried it because
+// nothing had ever diffed them: the diff set held one scholarship page. An
+// address in a markdown field has to be written as an explicit link.
+test('no markdown field carries a bare email address', function () {
+    $root = dirname(__DIR__, 2);
+    foreach (['data/content.json', 'php/leo-app/data/content.json'] as $store) {
+        $seed = json_decode(file_get_contents($root . '/' . $store), true);
+        foreach (['scholarships', 'pages', 'recipients'] as $collection) {
+            foreach ($seed[$collection] ?? [] as $record) {
+                foreach (['criteria', 'details', 'body', 'summary', 'quote'] as $field) {
+                    $value = $record[$field] ?? null;
+                    if (!is_string($value) || $value === '') {
+                        continue;
+                    }
+                    // An address is fine inside a link -- `](mailto:...)` or the
+                    // label of one. What must not appear is one standing alone in
+                    // the prose, which is the only form marked rewrites.
+                    $stripped = preg_replace('/\[[^\]]*\]\(mailto:[^)]*\)/', '', $value);
+                    ok(
+                        preg_match('/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/', $stripped) !== 1,
+                        $store . ': ' . ($record['slug'] ?? '?') . '.' . $field . ' has a bare email address, which only one build links'
+                    );
+                }
+            }
+        }
+    }
+});
+
+test('the memorial scholarships carry their photograph, sized and described', function () {
+    $root = dirname(__DIR__, 2);
+
+    $withPhoto = [
+        'richard-mccurdy-club-sports-golf-scholarship' => [463, 300],
+        'lavern-sharky-and-leona-baker-educational-scholarship' => [980, 363],
+        'joyce-k-smith-nursing-memorial-scholarship' => [924, 300],
+        'tiffany-d-mealman-women-excellence-in-chemistry-and-christian-character-scholarship' => [543, 700],
+        'evan-c-gary-memorial-scholarship' => [250, 312],
+    ];
+
+    foreach (['data/content.json', 'php/leo-app/data/content.json'] as $store) {
+        $seed = json_decode(file_get_contents($root . '/' . $store), true);
+        $bySlug = [];
+        foreach ($seed['scholarships'] as $s) {
+            $bySlug[$s['slug']] = $s;
+        }
+        foreach ($withPhoto as $slug => [$w, $h]) {
+            $s = $bySlug[$slug] ?? null;
+            ok($s !== null, $store . ': ' . $slug . ' is missing');
+            ok(
+                ($s['photoUrl'] ?? '') === '/img/scholarships/' . $slug . '.jpg',
+                $store . ': ' . $slug . ' has no photograph'
+            );
+            ok((int) ($s['photoWidth'] ?? 0) === $w && (int) ($s['photoHeight'] ?? 0) === $h,
+                $store . ': ' . $slug . ' photo size is not ' . $w . 'x' . $h);
+            // Alt text is not published anywhere live, so it was written here --
+            // but an empty one on a photograph of a named person is a real
+            // failure, not a deliberate decorative choice like the logo strip.
+            ok(trim($s['photoAlt'] ?? '') !== '', $store . ': ' . $slug . ' photo has no description');
+        }
+    }
+
+    // Both builds must ship the file, or the deployed site shows a broken image
+    // where the dev twin shows a photograph.
+    foreach (array_keys($withPhoto) as $slug) {
+        foreach (['public/img/scholarships', 'php/public_html/img/scholarships'] as $dir) {
+            $file = $root . '/' . $dir . '/' . $slug . '.jpg';
+            ok(is_file($file) && filesize($file) > 1024, $file . ' is missing or empty');
+        }
+    }
+
+    // .cpanel.yml has no --delete and creates each image directory by hand, so a
+    // new one that is not listed simply never arrives on the server.
+    $cpanel = file_get_contents($root . '/.cpanel.yml');
+    ok(strpos($cpanel, 'public_html/img/scholarships') !== false,
+        '.cpanel.yml does not create the scholarships image directory');
+
+    foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
+        $css = file_get_contents($root . '/' . $sheet);
+        // `width: 100%` upscaled the 463px composite to 688px in the column --
+        // measured. The figure must cap, never stretch.
+        ok(
+            preg_match('/\.scholarship-photo img \{[^}]*max-width: 100%;/s', $css) === 1,
+            $sheet . ': the scholarship photo does not cap at its own width'
+        );
+        ok(
+            // The lookbehind matters: `max-width: 100%` contains `width: 100%`, so
+            // without it this assertion is satisfied by the very rule it is meant
+            // to check is absent, and passes whatever the sheet says.
+            preg_match('/\.scholarship-photo img \{[^}]*(?<!max-)width: 100%;/s', $css) !== 1,
+            $sheet . ': the scholarship photo stretches, which upscales the small ones'
+        );
+        // A float shortens line boxes, never block boxes, so the gold panel runs
+        // under a floated picture without its own formatting context.
+        ok(
+            preg_match('/\.split > div > \.criteria,\s*\.split > div > h2 \{[^}]*flow-root;/s', $css) === 1,
+            $sheet . ': the criteria panel can run under the floated photograph'
+        );
+        // The column is 432px at an 800px viewport and 652px at 700px, so a
+        // viewport query unfloats it exactly where there is most room.
+        ok(
+            preg_match('/@container schol-col \(max-width: 600px\)/', $css) === 1,
+            $sheet . ': the photo unfloats on the viewport rather than the column'
+        );
+    }
+});
+
 test('the donor strip is one shared partial, opted into by the page record', function () {
     $root = dirname(__DIR__, 2);
     foreach (['views/partials/logo-strip.ejs', 'php/leo-app/views/partials/logo-strip.php'] as $partial) {
