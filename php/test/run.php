@@ -1971,6 +1971,47 @@ test('the impact figures are one component in both places', function () {
     }
 });
 
+// The callout at the top of a page's copy. It is a `notice` string on the
+// record, rendered in the same panel the scholarships page uses.
+test('a page can open its copy with a callout', function () {
+    $root = dirname(__DIR__, 2);
+    foreach (['views/page.ejs', 'php/leo-app/views/page.php'] as $view) {
+        $src = file_get_contents($root . '/' . $view);
+        ok(str_contains($src, 'page-notice'), $view . ' never renders the callout');
+    }
+    foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
+        $css = file_get_contents($root . '/' . $sheet);
+        ok(
+            preg_match('/^\\.page-notice \\{[^}]*margin:/m', $css) === 1,
+            $sheet . ': the callout has no spacing of its own'
+        );
+        // It needs no `clear` and no `flow-root`: `.notice` is a flex container,
+        // which already establishes its own formatting context, so it sits
+        // beside the floated card. Clearing it would drop it below the card --
+        // the note the inline logo strip carries too.
+        ok(
+            preg_match('/^\\.page-notice \\{[^}]*clear:/m', $css) !== 1,
+            $sheet . ': the callout clears the card, which drops it below it'
+        );
+    }
+    // Both stores carry the giving callout, and neither leaves the sentence in
+    // the body as well -- it was moved out of the copy, not copied.
+    foreach (['data/content.json', 'php/leo-app/data/content.json'] as $store) {
+        $seed = json_decode(file_get_contents($root . '/' . $store), true);
+        $giving = null;
+        foreach ($seed['pages'] as $page) {
+            if (($page['slug'] ?? '') === 'donate') {
+                $giving = $page;
+            }
+        }
+        ok(!empty($giving['notice']), $store . ': the giving page carries no callout');
+        ok(
+            !str_contains($giving['body'], $giving['notice']),
+            $store . ': the callout sentence is in the body as well, so the page says it twice'
+        );
+    }
+});
+
 echo "\n" . str_repeat('-', 46) . "\n";
 echo ($failed === 0 ? "ALL PASSED" : "FAILURES") . ": $passed passed, $failed failed\n\n";
 exit($failed === 0 ? 0 : 1);

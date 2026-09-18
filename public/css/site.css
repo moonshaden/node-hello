@@ -1320,6 +1320,15 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   border-radius: 10px; padding: 20px; display: flex; gap: 20px;
   align-items: center; flex-wrap: wrap;
 }
+/* The same panel inside a page's copy column, under the jump index. It needs no
+   `flow-root` and no `clear` to stay out from under the floated card: `.notice`
+   is a flex container, which already establishes its own formatting context --
+   checked by measuring the box against the card at seven widths rather than
+   assumed, because the plain block version of this (the jump index) did need
+   one. The bottom margin is the break before the copy; the 6px above it is the
+   index's own. */
+.page-notice { margin: 0 0 24px; }
+
 .notice h3 { margin: 0 0 2px; font-size: 1.05rem; }
 .notice p { margin: 0; color: var(--ink-soft); font-size: .95rem; }
 .notice .btn { margin-left: auto; }

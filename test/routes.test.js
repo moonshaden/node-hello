@@ -502,6 +502,31 @@ test('the impact figures read the same on the homepage and on /board', async () 
   });
 });
 
+// The giving page opens with a callout under its jump index, carrying the
+// sentence that used to open the copy. The sentence was MOVED, not copied, so
+// the one thing worth pinning is that the page does not say it twice -- and
+// that it still says it at all, since the copy is transcribed and every word
+// the live page publishes has to stay on this one.
+test('the giving callout carries its sentence once, above the copy', async () => {
+  const seed = JSON.parse(fs.readFileSync(path.join(__dirname, '..', 'data', 'content.json'), 'utf8'));
+  const giving = seed.pages.find((p) => p.slug === 'donate');
+  assert.ok(giving.notice, 'the giving page carries no callout');
+  assert.ok(!giving.body.includes(giving.notice),
+    'the callout sentence is still in the body as well, so the page says it twice');
+
+  await withServer(async (base) => {
+    const body = await (await fetch(`${base}/donate`)).text();
+    assert.match(body, /<div class="notice page-notice">/, 'the callout is not rendered');
+    const hits = body.split(giving.notice).length - 1;
+    assert.equal(hits, 1, `the giving page renders its opening sentence ${hits} times`);
+    // Above the copy, under the index -- the callout has to come first in the
+    // column or it is just another paragraph.
+    const at = body.indexOf('page-notice');
+    assert.ok(at > body.indexOf('page-index'), 'the callout is above the jump index');
+    assert.ok(at < body.indexOf('Your gift of any size'), 'the callout is below the copy it introduces');
+  });
+});
+
 // The header carried a CSS placeholder mark for months. Now that real artwork
 // is in the repo, nothing should render the site's identity from type again.
 test('the real lockup and favicons are served, not a placeholder', async () => {

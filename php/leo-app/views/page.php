@@ -40,6 +40,17 @@ $hasPicture = !empty($page['picture']['src']);
         </ol>
       </nav>
       <?php endif; ?>
+
+      <?php /* A page can open its copy with a callout -- a `notice` string on
+          the record, in the same panel the scholarships page uses for its
+          enrolment instructions. It sits under the jump index, or at the top of
+          the copy on a page that has no index. Mirrored in page.ejs. */ ?>
+      <?php if (!empty($page['notice'])): ?>
+        <div class="notice page-notice">
+          <div><p><?= e($page['notice']) ?></p></div>
+        </div>
+      <?php endif; ?>
+
       <?= $article['html'] ?>
 
       <?php /* A page with short copy leaves a gap under it. A page record can
