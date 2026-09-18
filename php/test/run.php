@@ -1399,9 +1399,16 @@ test('the memorial scholarships carry their photographs, sized and described', f
 
     // The three LEO-branded awards carry no sponsor's logo of their own, so they
     // take the foundation's own lion -- the same mark the footer and the masthead
-    // use, matted on the brand navy the way the favicons are, because the file is
-    // white and gold and would all but vanish on the page's #fdfcfa band. One
-    // shared file, not three copies.
+    // use, cropped to its own ink and left transparent. One shared file, not
+    // three copies.
+    //
+    // It was matted on the brand navy first, on the reasoning that a white-and-
+    // gold mark would vanish on the #fdfcfa band, and a pixel count agreed: 42%
+    // of it composites to within 18/255 of the background. The count was
+    // measuring the wrong thing. That 42% is the lion's white BODY, which is
+    // drawn by its grey shading and bounded by the gold mane and arc -- rendered
+    // on the band it reads perfectly well. A contrast metric cannot see line
+    // work; look at the picture.
     $lion = '/img/scholarships/leo-lion-mark.png';
     $lionSlugs = [
         'leo-foundation-scholarship',
