@@ -38,7 +38,7 @@ reaches real students and real donors. So:
   you did. Report the failure with the evidence, not a reassuring summary.
 
 
-## Where this left off — 2026-09-18, head `63a9f3a`
+## Where this left off — 2026-09-18, head `65275ab`
 
 Several sessions work this branch at once. Pull before starting, and expect the
 head to have moved mid-task. PR #3 is **merged**; the open one is **PR #4**
@@ -48,9 +48,9 @@ head.
 `docs/sessions/` holds a log per working session — what was asked, what was tried
 and rejected, and what went wrong. This file is the state; those are the reasons.
 The most recent is
-`docs/sessions/2026-09-18-scholarship-pictures-and-logos.md`.
+`docs/sessions/2026-09-18-programs-picture-and-program-rows.md`.
 
-**Landed and verified** (92 node / 94 PHP tests, PHP lint clean, cross-build
+**Landed and verified** (93 node / 95 PHP tests, PHP lint clean, cross-build
 render diff zero on **twenty-four** paths — the eleven public pages plus **all
 thirteen** scholarship detail pages — and every change byte-compared against the
 deployed build subdomain):
@@ -129,6 +129,19 @@ deployed build subdomain):
   `height: 100%` plus `object-fit: cover`, measured at 0px difference on all
   four cards. Stacking is keyed to the **list's own width**, not the viewport:
   `@container (max-width: 600px)` on `.recipient-rows`. See *Gotchas* for both.
+- **`/programs` closes its copy with a photograph, and its three rows run
+  their picture the full height of the text.** The picture is a `picture`
+  object on the page record, rendered inside the copy column 50px under the
+  last line -- the placement the inline logo strip has on `/community` -- and
+  it ends **level with the bottom of the aside card**, cropping to whatever
+  height that leaves. Getting two content-driven edges to meet took the card
+  out of the float and into a grid column on that page only
+  (`.page-flow.has-picture`); see *Gotchas*, and note `flex-basis: 0` is the
+  load-bearing part. The three program photographs use the recipient-row trio
+  (`align-self: stretch` + `height: 100%` + `object-fit: cover`), measured at
+  0px top and bottom on all three. It carried a transcribed quotation over the
+  photograph for two commits; the client asked for the picture without the
+  words.
 - **Twelve of the thirteen scholarships carry a picture**, in the right column
   under the award card, centred and stacked. `photos` is an array on the record,
   so an award with several pictures stacks them; two of the five memorial awards
@@ -244,8 +257,8 @@ once in `php/leo-app/views` + `php/public_html/css`, once in `views/` +
 ## Commands
 
 ```bash
-npm test                                    # 92 tests
-php php/test/run.php                        # 94 tests
+npm test                                    # 93 tests
+php php/test/run.php                        # 95 tests
 find php -name '*.php' -exec php -l {} \;   # lint
 
 ADMIN_PASSWORD='...' npm start              # Node build, :3000
@@ -383,6 +396,20 @@ the *old* build. It cost a false "10 of 10 pages differ" this session. Find it
 with `/proc/*/cmdline` and kill by PID — `pkill -f` matches the invoking bash
 command and kills the caller.
 
+Two further faces of the same thing, both cost a session each:
+
+- **The asset-version `Map` is the newest way it bites.** After editing the
+  stylesheet, a node server left running goes on serving the OLD `?v=` hash while
+  PHP computes the new one per request, so the cross-build diff comes back
+  **24 of 24 differing** on one attribute. Restart the node twin after any asset
+  change, not only after a route change. Gate on the hash: compare
+  `sha256sum public/css/site.css` against what each build renders before
+  believing a diff.
+- **A `/proc` kill loop can kill its own shell.** Matching `server.js` anywhere
+  in a command line matches the invoking bash command, which contains the loop's
+  own text — the `pkill -f` trap in a new guise. Match on the executable
+  (`readlink /proc/$p/exe`) as well, and skip `$$`.
+
 **Size the header for headroom, not for a measured fit.** The client works
 full-screen on a Mac, which renders these strings roughly 12% wider than this
 sandbox's headless Chromium, and `.wrap` caps at 1120px so a wider screen never
@@ -503,6 +530,39 @@ the stretched box.
   honest outcome rather than a bug to fix.
 - A `min-height` floor stops a short copy column grinding three pictures into
   slivers.
+
+**Two content-driven edges cannot be made to meet across a float.** The ask on
+`/programs` was that the picture closing the copy END level with the bottom of
+the aside card. The picture's top is wherever the copy ends and the card's bottom
+is wherever its own content ends, and **a float's bottom is not something the
+flow below it can be told about** -- no rule in the copy column can reach it. The
+answer is structural, and scoped to the pages that need it
+(`.page-flow.has-picture`): the card takes a grid column instead of floating, and
+the copy column becomes a flex column whose last item takes the slack. Nothing
+about the copy moves, and that is checkable rather than hoped for -- a float
+shortens the LINE boxes beside it, so the copy already wrapped at the grid
+column's width. Four traps in that one variant:
+
+- **`flex-basis: 0`, not `auto`.** A flex item's base size counts toward its
+  container's intrinsic height, so with `auto` the picture's own 728x228 sized
+  the grid row, the row outgrew the card, and the picture ended **73px below**
+  it. At zero it contributes only its floor, the card wins the row, and the
+  growth is exactly the space left. This is the same mistake as letting the
+  scholarship pictures size their row -- twice in one week, in two components.
+- **The card must not stretch.** `align-self: start`, or the row ends level by
+  growing the card, which measures as success.
+- **A clearfix `::after` becomes a grid item.** `.page-flow::after` exists to
+  clear the float; in the grid it is a third item taking a row of its own.
+  `content: none` on the variant.
+- **Margins do not collapse in a flex column.** The copy's last paragraph added
+  its 18px on top of the picture's 50 and the gap read 68 -- against the 50 the
+  inline logo strip gets, where ordinary block margins do collapse. Zeroed on the
+  second-to-last child.
+
+A `min-height` floor on such a picture belongs in the two-column query, not on
+the component: below the breakpoint there is no row to fill, and a floor there
+shows as a strip of the backing colour under a picture drawing at its own ratio
+(33px of navy at 390px wide).
 
 **Anything out of flow in the scholarship side column will land on the footer,
 and it has happened twice.** That column must not let the pictures size the grid
@@ -671,6 +731,16 @@ against a host allowlist. Confirmed by testing, not assumed:
 - port 2083 (cPanel) → connection reset even for allowed hosts
 - `claude.ai` → 403
 
+**Chromium cannot open the build subdomain from here**, so a screenshot of the
+deployed site is not a page load. The proxy re-terminates TLS and Playwright's
+Chromium does not trust its CA — `ERR_CERT_AUTHORITY_INVALID`, with or without
+`--use-system-ca-store`, and disabling verification is not an option. What works,
+and is arguably better evidence: `curl` the deployed page and every asset it
+references into a directory, serve that on a local port, and screenshot **that**.
+The picture is then rendered from the server's own bytes. Pull the two
+`url('../img/...')` lion watermarks by hand — they are in the stylesheet, not in
+any `src`, so a scrape of `src`/`href` misses them and they 404 into the shot.
+
 So: **you still cannot upload from here, but you can now verify what was
 uploaded.** Do not ask for FTP or cPanel credentials to upload with — the ports
 are closed regardless of credentials, and being handed a password does not change
@@ -760,6 +830,24 @@ matching the live nav.
   same 20 / $8.5M / 5,685 / $6.9M figures the impact band already carries; and
   the contact form, which needs a mail handler this build does not have — the
   page body links to `/contact` instead.
+
+**The photograph closing the Programs page is the live site's own**, taken on
+2026-09-18. What the client handed over was a 1895x562 screen capture of the
+testimonial band that sits on every live scholarship page — carousel dots, white
+strip and all, with the words baked into the pixels. The parts are published
+separately: the band is `fusion-builder-row-24`, its `data-bg` is
+`2024/07/991.jpg` at **1280x400 and 19KB** (three crosses on a hillside at
+sunrise), and the words are an Avada three-quote rotator. So the capture was not
+shipped; the photograph was, rehosted as `/img/programs/quote-mlk.jpg`. The
+filename records where it came from — the picture no longer carries a quotation.
+
+- It rendered the live MLK quotation over the photograph for two commits, as
+  real text on the page record rather than a raster. **The client asked for the
+  picture without the words** and the text came out of the store; it is in
+  `page-picture.ejs`'s history if it is ever wanted back. The other two quotes
+  that band rotates were never carried.
+- No alt text is published for it, so the alt was written here from the
+  photograph, the same as every other rehosted image.
 
 The **Community Partnerships page is the live `/community-partnerships/`
 page**, transcribed on 2026-08-30. It is short: an intro, one partner —
@@ -1078,7 +1166,13 @@ is an empty string on all three. Do not compose one.
     publishes none and none was invented. They are the other two LEO awards
     without a sponsor's logo, so the lion is the obvious candidate — the client's
     call, and offered.
-16. **The Baker banner crop drops the award's name** from the artwork, because
+16. **The Impact Leadership photograph's own word is cropped.** The programs
+    rows run each picture the full height of its text, and a 300x590 window over
+    that 1200x1200 square cuts the LEADERSHIP set into the artwork to "ADERSH".
+    The live site publishes all three program photos as squares, so there is no
+    wider source: it is the direct price of equal heights. Keep it, widen the
+    column, or swap the picture — offered, the client's call.
+17. **The Baker banner crop drops the award's name** from the artwork, because
     the page already renders it as the `h1`. Worth confirming with the client.
 
 ## Deploying
