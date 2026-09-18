@@ -38,7 +38,7 @@ reaches real students and real donors. So:
   you did. Report the failure with the evidence, not a reassuring summary.
 
 
-## Where this left off — 2026-09-18, head `9264af7`
+## Where this left off — 2026-09-18, head `ae732e2`
 
 Several sessions work this branch at once. Pull before starting, and expect the
 head to have moved mid-task. PR #3 is **merged**; the open one is **PR #4**
@@ -48,9 +48,11 @@ head.
 `docs/sessions/` holds a log per working session — what was asked, what was tried
 and rejected, and what went wrong. This file is the state; those are the reasons.
 The most recent is
-`docs/sessions/2026-09-18-programs-picture-and-program-rows.md`.
+`docs/sessions/2026-09-18-giving-callout.md`, and
+`docs/sessions/2026-09-18-programs-picture-and-program-rows.md` is the thread
+before it in the same session.
 
-**Landed and verified** (94 node / 96 PHP tests, PHP lint clean, cross-build
+**Landed and verified** (95 node / 97 PHP tests, PHP lint clean, cross-build
 render diff zero on **twenty-four** paths — the eleven public pages plus **all
 thirteen** scholarship detail pages — and every change byte-compared against the
 deployed build subdomain):
@@ -129,6 +131,16 @@ deployed build subdomain):
   `height: 100%` plus `object-fit: cover`, measured at 0px difference on all
   four cards. Stacking is keyed to the **list's own width**, not the viewport:
   `@container (max-width: 600px)` on `.recipient-rows`. See *Gotchas* for both.
+- **A page can open its copy with a callout.** `notice` on the page record,
+  `{ heading, body }`, rendered in the same `.notice` panel the scholarships
+  page uses for its enrolment instructions -- white card, gold left bar -- as
+  the FIRST thing in the copy column, above the jump index, which is what lines
+  its top edge up with the top of the aside card (measured 0px). `/donate` is
+  the one that carries it, and the three sentences in it were **moved** out of
+  the copy rather than copied, so the page does not say them twice; a test
+  asserts each appears exactly once. The head of a copy column is now 30px
+  between the two boxes and 50px under the index -- and that second number is
+  the shared `.page-index` rule, so `/faq` and `/privacy` moved with it.
 - **The impact figures are one component in two places.** The four panels are
   `partials/impact-figures`, included by both homepages inside the navy band and
   by a page that sets `impactFigures: true` on its record -- `/board` is the one
@@ -264,8 +276,8 @@ once in `php/leo-app/views` + `php/public_html/css`, once in `views/` +
 ## Commands
 
 ```bash
-npm test                                    # 94 tests
-php php/test/run.php                        # 96 tests
+npm test                                    # 95 tests
+php php/test/run.php                        # 97 tests
 find php -name '*.php' -exec php -l {} \;   # lint
 
 ADMIN_PASSWORD='...' npm start              # Node build, :3000
@@ -689,6 +701,17 @@ constant.
 went out with a red test this way. Run the suite on its own, read the result,
 then commit.
 
+**Adjacent sibling margins collapse; a flex container does not stop that.** The
+callout on `/donate` sits above the jump index, which carries its own
+`margin-bottom` -- and the note written against it claimed the two would ADD, so
+the gap would be 56px rather than 50. It is 50: sibling margins collapse to the
+larger of the two. Being a flex container stops a box's margins collapsing with
+its **children's**, and keeps it out from under a float (which is why `.notice`
+needs no `flow-root` and no `clear` in the copy column, measured at seven widths).
+It does nothing to its siblings. Measure the gap before writing the number down
+-- a comment that reasons wrongly is worse than no comment, because it is
+inherited with a confident tone.
+
 **A CSS assertion must stay inside its rule.** Two tests here used `.*?` with the
 `/s` flag to reach a declaration inside a block — which runs straight past the
 closing brace and matches a rule further down the sheet, so the assertion passed
@@ -696,6 +719,14 @@ with its declaration deleted. Use `[^}]*?`, match the declaration rather than th
 rule's exact one-line text (adding a property reformats the rule and turns an
 exact match red on formatting, not behaviour), and watch every new assertion fail
 before trusting it.
+
+**And pin the VALUE, not just the property.** An assertion that `.page-notice`
+has *a* `margin:` stayed green with the gap flipped from the bottom of the box to
+the top -- the exact regression that rule exists to prevent. The mutation pass is
+what found it. Pinning `margin: 0 0 30px` then earned its keep one commit later,
+going red on a deliberate change instead of letting it through: a pinned
+declaration is a change detector, not a correctness proof, and that is the point
+of it.
 
 **A computed count is not a rendered count.** Sizing the logo strip by arithmetic
 — cap plus gap divides into the strip width — was wrong twice, because the marks
@@ -1178,11 +1209,14 @@ is an empty string on all three. Do not compose one.
     month. The most valuable item here that does not need the client.
 11. **The 26 strip logos have no alt text**, because nothing published names
     those organisations. See *Content accuracy*.
-12. **The scholarship photographs are not editable in `/admin`.** `photos` is an
-    array on the record, so it follows the board roster and the programs list:
-    it survives a save but no form field edits it. Everything else on a
-    scholarship is editable, so this is the odd one out. Needs a repeating
-    field — worth doing if the client wants to swap a picture themselves.
+12. **The page and scholarship extras are not editable in `/admin`.** They all
+    live on the record and survive a save because `applyFields()` spreads the
+    existing record first, but no form field touches any of them: a
+    scholarship's `photos`, and on a page `members`, `programs`, `partners`,
+    `gallery`, `logoStrip`, `impactFigures`, `picture` and `notice`. That is a
+    pile now, and everything else on both records IS editable. Needs a
+    repeating field — worth doing if the client wants to change a picture or a
+    callout themselves.
 13. **The Smith photograph is one composite that could not be split**, so it
     renders small in the column while the others fill it. Only the client can
     close this, by supplying the three originals. See *Content accuracy*.
@@ -1236,6 +1270,14 @@ the content and silently drops the code. It happened twice in one session (runs
 symptom is a server whose content store has a field the deployed templates do not
 render yet. Nothing breaks — an unknown field is ignored — so only a byte check
 catches it. Wait for the first run to finish before dispatching the second.
+
+**Gate on something the change actually moves.** The byte check below hashes
+`site.css`, which is useless for a commit that does not touch the stylesheet: a
+views-and-content change had the gate green before the deploy started. Pick the
+signal from the diff -- for that one it was the callout vanishing from the live
+page (the new template reading a field the not-yet-seeded store did not have) and
+coming back after the `seed_content` run. Note that a store whose SHAPE changed
+renders nothing in between the two runs.
 
 **Confirm a deploy by bytes, and only then say it is live.** A 200 proves the
 server answered, not that it answered with *this* build, and this session burned
