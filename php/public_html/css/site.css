@@ -113,6 +113,16 @@ img { max-width: 100%; display: block; }
   display: block; height: 128px; width: auto; margin: 0 auto 14px;
 }
 
+/* The mark is a link home. `width: max-content` keeps the hit area the width of
+   the lion rather than the whole 320px sign-off block -- an anchor is a block
+   here, and a block-width link means the dead space either side of the mark is
+   clickable, which reads as a broken target. `margin: 0 auto` then re-centres
+   the shrunk box, since the image's own auto margins have nothing left to
+   distribute once the box is its width. */
+.foot-mark-link {
+  display: block; width: max-content; margin: 0 auto;
+}
+
 /* The wordmark sits under the mark and reads as the second line of one
    sign-off, so the gap above it is tighter than the gap below. It fills the
    wrapper, which is what caps it. `height: auto` is load-bearing: the

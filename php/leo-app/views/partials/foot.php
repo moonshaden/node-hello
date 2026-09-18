@@ -10,8 +10,15 @@
               // footer column is a 1fr track and is wider -- which is what this
               // wrapper is for. Sizing the mark then stays one height value. ?>
         <div class="foot-sign">
-          <img class="foot-mark" src="<?= e(asset_url('/img/brand/leo-mark-lion.png', $basePath)) ?>"
-               alt="" aria-hidden="true" width="520" height="380" loading="lazy">
+          <?php // The mark links home, the way the masthead's wordmark does.
+                // The image itself is decorative (the wordmark under it is the
+                // group's accessible name), so a link wrapping it alone would
+                // have NO accessible name -- hence the aria-label, matching the
+                // masthead's wording. ?>
+          <a class="foot-mark-link" href="<?= e($basePath) ?>/" aria-label="<?= e($site['name'] ?? '') ?> home">
+            <img class="foot-mark" src="<?= e(asset_url('/img/brand/leo-mark-lion.png', $basePath)) ?>"
+                 alt="" aria-hidden="true" width="520" height="380" loading="lazy">
+          </a>
           <?php // The wordmark below is the accessible name of the group, so
                 // the mark above it is decorative -- otherwise both announce the
                 // same thing. The artwork is cropped to the name and its two

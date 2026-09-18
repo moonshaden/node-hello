@@ -1327,6 +1327,41 @@ test('the footer spreads its columns rather than sharing equal tracks', function
     }
 });
 
+// The lion links home. Its image is aria-hidden -- the wordmark below it is the
+// sign-off's accessible name -- so an anchor around it alone would be a link
+// with no name at all, which is why the label is asserted beside the href
+// rather than left to the markup looking right.
+test('the footer lion is a labelled link home in both builds', function () {
+    $root = dirname(__DIR__, 2);
+    // Bounded .* rather than [^>]*: both templates build the href from a tag
+    // whose own closing angle bracket would end a [^>]* run early.
+    foreach ([
+        'views/partials/foot.ejs' => '/<a class="foot-mark-link" href="\/"/',
+        'php/leo-app/views/partials/foot.php' => '/<a class="foot-mark-link" href=".{0,60}?basePath.{0,20}?\/"/s',
+    ] as $view => $hrefPattern) {
+        $src = file_get_contents($root . '/' . $view);
+        ok(
+            preg_match($hrefPattern, $src) === 1,
+            $view . ': the footer lion does not link to this build\'s own homepage'
+        );
+        ok(
+            preg_match('/<a class="foot-mark-link".{0,200}?aria-label=.{0,400}?<img class="foot-mark"/s', $src) === 1,
+            $view . ': the footer lion link has no accessible name wrapping the mark'
+        );
+    }
+
+    foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
+        $css = file_get_contents($root . '/' . $sheet);
+        // An anchor is a block here, so without this the hit area is the whole
+        // 320px sign-off block and the dead space either side of the lion is
+        // clickable -- which reads as a broken target rather than a link.
+        ok(
+            preg_match('/\.foot-mark-link \{[^}]*width: max-content;/s', $css) === 1,
+            $sheet . ": the footer lion's link fills its column, so the space beside the mark is clickable"
+        );
+    }
+});
+
 // The two menus start on one line as each other, at the top of the row. They
 // used to centre individually against the brand column, which put a 278px
 // column of links and a 217px column of contact details 30px apart at the top --

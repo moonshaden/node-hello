@@ -639,6 +639,16 @@ test('the real lockup and favicons are served, not a placeholder', async () => {
     assert.match(home, /<span class="foot-strap">Leadership/, 'the strapline is not set in type');
     assert.match(home, /class="foot-mark"[^>]*aria-hidden="true"/,
       'the footer mark must be decorative now that the wordmark names the org');
+    // The mark links home, the way the masthead's wordmark does. Because the
+    // image is aria-hidden, a link wrapping it alone would have NO accessible
+    // name at all -- so the label on the anchor is what makes the link usable,
+    // not decoration. Read off the rendered page rather than the template: a
+    // route can hand a template the wrong value with the markup still right.
+    const markLink = home.match(/<a class="foot-mark-link"([^>]*)>\s*<img class="foot-mark"/);
+    assert.ok(markLink, 'the footer lion is not a link wrapping the mark');
+    assert.match(markLink[1], /href="\/"/, 'the footer lion does not link to the homepage');
+    assert.match(markLink[1], /aria-label="LEO Foundation home"/,
+      'the footer lion link has no accessible name, and its image is aria-hidden');
     const lockupAlt = home.match(/class="foot-lockup"[\s\S]*?alt="([^"]*)"/);
     assert.ok(lockupAlt, 'the footer wordmark has no alt text');
     assert.match(lockupAlt[1], /LEO Foundation/, 'the wordmark alt must name the organisation');
