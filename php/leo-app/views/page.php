@@ -42,18 +42,19 @@ $index = count($article['headings']) >= $indexFrom ? $article['headings'] : [];
       <?php if (!empty($page['logoStrip']) && !empty($logos)): ?>
         <?php $app->partial('logo-strip', ['logos' => $logos, 'stripSize' => 'large', 'stripInline' => true]); ?>
       <?php endif; ?>
+
+      <?php /* A page can close its copy with a quotation over a photograph. It
+          sits INSIDE the prose column, directly under the last line of copy,
+          the way the inline logo strip does -- and for the same reason it needs
+          no `clear`: its own `overflow: hidden` already makes it a block
+          formatting context, so it sits beside the floated card rather than
+          running under it. Mirrored in page.ejs. */ ?>
+      <?php if (!empty($page['quote']['src'])): ?>
+        <?php $app->partial('page-quote', ['quote' => $page['quote']]); ?>
+      <?php endif; ?>
     </div>
   </div>
 
-  <?php /* A page can close its copy with a quotation over a photograph. It sits
-      outside `.page-flow`, whose `::after` clears the floated card, so it is a
-      full-width block under the copy rather than something wrapping beside the
-      card. Mirrored in page.ejs. */ ?>
-  <?php if (!empty($page['quote']['src'])): ?>
-  <div class="wrap">
-    <?php $app->partial('page-quote', ['quote' => $page['quote']]); ?>
-  </div>
-  <?php endif; ?>
 </section>
 
 <?php

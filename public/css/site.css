@@ -1201,8 +1201,22 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
    width this site renders; `min-height` on the figure is the floor if a longer
    quotation is ever stored. */
 .page-quote {
-  display: grid; margin: 46px 0 0; min-height: 200px;
+  /* 50px under the last line of copy, the same gap the inline logo strip
+     leaves. No `clear`: `overflow: hidden` is already a block formatting
+     context, so it sits beside the floated card instead of running under it --
+     clearing it would drop it below the card and open the gap this is meant to
+     close, which is the note the inline strip carries too. */
+  display: grid; margin: 50px 0 0; min-height: 200px;
   border-radius: 16px; overflow: hidden; background: var(--ink);
+}
+
+/* This renders inside `.prose`, which hands it every rule `.prose` has --
+   `.prose blockquote` is a gold left bar, 18px of indent and a soft ink colour,
+   which would push the centred quotation off-centre. The override needs two
+   classes (0,2,1) to outrank it (0,1,1). Same trap as the gold dot the prose
+   list rule painted on all 26 strip logos. */
+.prose .page-quote blockquote {
+  border-left: 0; padding-left: 0; margin: 0; color: inherit;
 }
 .page-quote > * { grid-area: 1 / 1; }
 .page-quote img {
@@ -1236,6 +1250,10 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
   max-width: 26em; margin: 0 auto; color: #fff;
   font-family: var(--serif); font-style: italic; font-weight: 700;
   font-size: clamp(1.15rem, 2.1vw, 1.75rem); line-height: 1.34;
+  /* Three lines with one word alone on the last is what this wraps to in the
+     copy column at several widths. Balancing evens them out where the browser
+     supports it and changes nothing where it does not. */
+  text-wrap: balance;
 }
 .page-quote cite {
   display: block; margin-top: 20px; font-style: normal; font-weight: 700;

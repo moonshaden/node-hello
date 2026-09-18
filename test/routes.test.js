@@ -467,6 +467,16 @@ test('the programs page renders its quotation as text over a versioned photograp
     // stylesheet carries no hash and this sheet would be the wrong place for it.
     const css = await (await fetch(`${base}/css/site.css`)).text();
     assert.doesNotMatch(css, /url\([^)]*quote-mlk/, 'the photograph is a CSS background');
+
+    // It belongs INSIDE the prose column, directly under the last line of copy,
+    // the way the community page's inline logo strip does -- not as a
+    // full-width block of its own below the section. Checked structurally
+    // rather than by indentation: nothing that closes the column or opens a new
+    // one may stand between the column and the figure.
+    const between = body.slice(body.indexOf('class="prose"'), body.indexOf('<figure class="page-quote">'));
+    assert.ok(between.length > 0, 'the quote is rendered before the prose column');
+    assert.doesNotMatch(between, /<div class="wrap"/, 'the quote sits in a wrap of its own, not in the copy');
+    assert.doesNotMatch(between, /<\/section>/, 'the quote has left the copy section');
   });
 });
 

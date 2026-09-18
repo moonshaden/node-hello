@@ -1841,6 +1841,26 @@ test('the page quote and the program rows are built the way they measure', funct
             $sheet . ': the stacked program photo has no ratio of its own'
         );
 
+        // In the prose column it inherits `.prose blockquote`: a gold left bar
+        // and 18px of indent, which pushes the centred quotation off-centre.
+        // The override needs two classes (0,2,1) to outrank it (0,1,1).
+        ok(
+            preg_match('/\\.prose \\.page-quote blockquote \\{[^}]*border-left: 0;/s', $css) === 1,
+            $sheet . ': the prose blockquote bar is back on the quotation'
+        );
+        ok(
+            preg_match('/\\.prose \\.page-quote blockquote \\{[^}]*padding-left: 0;/s', $css) === 1,
+            $sheet . ': the prose blockquote indent is back on the quotation'
+        );
+        // And it must NOT clear the float -- `overflow: hidden` already makes it
+        // a formatting context, so it sits beside the card and therefore
+        // directly under the copy. Clearing it drops it below the card and
+        // opens the gap the move was meant to close. Same note as the strip.
+        ok(
+            preg_match('/^\\.page-quote \\{[^}]*clear:/ms', $css) !== 1,
+            $sheet . ': the quote clears the card, which puts it back below it'
+        );
+
         // The caption sits above the scrim, and grid items paint in DOM order --
         // a generated ::after is the last of them, so without this the tint
         // covers the words.
