@@ -153,6 +153,68 @@ img { max-width: 100%; display: block; }
   margin-bottom: 18px;
 }
 
+/* Back to top.
+ *
+ * Fixed at the foot of the viewport on any page that runs past one full screen.
+ * The script decides that -- the page's height is not something the stylesheet
+ * can ask about -- and the stylesheet decides only what it looks like.
+ *
+ * `.to-top[hidden]` is load-bearing. This rule sets `display`, and a class with
+ * `display` OUTRANKS the browser's own `[hidden] { display: none }`, so without
+ * that line the control would be on screen on every page from the first paint,
+ * before the script has looked at anything. The hero rail learned this the hard
+ * way; any component that sets `display` on a class and toggles `hidden` in
+ * script needs the same line.
+ *
+ * Hiding between scroll positions is `visibility` plus `opacity`, not `display`:
+ * `visibility: hidden` takes it out of the tab order and the accessibility tree
+ * the way `display: none` would, and unlike `display` it can be transitioned --
+ * so there is no two-frame dance to make the fade happen. The nav dropdown is
+ * hidden the same way, for the same focus reason.
+ */
+.to-top {
+  position: fixed; right: 20px; bottom: 20px; z-index: 40;
+  display: grid; place-items: center;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: var(--ink); color: #fff;
+  /* The gold rim is what stops it disappearing into the navy footer, which is
+     the one band it will sit over most often. */
+  border: 1px solid var(--gold);
+  box-shadow: var(--lift-2);
+  text-decoration: none;
+  opacity: 0; visibility: hidden;
+  transition: opacity .18s var(--depth-ease), visibility .18s var(--depth-ease),
+              background-color .18s var(--depth-ease), transform .18s var(--depth-ease);
+}
+.to-top[hidden] { display: none; }
+.to-top.is-shown { opacity: 1; visibility: visible; }
+.to-top:hover { background: var(--gold); border-color: var(--gold-bright); }
+.to-top:hover, .to-top:focus-visible { transform: translateY(-2px); }
+.to-top:focus-visible { outline: 2px solid var(--gold-bright); outline-offset: 3px; }
+
+/* The masthead is the scroll target and takes focus programmatically, so it is
+   never reached by Tab -- and an outline on a full-width header would be a
+   band across the top of the page. This is the standard treatment for a
+   `tabindex="-1"` scroll target, and it removes no keyboard affordance because
+   there was none to remove. */
+.masthead[tabindex]:focus { outline: none; }
+
+@media (max-width: 560px) {
+  /* Out of the way of a thumb reaching the bottom edge, and smaller, because
+     the phone viewport is where a fixed control costs the most screen. */
+  .to-top { right: 14px; bottom: 14px; width: 42px; height: 42px; }
+  /* Matching reserve for the smaller control -- see `.foot-legal`. 66px of a
+     342px line is worth giving back. */
+  .foot-legal { padding-right: 56px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The fade and the lift go; the control itself stays. Asking for stillness is
+     not asking to lose a way back to the top. */
+  .to-top { transition: none; }
+  .to-top:hover, .to-top:focus-visible { transform: none; }
+}
+
 @media (max-width: 780px) {
   .wordmark-lion { height: 44px; }
   .wordmark-strap { display: none; }
@@ -1482,7 +1544,20 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
    menus' visible text 4px high of centre while their boxes were centred
    exactly. */
 .foot li:last-child { margin-bottom: 0; }
-.foot-legal { border-top: 1px solid #24455f; margin-top: 40px; padding-top: 24px; font-size: .85rem; color: #7f95a8; }
+/* The right padding is a reserve for the back-to-top control, which is fixed to
+   the bottom-right of the VIEWPORT while this line's sign-in link floats to the
+   right of `.wrap`. Above about 1180px those two are apart; at every width below
+   it they coincide, and the button sat squarely on the link -- measured
+   unclickable at 1140, 1024, 900, 760, 560 and 390. The control is 46px at
+   right: 20 (42 at 14 on a phone), so 66px here always clears it: `.wrap` is
+   itself inset 24px, so the float ends at least 24px left of the button's edge
+   at every width. Padding rather than moving the link, because the link belongs
+   in that corner. */
+.foot-legal {
+  border-top: 1px solid #24455f; margin-top: 40px; padding-top: 24px;
+  padding-right: 66px;
+  font-size: .85rem; color: #7f95a8;
+}
 /* The second heading in the Contact column needs the air the first one gets
    from the grid gap, or Legal reads as part of the contact list above it. */
 .foot-legal-head { margin-top: 24px; }

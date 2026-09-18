@@ -306,3 +306,94 @@
     if (!img.complete) img.addEventListener('load', measure, { once: true });
   });
 })();
+
+
+/* Back to top.
+ *
+ * The control ships with the `hidden` attribute. This is the only thing that
+ * ever takes it off, and only on a page whose document runs past one full
+ * screen -- so a page short enough to read without scrolling never carries one,
+ * and a page that grows or shrinks (the copy is editable in /admin, and a
+ * narrow window makes every page taller) is re-judged on resize.
+ *
+ * Two thresholds rather than one, because a single one is wrong at both ends:
+ *
+ *  - Half a screen down is the usual trigger, but on a page only a little
+ *    taller than the window you can never scroll that far -- the shortest page
+ *    on this site scrolls 427px in a 1080px-tall window -- so the control would
+ *    exist and never appear.
+ *  - Halfway down the page covers that case, and on a long page it is far too
+ *    late: the homepage would not offer one until 1,797px.
+ *
+ * Whichever comes FIRST, then. It is the smaller number in both directions.
+ *
+ * prefers-reduced-motion drops the smooth scroll, not the control: a visitor
+ * asking for stillness still gets taken to the top, it just happens at once.
+ */
+(function () {
+  'use strict';
+
+  var button = document.querySelector('.to-top');
+  if (!button) return;
+
+  var target = document.getElementById('top');
+  var still = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var shown = false;
+  var eligible = false;
+
+  function maxScroll() {
+    return document.documentElement.scrollHeight - window.innerHeight;
+  }
+
+  function judge() {
+    // "Past a full screen" is the document being taller than the window. A
+    // page that cannot scroll at all can never reveal the control anyway, but
+    // the attribute is what keeps it out of the accessibility tree and the tab
+    // order on such a page rather than merely invisible.
+    eligible = maxScroll() > 0;
+    button.hidden = !eligible;
+    if (!eligible) {
+      shown = false;
+      button.classList.remove('is-shown');
+    }
+  }
+
+  function update() {
+    if (!eligible) return;
+    var trigger = Math.min(window.innerHeight * 0.5, maxScroll() * 0.5);
+    var want = window.scrollY > trigger;
+    if (want === shown) return;                 // don't touch the class every frame
+    shown = want;
+    button.classList.toggle('is-shown', want);
+  }
+
+  button.addEventListener('click', function (e) {
+    // The href is a real fragment and works without this handler; the handler
+    // only adds the smooth scroll and, more importantly, moves focus. Without
+    // that a keyboard user lands at the top of the page with their focus still
+    // in the footer, so the next Tab takes them straight back down.
+    e.preventDefault();
+    window.scrollTo({ top: 0, behavior: still.matches ? 'auto' : 'smooth' });
+    if (target) target.focus({ preventScroll: true });
+  });
+
+  var queued = false;
+  addEventListener('scroll', function () {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(function () { queued = false; update(); });
+  }, { passive: true });
+
+  var settle;
+  addEventListener('resize', function () {
+    clearTimeout(settle);
+    settle = setTimeout(function () { judge(); update(); }, 180);
+  }, { passive: true });
+
+  // Images load lazily and the document gets taller as they land, so a page
+  // that was one screen at parse time may not be one screen a moment later.
+  addEventListener('load', function () { judge(); update(); });
+
+  judge();
+  update();
+})();

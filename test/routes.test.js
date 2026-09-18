@@ -758,6 +758,37 @@ test('no rendered page escapes the quotes of an attribute it is building', async
   });
 });
 
+// Back to top. This half reads the RENDERED pages: a template can be right
+// while a route hands it a wrong value, and the control has to ship hidden on
+// every page or it is on screen before the script has judged anything. When it
+// appears and what it scrolls is exercised in a browser; this is the markup
+// contract behind that.
+test('every page ships a back-to-top control, hidden, pointing at its own top', async () => {
+  const paths = ['/', '/scholarships', '/recipients', '/faq', '/about', '/donate',
+    '/contact', '/programs', '/community', '/board', '/privacy',
+    '/scholarships/leo-foundation-scholarship'];
+  await withServer(async (base) => {
+    for (const p of paths) {
+      const html = await (await fetch(`${base}${p}`)).text();
+      const control = html.match(/<a class="to-top"([^>]*)>/);
+      assert.ok(control, `${p} ships no back-to-top control`);
+      // A bare fragment: it resolves against the current URL, so it is the top
+      // of THIS page. A base-path-prefixed one would be the homepage.
+      assert.match(control[1], /href="#top"/, `${p} points its control somewhere other than its own top`);
+      // Hidden in the markup, because only the script can know whether the page
+      // runs past a full screen -- and with JavaScript off nothing should
+      // appear rather than a control that cannot know where you are.
+      assert.match(control[1], /\bhidden\b/, `${p} ships its control visible`);
+      // The destination, and the tabindex that lets focus follow the scroll.
+      assert.match(html, /<header class="masthead" id="top" tabindex="-1">/,
+        `${p} has no focusable top for the control to reach`);
+      // Named by text rather than an aria-label, with the arrow itself silent.
+      assert.match(html, /<span class="visually-hidden">Back to top<\/span>/,
+        `${p} has an unnamed back-to-top control`);
+    }
+  });
+});
+
 // The privacy policy is the live page verbatim. The test pins the sentences
 // that carry the legal weight -- a "we may collect" list and the children's
 // clause -- so a well-meaning rewrite in /admin shows up here rather than on

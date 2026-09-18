@@ -1327,6 +1327,96 @@ test('the footer spreads its columns rather than sharing equal tracks', function
     }
 });
 
+// Back to top. The control is script-driven -- the stylesheet cannot ask how
+// tall the document is -- so the guards split: the markup and the CSS here, the
+// rendered pages in the node suite. The behaviour itself (when it appears, what
+// it scrolls, where focus lands) is exercised in a browser, not asserted here.
+test('the back-to-top control is the same in both builds', function () {
+    $root = dirname(__DIR__, 2);
+
+    foreach (['views/partials/foot.ejs', 'php/leo-app/views/partials/foot.php'] as $view) {
+        $src = file_get_contents($root . '/' . $view);
+        // A BARE fragment in both builds. "#top" resolves against the current
+        // URL; a base-path-prefixed one would be the homepage plus a fragment
+        // under the /~leofoundationusa temporary URL -- a back-to-top control
+        // that navigates away from the page you are on.
+        ok(
+            str_contains($src, '<a class="to-top" href="#top" hidden>'),
+            $view . ': the back-to-top control is missing, no longer a bare #top fragment, or ships visible'
+        );
+        // Its name is text, not an aria-label, so it survives translation, and
+        // the arrow beside it must not be announced as well.
+        ok(
+            str_contains($src, '<span class="visually-hidden">Back to top</span>'),
+            $view . ': the back-to-top control has lost its accessible name'
+        );
+        ok(
+            preg_match('/<svg[^>]*aria-hidden="true"[^>]*>\s*<path/s', $src) === 1,
+            $view . ': the back-to-top arrow is not hidden from assistive tech'
+        );
+    }
+
+    foreach (['views/partials/head.ejs', 'php/leo-app/views/partials/head.php'] as $view) {
+        $src = file_get_contents($root . '/' . $view);
+        // The scroll destination, and the tabindex that lets focus follow the
+        // scroll -- without it a keyboard user is taken to the top with their
+        // focus still in the footer, so the next Tab goes straight back down.
+        ok(
+            str_contains($src, '<header class="masthead" id="top" tabindex="-1">'),
+            $view . ': the masthead is no longer the back-to-top target, or has lost its focusability'
+        );
+    }
+
+    foreach (['public/css/site.css', 'php/public_html/css/site.css'] as $sheet) {
+        $css = file_get_contents($root . '/' . $sheet);
+        // THE line. `.to-top` sets `display`, and a class with `display`
+        // outranks the browser's own [hidden] rule -- so without this the
+        // control is on screen on every page from the first paint, before the
+        // script has looked at anything. The hero rail learned this the hard
+        // way and this is the second component to need it.
+        ok(
+            str_contains($css, '.to-top[hidden] { display: none; }'),
+            $sheet . ': .to-top sets display, so without the [hidden] rule the control shows before the script runs'
+        );
+        // Hidden between scroll positions with visibility, not display: it has
+        // to stay out of the tab order AND be transitionable.
+        ok(
+            preg_match('/\.to-top \{[^}]*visibility: hidden;/s', $css) === 1,
+            $sheet . ': the resting state no longer hides the control from the tab order'
+        );
+        ok(
+            preg_match('/\.to-top\.is-shown \{[^}]*visibility: visible;/s', $css) === 1,
+            $sheet . ': the shown state no longer returns the control to the tab order'
+        );
+        // The reserve that keeps the control off the footer's sign-in link.
+        // Measured unclickable at 1140, 1024, 900, 760, 560 and 390 without it.
+        ok(
+            preg_match('/\.foot-legal \{[^}]*padding-right: 66px;/s', $css) === 1,
+            $sheet . ": the footer legal line has lost its reserve, so the control covers its sign-in link"
+        );
+        // Bounded .* rather than [^}]*: this one has to reach INTO a media
+        // block, past the closing brace of the `.to-top` rule that sits above
+        // it in the same block. Bounded so it still cannot wander off down the
+        // sheet and match a rule that has nothing to do with this one.
+        ok(
+            preg_match('/@media \\(max-width: 560px\\) \\{.{0,400}?\\.foot-legal \\{ padding-right: 56px; \\}/s', $css) === 1,
+            $sheet . ': the phone reserve for the back-to-top control is gone'
+        );
+    }
+
+    // The script is shared, and its parity is pinned elsewhere -- here just
+    // that the component is in it at all.
+    $js = file_get_contents($root . '/public/js/site.js');
+    ok(str_contains($js, ".querySelector('.to-top')"), 'site.js no longer drives the back-to-top control');
+    // Whichever threshold comes first. A single one is wrong at both ends: half
+    // a screen is unreachable on a page that scrolls 427px, and half the page
+    // is 1,797px down on the homepage.
+    ok(
+        str_contains($js, 'Math.min(window.innerHeight * 0.5, maxScroll() * 0.5)'),
+        'site.js no longer reveals the control at whichever threshold comes first'
+    );
+});
+
 // The lion links home. Its image is aria-hidden -- the wordmark below it is the
 // sign-off's accessible name -- so an anchor around it alone would be a link
 // with no name at all, which is why the label is asserted beside the href

@@ -75,6 +75,28 @@
   </div>
 </footer>
 
+<?php // Back to top. It ships hidden and the script un-hides it only on a
+      // page that runs past one full screen, so a page that does not scroll
+      // never carries one -- and with JavaScript off nothing appears at all,
+      // rather than a control that cannot know where you are. A real link to
+      // the #top fragment rather than a button, so it still works if the
+      // handler never binds. Last in the document on purpose: a keyboard
+      // user reaches it after the page, which is when it is useful. The name
+      // is text, not an aria-label, so it survives translation; the arrow
+      // itself is decorative. ?>
+<?php // A bare fragment, NOT basePath-prefixed: "#top" resolves against the
+      // current URL, so it is the top of whatever page you are on. Prefixing
+      // it would make it the HOMEPAGE plus a fragment under the
+      // /~leofoundationusa temporary URL -- a back-to-top control that
+      // navigates away. ?>
+<a class="to-top" href="#top" hidden>
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+      <path d="M12 19V7M6 13l6-6 6 6" fill="none" stroke="currentColor"
+            stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+    <span class="visually-hidden">Back to top</span>
+</a>
+
 <script src="<?= e(asset_url('/js/site.js', $basePath)) ?>" defer></script>
 
 </body>

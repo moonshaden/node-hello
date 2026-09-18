@@ -32,7 +32,13 @@
 </div>
 <?php endif; ?>
 
-<header class="masthead">
+<?php // id="top" is the back-to-top control's destination, and the tabindex
+      // is what lets a keyboard user's focus follow the scroll: without it
+      // the page goes to the top and the next Tab carries on from the
+      // footer. It is -1, so the header never joins the tab order itself.
+      // The preview bar above is admin chrome, so the masthead is the top
+      // of the page proper. ?>
+<header class="masthead" id="top" tabindex="-1">
   <div class="wrap masthead-inner">
     <a class="wordmark" href="<?= e($basePath) ?>/" aria-label="<?= e($site['name'] ?? '') ?> home">
       <?php // The client's own crest, cropped above its LEADERSHIP/EDUCATION/
