@@ -1351,7 +1351,7 @@ test('the footer menus start on one line as each other', function () {
         // margin is 100px between every stacked block rather than a drop down
         // the row.
         ok(
-            preg_match('/@media \(min-width: 861px\) \{[^}]*\.foot-grid > div \+ div \{[^}]*margin-top: 100px;/s', $css) === 1,
+            preg_match('/@media \(min-width: 861px\) \{[^}]*\.foot-grid > div \+ div \{[^}]*margin-top: 60px;/s', $css) === 1,
             $sheet . ': the menus have lost their drop, or it is no longer scoped to the side-by-side layout'
         );
         ok(
