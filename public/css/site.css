@@ -640,24 +640,43 @@ section.band.tint { background: #fff; border-top: 1px solid var(--rule); border-
 .recipient-rows { gap: 18px; }
 .recipient-row {
   display: grid;
-  grid-template-columns: 140px minmax(0, 1fr);
+  grid-template-columns: 265px minmax(0, 1fr);
   column-gap: 22px;
   align-items: start;
 }
-.recipient-row > .portrait { grid-column: 1; grid-row: 1 / span 30; align-self: start; }
+/* `stretch`, not `start`: the portrait spans every row the text produces, so
+   stretching it makes its height the height of the text beside it. That needs a
+   real height as well -- a grid item stretches its box, and without height:100%
+   the image inside would still draw at its own ratio and leave the box empty
+   below. Setting both width and height also takes the 4:5 aspect-ratio out of
+   play, which is the point: the crop follows the text now, so `object-fit:
+   cover` is what keeps the face from stretching with it. */
+.recipient-row > .portrait { grid-column: 1; grid-row: 1 / span 30; align-self: stretch; }
 .recipient-row > :not(.portrait) { grid-column: 2; }
-.recipient-row .portrait { width: 140px; margin-bottom: 0; }
+.recipient-row .portrait {
+  width: 265px; height: 100%; min-height: 175px;
+  object-fit: cover; margin-bottom: 0;
+}
 .recipient-row .portrait-fallback { font-size: 2.2rem; }
 .recipient-row .name { font-size: 1.15rem; }
 .recipient-row blockquote { margin-top: 12px; }
 .recipient-row .story { margin-top: 12px; }
 
-@media (max-width: 560px) {
-  /* Too narrow to keep a column beside 140px of portrait and still read. */
+/* Keyed off the list's own width, not the viewport: this column is a `.split`
+   track, so the card is 532px at a 900px viewport and 732px at 780px once the
+   sidebar drops out. A viewport query gets that backwards. Below 600px of card
+   there is not enough left beside a 265px portrait for the text to read -- it
+   wrapped hard enough to make the matched-height portrait 753px tall, a 0.35
+   crop -- so it stacks instead. */
+.recipient-rows { container-type: inline-size; }
+@container (max-width: 600px) {
   .recipient-row { grid-template-columns: 1fr; }
-  .recipient-row > .portrait { grid-column: 1; grid-row: auto; }
+  .recipient-row > .portrait { grid-column: 1; grid-row: auto; align-self: start; }
   .recipient-row > :not(.portrait) { grid-column: 1; }
-  .recipient-row .portrait { width: 120px; margin-bottom: 14px; }
+  .recipient-row .portrait {
+    width: 190px; height: auto; min-height: 0;
+    aspect-ratio: 4 / 5; margin-bottom: 14px;
+  }
 }
 
 /* board members — the same card as a recipient, but the published portraits

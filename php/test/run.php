@@ -1459,8 +1459,27 @@ test('the recipient card lays out horizontally only where it is asked to', funct
         // The portrait is the whole point: unconstrained it filled the 690px
         // column at 4:5 and stood 808px tall.
         ok(
-            preg_match('/\\.recipient-row \\.portrait \\{[^}]*width: 140px;/s', $css) === 1,
+            preg_match('/\\.recipient-row \\.portrait \\{[^}]*width: 265px;/s', $css) === 1,
             $sheet . ': the row portrait has no width, so it fills the column again'
+        );
+        // The portrait's height is the text's height. That needs BOTH the grid
+        // item stretched and a real height on the image -- stretching alone
+        // gives the box the height and leaves the picture drawing at its own
+        // ratio inside it.
+        ok(
+            preg_match('/\\.recipient-row > \\.portrait \\{[^}]*align-self: stretch;/s', $css) === 1,
+            $sheet . ': the row portrait does not stretch to the text'
+        );
+        ok(
+            preg_match('/\\.recipient-row \\.portrait \\{[^}]*height: 100%;/s', $css) === 1,
+            $sheet . ': the row portrait has no height, so it will not match the text'
+        );
+        // Stacking is keyed off the list's own width, not the viewport: this
+        // column is a .split track, so the card is 532px at a 900px viewport and
+        // 732px at 780px once the sidebar drops out.
+        ok(
+            str_contains($css, '@container (max-width: 600px)'),
+            $sheet . ': the row stacks on a viewport query, which gets this column backwards'
         );
         // And the text has to be pinned to column two, or it auto-places under
         // the portrait and the row is a stack with a small photo.
